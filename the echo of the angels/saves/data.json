@@ -1,0 +1,33 @@
+{
+    "pos": {
+        "x": 295,
+        "y": 360
+    },
+    "room": "dungeon room 6",
+    "stats": {
+        "hp": 76,
+        "max hp": 100,
+        "gold": 10,
+        "inventory": [],
+        "max inventory capacity": 20,
+        "current weapon": "sword",
+        "weapons": [
+            "sword"
+        ],
+        "keys": 0,
+        "speed": 5,
+        "attack": 1,
+        "key enemies": [
+            false
+        ],
+        "locked rooms": [
+            false
+        ]
+    },
+    "respawn timer": {
+        "spawn room": 10,
+        "dungeon room 2": 10,
+        "dungeon room 4": 9,
+        "dungeon room 5": 10
+    }
+}

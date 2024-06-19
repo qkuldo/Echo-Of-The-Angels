@@ -1,0 +1,29 @@
+A guide for the game "The Echo Of The Angels"
+Document(and game) made by qkuldo(pronounced kwa-culdo)
+
+
+Story
+     After finishing years of training in exile, far away from your colonized country, you have to prove yourself worthy of being the Hero of your kingdom.
+ To do this, you must obtain the 4 Magical Crests of the Hero, guarded by powerful deities who protect these Crests.
+ You must defeat them in combat in order to recive the Crests. There are also other monsters and goblin shopkeepers in the dungeon.
+ You grab your trusty sword and eat your last piece of bread before diving into the dungeon.
+Controls
+ Arrow keys = move
+ Space = use sword
+ E = enter doors/unlock doors
+ R = rest(w/ 10 second cooldown and not able to rest in a room full of monsters)
+ S = Save game
+ Escape = Pause game
+ Arrow keys + Enter/Return = dash
+Monster
+ These are the monsters found in this dungeon
+ -Slime
+   5 HP 1 DMG 1 SPEED
+   These cute, slimy bastards are very common around here.
+   They usually wander around in packs, but some like traveling on their own.
+   A pack of Slimes is called a Glob Ball. Slimes are weak, but you can sneak behind them.
+ -Corrupted Golem
+   10 HP 2 DMG 1 SPEED
+   These tall golems are the weakest of its brothers.
+   It was corrupted by one of the deities in the dungeon to help them protect the Crests.
+   Tall in height, they can easily spot you from far away. Their arms have been destroyed, so they stomp intruders to death.
