@@ -735,6 +735,13 @@ def game():
             if (sword_pause_timer >= 100):
                 sword_pause_timer = 0
                 sword_pause = False
+        for i in dash_particle.particlelist:
+            if (60 < i.lifetime <= 90):
+                i.texture.set_alpha(40)
+            elif (30 < i.lifetime <= 60):
+                i.texture.set_alpha(30)
+            elif (i.lifetime <= 30):
+                i.texture.set_alpha(20)
         footsteps.setup(screen,clock)
         dash_particle.setup(screen,clock)
         for i in enemies:
