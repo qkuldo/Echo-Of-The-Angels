@@ -818,7 +818,7 @@ def game():
                         damage = player_stats["attack"]
                         i.hp -= damage
                         combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 15, 15)),[i.pos[0],i.pos[1]], 500])
-                    i.inv_frames = 20
+                    i.inv_frames = 15
                     current_notification = notification_font.render("You damaged an enemy",True, (127,98,98))
                     notification_rect = current_notification.get_rect(midtop=(200, 450))
                     if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not i.hitbox.colliderect(wall_r_rect)):
