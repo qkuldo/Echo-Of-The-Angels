@@ -777,7 +777,7 @@ def game():
                 if (i.line_of_sight.colliderect(player_hitbox)):
                     i.state = "chase"
                     combat_text.append([sprites["alert"],[i.pos[0],i.pos[1]], 200])
-            elif (i.state == "chase"):
+            elif (i.state == "chase" and i.line_of_sight.colliderect(player_hitbox)):
                 if (i.pos[0] > player_x and not i.hitbox.colliderect(wall_r_rect)):
                     i.pos[0] -= i.speed
                     i.direction = 0
@@ -790,7 +790,7 @@ def game():
                 if (i.pos[1] < player_x and not i.hitbox.colliderect(wall_s_rect)):
                     i.pos[1] += i.speed
                     i.direction = 3
-            if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,2] and not i.inv_frames > 0):
+            if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,2]  and i.line_of_sight.colliderect(player_hitbox) and not i.inv_frames > 0):
                 i.cooldown = 1500
                 enemy_attack = True
                 enemy_projectiles.append(classes.enemy.Projectile(sprites["stomp"], 0, 0, i.dmg, 100, [i.hitbox.bottomleft[0], i.hitbox.bottomleft[1]-30]))
