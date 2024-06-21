@@ -498,11 +498,11 @@ def game():
         old_y = copy.deepcopy(player_y)
         if (keys[pygame.K_UP] and not wall_n_rect.colliderect(player_hitbox) and (not sword_pause) and (not resting) and (wall_move[0]) and (not dash_duration > 0)):
             if ((keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and dash):
-                screenshake_duration = 100
+                screenshake_duration = 200
                 player_y -= player_stats["speed"]*2
                 dash = False
                 invincibility_frames = 20
-                dash_duration = 200
+                dash_duration = 370
                 for i in range(1, 10):
                     dash_particle.pos = [player_x+randint(-10,10), player_y+randint(-30,30)]
                     dash_particle.spawn_particle()
@@ -516,11 +516,11 @@ def game():
             moved = True
         elif (keys[pygame.K_DOWN] and not wall_s_rect.colliderect(player_hitbox) and (not sword_pause) and (not resting) and (wall_move[1]) and (not dash_duration > 0)):
             if ((keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and dash):
-                screenshake_duration = 100
+                screenshake_duration = 200
                 player_y += player_stats["speed"]*2
                 dash = False
                 invincibility_frames = 20
-                dash_duration = 200
+                dash_duration = 370
                 for i in range(1, 10):
                     dash_particle.pos = [player_x+randint(-10,10), player_y+randint(-30,30)]
                     dash_particle.spawn_particle()
@@ -535,11 +535,11 @@ def game():
         if (keys[pygame.K_RIGHT]and not wall_l_rect.colliderect(player_hitbox) and (not sword_pause) and (not resting) and (wall_move[2]) and (not dash_duration > 0)):
             updated_x = 1
             if ((keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and dash):
-                screenshake_duration = 100
+                screenshake_duration = 200
                 player_x += player_stats["speed"]*2
                 dash = not dash
                 invincibility_frames = 20
-                dash_duration = 200
+                dash_duration = 370
                 for i in range(1, 10):
                     dash_particle.pos = [player_x+randint(-30,30), player_y+randint(-10,10)]
                     dash_particle.spawn_particle()
@@ -557,8 +557,8 @@ def game():
                 player_x -= player_stats["speed"]*2
                 dash = not dash
                 invincibility_frames = 100
-                screenshake_duration = 100
-                dash_duration = 200
+                screenshake_duration = 200
+                dash_duration = 370
                 for i in range(1, 10):
                     dash_particle.pos = [player_x+randint(-30,30), player_y+randint(0,10)]
                     dash_particle.spawn_particle()
@@ -738,10 +738,15 @@ def game():
         for i in dash_particle.particlelist:
             if (60 < i.lifetime <= 90):
                 i.texture.set_alpha(40)
+                i.texture = pygame.transform.scale(i.texture, (16,16))
             elif (30 < i.lifetime <= 60):
                 i.texture.set_alpha(30)
+                i.texture = pygame.transform.scale(i.texture, (12,12))
             elif (i.lifetime <= 30):
                 i.texture.set_alpha(20)
+                i.texture = pygame.transform.scale(i.texture, (10,10))
+            else:
+                i.texture = pygame.transform.scale(i.texture, (20,20))
         footsteps.setup(screen,clock)
         dash_particle.setup(screen,clock)
         for i in enemies:
