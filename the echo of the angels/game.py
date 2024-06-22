@@ -124,7 +124,8 @@ pygame.display.set_icon(sprites["player down"])
 cursor_rect = sprites["cursor"].get_rect()
 sound_effects = {
                  "swing sword":pygame.mixer.Sound("sounds/sword_swing.wav"),
-                 "defeat enemy":pygame.mixer.Sound("sounds/defeat_enemy.wav")
+                 "defeat enemy":pygame.mixer.Sound("sounds/defeat_enemy.wav"),
+                 "dash":pygame.mixer.Sound("sounds/dash.wav")
                 }
 pygame.mixer.music.set_volume(0.7)
 music = [
@@ -503,6 +504,7 @@ def game():
                 dash = False
                 invincibility_frames = 20
                 dash_duration = 370
+                sound_effects["dash"].play()
                 for i in range(1, 10):
                     dash_particle.pos = [player_x+randint(-10,10), player_y+randint(-30,30)]
                     dash_particle.spawn_particle()
@@ -521,6 +523,7 @@ def game():
                 dash = False
                 invincibility_frames = 20
                 dash_duration = 370
+                sound_effects["dash"].play()
                 for i in range(1, 10):
                     dash_particle.pos = [player_x+randint(-10,10), player_y+randint(-30,30)]
                     dash_particle.spawn_particle()
@@ -540,6 +543,7 @@ def game():
                 dash = not dash
                 invincibility_frames = 20
                 dash_duration = 370
+                sound_effects["dash"].play()
                 for i in range(1, 10):
                     dash_particle.pos = [player_x+randint(-30,30), player_y+randint(-10,10)]
                     dash_particle.spawn_particle()
@@ -559,6 +563,7 @@ def game():
                 invincibility_frames = 100
                 screenshake_duration = 200
                 dash_duration = 370
+                sound_effects["dash"].play()
                 for i in range(1, 10):
                     dash_particle.pos = [player_x+randint(-30,30), player_y+randint(0,10)]
                     dash_particle.spawn_particle()
