@@ -125,7 +125,8 @@ cursor_rect = sprites["cursor"].get_rect()
 sound_effects = {
                  "swing sword":pygame.mixer.Sound("sounds/sword_swing.wav"),
                  "defeat enemy":pygame.mixer.Sound("sounds/defeat_enemy.wav"),
-                 "dash":pygame.mixer.Sound("sounds/dash.wav")
+                 "dash":pygame.mixer.Sound("sounds/dash.wav"),
+                 "door":pygame.mixer.Sound("sounds/door_open.wav")
                 }
 pygame.mixer.music.set_volume(0.7)
 music = [
@@ -623,6 +624,7 @@ def game():
                         notification_rect = current_notification.get_rect(midtop=(200, 450))
                     elif (type(room_dict[current_room].exits[direction]) == classes.room.Lock and player_stats["keys"] > 0):
                         current_notification = notification_font.render("You unlock the door.",True, (127,98,98))
+                        sound_effects["door"].play()
                         notification_rect = current_notification.get_rect(midtop=(200, 450))
                         pygame.time.delay(300)
                         if (current_room == "dungeon room 4"):
