@@ -126,7 +126,8 @@ sound_effects = {
                  "swing sword":pygame.mixer.Sound("sounds/sword_swing.wav"),
                  "defeat enemy":pygame.mixer.Sound("sounds/defeat_enemy.wav"),
                  "dash":pygame.mixer.Sound("sounds/dash.wav"),
-                 "door":pygame.mixer.Sound("sounds/door_open.wav")
+                 "door":pygame.mixer.Sound("sounds/door_open.wav"),
+                 "footstep":pygame.mixer.Sound("sounds/footstep.wav")
                 }
 pygame.mixer.music.set_volume(0.7)
 music = [
@@ -419,6 +420,7 @@ def game():
     moved = True
     dash_duration = 0
     transition = True
+    footsteps_sound_cooldown = 1500
     while True:
         dark_surf.fill("black")
         dark_surf.set_alpha(45)
@@ -429,6 +431,8 @@ def game():
         torch_timer -= clock.get_time()
         if (screenshake_duration > 0):
             screenshake_duration -= clock.get_time()
+        if (footsteps_sound_cooldown > 0):
+            footsteps_sound_cooldown -= clock.get_time()
         if (torch_timer <= 0):
             if (current_torch == sprites["torch"]):
                 current_torch = sprites["torch 2"]
@@ -668,6 +672,9 @@ def game():
                 player_blitscreen = pygame.transform.rotate(main_dir, randint(-5, 5))
                 player_blitscreen.set_colorkey((255, 255, 255))
                 spin_walk_cooldown = 100
+            if (moved and footsteps_sound_cooldown <= 0):
+                sound_effects["footstep"].play()
+                footsteps_sound_cooldown = 1500
         else:
             if (main_dir == sprites["player up invincible"]):
                 main_dir = sprites["player up"]
@@ -681,6 +688,9 @@ def game():
                 player_blitscreen = pygame.transform.rotate(main_dir, randint(-5, 5))
                 player_blitscreen.set_colorkey((255, 255, 255))
                 spin_walk_cooldown = 100
+            if (moved and footsteps_sound_cooldown <= 0):
+                sound_effects["footstep"].play()
+                footsteps_sound_cooldown = 1500
         if (player_stats["hp"] > 100):
             player_stats["hp"] = 100
         footsteps.pos = [player_hitbox.midbottom[0], player_hitbox.midbottom[1]-20]
