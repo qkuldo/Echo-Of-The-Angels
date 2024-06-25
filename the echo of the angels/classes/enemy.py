@@ -19,7 +19,7 @@ class Enemy:
 		self.inv_frames = 0
 		self.move_wall = [True, True, True, True]
 		self.state = "patrol"
-		self.line_of_sight = pygame.Rect(self.hitbox.center[0], self.hitbox.center[1], 250,250)
+		self.line_of_sight = pygame.Rect(self.hitbox.center[0], self.hitbox.center[1], 300,300)
 		self.old_pos = self.pos
 		self.anim_frames = anim_frames
 		self.anim_index = 0
