@@ -120,6 +120,7 @@ sprites["pot"].set_colorkey((255,255,255))
 sprites["alert"].set_colorkey((255,255,255))
 sprites["damage particle"].set_colorkey((255,255,255))
 sprites["dash"].set_colorkey((255,255,255))
+sprites["hud bg"].set_alpha(177)
 pygame.display.set_icon(sprites["player down"])
 cursor_rect = sprites["cursor"].get_rect()
 sound_effects = {
@@ -689,8 +690,9 @@ def game():
                 player_blitscreen.set_colorkey((255, 255, 255))
                 spin_walk_cooldown = 100
             if (moved and footsteps_sound_cooldown <= 0):
-                sound_effects["footstep"].play()
-                footsteps_sound_cooldown = 1500
+                if (randint(0,20) == 15):
+                    sound_effects["footstep"].play()
+                    footsteps_sound_cooldown = randint(950, 1500)
         if (player_stats["hp"] > 100):
             player_stats["hp"] = 100
         footsteps.pos = [player_hitbox.midbottom[0], player_hitbox.midbottom[1]-20]
