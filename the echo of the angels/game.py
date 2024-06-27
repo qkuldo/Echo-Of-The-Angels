@@ -71,7 +71,8 @@ sprites = {
            "locked door":pygame.transform.scale(pygame.image.load("assets/locked_door.png"), (30,30)).convert_alpha(),
            "pot":pygame.transform.scale(pygame.image.load("assets/pot.png"),(40,40)).convert_alpha(),
            "alert":pygame.transform.scale(pygame.image.load("assets/alert.png"),(20,20)).convert_alpha(),
-           "damage particle":pygame.transform.scale(pygame.image.load("assets/particle/damage_particle.png"),(30,30)).convert_alpha()
+           "damage particle":pygame.transform.scale(pygame.image.load("assets/particle/damage_particle.png"),(30,30)).convert_alpha(),
+           "game bg":pygame.transform.scale(pygame.image.load("assets/background.png"), (600,510)).convert()
           }
 sprites["player left"].set_colorkey((255,255,255))
 sprites["player right"].set_colorkey((255,255,255))
@@ -702,6 +703,7 @@ def game():
              screen.blit(current_notification, notification_rect)
         sword_cooldown += clock.get_time()
         screen.blit(sprites["hud bg"], (0, 0))
+        screen.blit(sprites["game bg"], (0, 90))
         screen.blit(sprites["coin icon"], (30, 30))
         screen.blit(sprites["key icon"], (400, 30))
         screen.blit(coin_surf, (56, 35))
