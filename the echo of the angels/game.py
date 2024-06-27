@@ -34,7 +34,7 @@ sprites = {
            "slime":pygame.transform.scale(pygame.image.load("assets/enemy/slime/slime.png"), (50,50)).convert_alpha(),
            "slimeball":pygame.transform.scale(pygame.image.load("assets/enemy/slime/slimeball.png"), (30, 30)).convert_alpha(),
            "invincible slime":pygame.transform.scale(pygame.image.load("assets/enemy/slime/slime_inv.png"), (50,50)).convert_alpha(),
-           "door":pygame.transform.scale(pygame.image.load("assets/door.png"), (30,30)).convert_alpha(),
+           "door":pygame.transform.scale(pygame.image.load("assets/door.png"), (40,30)).convert_alpha(),
            "floor":pygame.transform.scale(pygame.image.load("assets/floor.png"), (450, 250)).convert_alpha(),
            "player rest":pygame.transform.scale(pygame.image.load("assets/player/player_rest.png"), (50,50)).convert_alpha(),
            "small wall":pygame.transform.scale(pygame.image.load("assets/small_wall.png"), (30,30)).convert_alpha(),
@@ -68,7 +68,7 @@ sprites = {
            "gameover 1":pygame.transform.scale(pygame.image.load("assets/ripbozo_dead.png"), (600,600)).convert(),
            "gameover 2":pygame.transform.scale(pygame.image.load("assets/ripbozo_dead2.png"), (600,600)).convert(),
            "key icon":pygame.transform.scale(pygame.image.load("assets/hud/key_icon.png"), (30, 30)).convert_alpha(),
-           "locked door":pygame.transform.scale(pygame.image.load("assets/locked_door.png"), (30,30)).convert_alpha(),
+           "locked door":pygame.transform.scale(pygame.image.load("assets/locked_door.png"), (40,30)).convert_alpha(),
            "pot":pygame.transform.scale(pygame.image.load("assets/pot.png"),(40,40)).convert_alpha(),
            "alert":pygame.transform.scale(pygame.image.load("assets/alert.png"),(20,20)).convert_alpha(),
            "damage particle":pygame.transform.scale(pygame.image.load("assets/particle/damage_particle.png"),(30,30)).convert_alpha(),
@@ -352,6 +352,7 @@ def game():
     sword_pause = False
     sword_pause_timer = 0
     hud_font = pygame.font.Font("fonts/Pixeltype.ttf", 40)
+    tut_font = pygame.font.Font("fonts/Pixeltype.ttf", 30)
     coin_surf = hud_font.render("x"+str(player_stats["gold"]), True, (255,255,255))
     hp_surf = hud_font.render("HP:", True, (255,255,255))
     hp_rect = pygame.Rect(150, 30, player_stats["hp"]*2, 30)
@@ -423,6 +424,8 @@ def game():
     dash_duration = 0
     transition = True
     footsteps_sound_cooldown = 1500
+    tut_1 = tut_font.render("Arrow Keys to move, Space to attack", True, (255,255,255))
+    in_door = False
     while True:
         dark_surf.fill("black")
         dark_surf.set_alpha(45)
@@ -623,12 +626,14 @@ def game():
                             player_y = exit_rects[2].y
                         save({"pos":{"x":player_x, "y":player_y}, "room":current_room, "stats":player_stats, "respawn timer":respawn_timer})
                         room_cooldown = 1000
+                        in_door = True
                         fade()
                         transition = True
                     elif (type(room_dict[current_room].exits[direction]) == classes.room.Lock and player_stats["keys"] == 0):
                         current_notification = notification_font.render("This door is locked.",True, (127,98,98))
                         notification_rect = current_notification.get_rect(midtop=(200, 450))
                     elif (type(room_dict[current_room].exits[direction]) == classes.room.Lock and player_stats["keys"] > 0):
+                        screenshake_duration = 100
                         current_notification = notification_font.render("You unlock the door.",True, (127,98,98))
                         sound_effects["door"].play()
                         notification_rect = current_notification.get_rect(midtop=(200, 450))
@@ -698,9 +703,6 @@ def game():
             player_stats["hp"] = 100
         footsteps.pos = [player_hitbox.midbottom[0], player_hitbox.midbottom[1]-20]
         dash_particle.pos = [player_hitbox.midbottom[0], player_hitbox.midbottom[1]-20]
-        screen.fill("black")
-        if (not current_notification == None):
-             screen.blit(current_notification, notification_rect)
         sword_cooldown += clock.get_time()
         screen.blit(sprites["hud bg"], (0, 0))
         screen.blit(sprites["game bg"], (0, 90))
@@ -721,7 +723,14 @@ def game():
             i.draw(screen)
             if (i.lifetime <= 0):
                 animations.remove(i)
-        screen.blit(player_blitscreen, (player_x,player_y))
+        if (not current_notification == None):
+             screen.blit(current_notification, notification_rect)
+        if (current_room == "spawn room"):
+            screen.blit(tut_1, (150,300))
+        if (not in_door):
+            screen.blit(player_blitscreen, (player_x,player_y))
+        else:
+            in_door = not in_door
         screen.blit(sprites["wall"][1], (50,200))
         screen.blit(sprites["wall"][1], (50,400))
         screen.blit(sprites["wall"][0], (50,200))
@@ -942,8 +951,10 @@ def game():
             if (room_dict[current_room].exits[exits.index(i)] != None and type(room_dict[current_room].exits[exits.index(i)]) != classes.room.Lock):
                  if (exits.index(i) == 0):
                       screen.blit(sprites["door"], (i[0], i[1] - 30))
+                 elif (exits.index(i) == 1):
+                      screen.blit(pygame.transform.rotate(sprites["door"], 180), i)
                  elif (exits.index(i) == 2):
-                      screen.blit(pygame.transform.rotate(sprites["door"], 90), i)
+                      screen.blit(pygame.transform.rotate(sprites["door"], -90), i)
                  elif (exits.index(i) == 3):
                       screen.blit(pygame.transform.rotate(sprites["door"], 90), (i[0]-30, i[1]))
                  else:    
@@ -951,8 +962,10 @@ def game():
             elif (type(room_dict[current_room].exits[exits.index(i)]) == classes.room.Lock):
                 if (exits.index(i) == 0):
                       screen.blit(sprites["locked door"], (i[0], i[1] - 30))
+                elif (exits.index(i) == 1):
+                      screen.blit(pygame.transform.rotate(sprites["door"], 180), i)
                 elif (exits.index(i) == 2):
-                      screen.blit(pygame.transform.rotate(sprites["door"], 90), i)
+                      screen.blit(pygame.transform.rotate(sprites["door"], -90), i)
                 elif (exits.index(i) == 3):
                       screen.blit(pygame.transform.rotate(sprites["locked door"], 90), (i[0]-30, i[1]))
                 else:    
