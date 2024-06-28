@@ -446,14 +446,51 @@ def game():
             torch_timer = 500
         if (dash_duration > 0):
             dash_duration -= clock.get_time()
-            if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
-                player_x -= player_stats["speed"]*2
-            if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
-                player_x += player_stats["speed"]*2
-            if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
-                player_y -= player_stats["speed"]*2
-            if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
-                player_y += player_stats["speed"]*2
+            if (296 >= dash_duration > 222):
+                if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
+                    player_x -= player_stats["speed"]
+                if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
+                    player_x += player_stats["speed"]
+                if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
+                    player_y -= player_stats["speed"]
+                if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
+                    player_y += player_stats["speed"]
+            if (222 >= dash_duration > 148):
+                if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
+                    player_x -= player_stats["speed"]*2
+                if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
+                    player_x += player_stats["speed"]*2
+                if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
+                    player_y -= player_stats["speed"]*2
+                if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
+                    player_y += player_stats["speed"]*2
+            if (148 >= dash_duration > 111):
+                if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
+                    player_x -= player_stats["speed"]*2.5
+                if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
+                    player_x += player_stats["speed"]*2.5
+                if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
+                    player_y -= player_stats["speed"]*2.5
+                if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
+                    player_y += player_stats["speed"]*2.5
+            if (111 >= dash_duration > 74):
+                if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
+                    player_x -= player_stats["speed"]*2.5
+                if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
+                    player_x += player_stats["speed"]*2
+                if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
+                    player_y -= player_stats["speed"]*2
+                if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
+                    player_y += player_stats["speed"]*2
+            else:
+                if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
+                    player_x -= player_stats["speed"]
+                if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
+                    player_x += player_stats["speed"]
+                if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
+                    player_y -= player_stats["speed"]
+                if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
+                    player_y += player_stats["speed"]
         if (invincibility_frames > 0):
             invincibility_frames -= 1
         if (room_cooldown > 0):
