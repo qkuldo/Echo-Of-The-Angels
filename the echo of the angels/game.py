@@ -34,7 +34,7 @@ sprites = {
            "slime":pygame.transform.scale(pygame.image.load("assets/enemy/slime/slime.png"), (50,50)).convert_alpha(),
            "slimeball":pygame.transform.scale(pygame.image.load("assets/enemy/slime/slimeball.png"), (30, 30)).convert_alpha(),
            "invincible slime":pygame.transform.scale(pygame.image.load("assets/enemy/slime/slime_inv.png"), (50,50)).convert_alpha(),
-           "door":pygame.transform.scale(pygame.image.load("assets/door.png"), (40,30)).convert_alpha(),
+           "door":pygame.transform.scale(pygame.image.load("assets/door.png"), (35,30)).convert_alpha(),
            "floor":pygame.transform.scale(pygame.image.load("assets/floor.png"), (450, 250)).convert_alpha(),
            "player rest":pygame.transform.scale(pygame.image.load("assets/player/player_rest.png"), (50,50)).convert_alpha(),
            "small wall":pygame.transform.scale(pygame.image.load("assets/small_wall.png"), (30,30)).convert_alpha(),
@@ -68,7 +68,7 @@ sprites = {
            "gameover 1":pygame.transform.scale(pygame.image.load("assets/ripbozo_dead.png"), (600,600)).convert(),
            "gameover 2":pygame.transform.scale(pygame.image.load("assets/ripbozo_dead2.png"), (600,600)).convert(),
            "key icon":pygame.transform.scale(pygame.image.load("assets/hud/key_icon.png"), (30, 30)).convert_alpha(),
-           "locked door":pygame.transform.scale(pygame.image.load("assets/locked_door.png"), (40,30)).convert_alpha(),
+           "locked door":pygame.transform.scale(pygame.image.load("assets/locked_door.png"), (35,30)).convert_alpha(),
            "pot":pygame.transform.scale(pygame.image.load("assets/pot.png"),(40,40)).convert_alpha(),
            "alert":pygame.transform.scale(pygame.image.load("assets/alert.png"),(20,20)).convert_alpha(),
            "damage particle":pygame.transform.scale(pygame.image.load("assets/particle/damage_particle.png"),(30,30)).convert_alpha(),
@@ -207,7 +207,7 @@ def title():
             clock.tick(60)
 #--------------------
 def checkfor_collision_dir(wall, player_x, player_y):
-    if (player_x > wall.pos[0]):
+    if (player_x >= wall.pos[0]):
         return "left"
     elif (player_x < wall.pos[0]):
         return "right"
@@ -982,7 +982,7 @@ def game():
                 elif (randint(0,1) == 0):
                     flame_particle_2.spawn_particle()
             if (i.hitbox.colliderect(player_hitbox)):
-                 direction_of_collide = checkfor_collision_dir(i, player_x, player_y)
+                 direction_of_collide = checkfor_collision_dir(i, player_hitbox.center[0], player_hitbox.center[1])
                  if (direction_of_collide == "up"):
                     player_y = i.hitbox.bottom
                  if (direction_of_collide == "down"):
@@ -993,7 +993,7 @@ def game():
                     player_x = i.hitbox.midleft[0] - 50
             for j in enemies:
                 if (i.hitbox.colliderect(j.hitbox)):
-                 direction_of_collide = checkfor_collision_dir(i, j.pos[0], j.pos[1])
+                 direction_of_collide = checkfor_collision_dir(i, j.hitbox.center[0], j.hitbox.center[1])
                  if (direction_of_collide == "up"):
                     j.pos[1] = i.hitbox.bottom
                  if (direction_of_collide == "down"):
@@ -1005,7 +1005,7 @@ def game():
         for i in pot_list:
             screen.blit(i.texture, i.pos)
             if (i.hitbox.colliderect(player_hitbox)):
-                 direction_of_collide = checkfor_collision_dir(i, player_x, player_y)
+                 direction_of_collide = checkfor_collision_dir(i, player_hitbox.center[0], player_hitbox.center[1])
                  if (direction_of_collide == "up"):
                     player_y = i.hitbox.bottom
                  if (direction_of_collide == "down"):
@@ -1016,7 +1016,7 @@ def game():
                     player_x = i.hitbox.midleft[0] - 50
             for j in enemies:
                 if (i.hitbox.colliderect(j.hitbox)):
-                 direction_of_collide = checkfor_collision_dir(i, j.pos[0], j.pos[1])
+                 direction_of_collide = checkfor_collision_dir(i, player_hitbox.center[0], player_hitbox.center[1])
                  if (direction_of_collide == "up"):
                     j.pos[1] = i.hitbox.bottom
                  if (direction_of_collide == "down"):
