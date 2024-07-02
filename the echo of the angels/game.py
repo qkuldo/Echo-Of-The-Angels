@@ -9,7 +9,6 @@ import copy
 #---------------------
 pygame.init()
 pygame.mixer.init()
-pygame.mouse.set_visible(False)
 screen = pygame.display.set_mode((600,600))
 clock = pygame.time.Clock()
 pygame.display.set_caption("The Echo of The Angels")
@@ -35,7 +34,7 @@ sprites = {
            "slimeball":pygame.transform.scale(pygame.image.load("assets/enemy/slime/slimeball.png"), (30, 30)).convert_alpha(),
            "invincible slime":pygame.transform.scale(pygame.image.load("assets/enemy/slime/slime_inv.png"), (50,50)).convert_alpha(),
            "door":pygame.transform.scale(pygame.image.load("assets/door.png"), (35,30)).convert_alpha(),
-           "floor":pygame.transform.scale(pygame.image.load("assets/floor.png"), (450, 250)).convert_alpha(),
+           "floor":pygame.transform.scale(pygame.image.load("assets/floor.png"), (500, 200)).convert_alpha(),
            "player rest":pygame.transform.scale(pygame.image.load("assets/player/player_rest.png"), (50,50)).convert_alpha(),
            "small wall":pygame.transform.scale(pygame.image.load("assets/small_wall.png"), (30,30)).convert_alpha(),
            "slime 2":pygame.transform.scale(pygame.image.load("assets/enemy/slime/slime_2.png"), (50,50)).convert_alpha(),
@@ -72,7 +71,8 @@ sprites = {
            "pot":pygame.transform.scale(pygame.image.load("assets/pot.png"),(40,40)).convert_alpha(),
            "alert":pygame.transform.scale(pygame.image.load("assets/alert.png"),(20,20)).convert_alpha(),
            "damage particle":pygame.transform.scale(pygame.image.load("assets/particle/damage_particle.png"),(30,30)).convert_alpha(),
-           "game bg":pygame.transform.scale(pygame.image.load("assets/background.png"), (600,510)).convert()
+           "game bg":pygame.transform.scale(pygame.image.load("assets/background.png"), (600,510)).convert_alpha(),
+           "qk":pygame.transform.scale(pygame.image.load("assets/qkuldo.png"), (100,100)).convert_alpha()
           }
 sprites["player left"].set_colorkey((255,255,255))
 sprites["player right"].set_colorkey((255,255,255))
@@ -121,6 +121,7 @@ sprites["pot"].set_colorkey((255,255,255))
 sprites["alert"].set_colorkey((255,255,255))
 sprites["damage particle"].set_colorkey((255,255,255))
 sprites["dash"].set_colorkey((255,255,255))
+sprites["qk"].set_colorkey((255,255,255))
 sprites["hud bg"].set_alpha(177)
 pygame.display.set_icon(sprites["player down"])
 cursor_rect = sprites["cursor"].get_rect()
@@ -151,8 +152,29 @@ def save(to_save):
     file.close()
 
 #---------------------
+def intro():
+    surf = pygame.Surface((600,600)).convert_alpha()
+    surf.fill((255,150,81))
+    rect = sprites["qk"].get_rect(midtop=(300,300))
+    surf.blit(sprites["qk"], rect)
+    font = pygame.font.Font("fonts/Pixeltype.ttf", 60)
+    title = font.render("qkuldo presents...",True,(175,70,0))
+    title_rect = title.get_rect(midtop=(300,100))
+    surf.blit(title,title_rect)
+    time = 900
+    while time>0:
+        time -= clock.get_time()
+        for event in pygame.event.get():
+            if (event.type == pygame.QUIT):
+                pygame.quit()
+                sys.exit()
+        screen.blit(surf, (0,0))
+        pygame.display.update()
+        clock.tick(60)
+#---------------------
 def title():
     global cursor_rect
+    fade()
     play_music(music[1])
     button_font = pygame.font.Font("fonts/Pixeltype.ttf", 60)
     title_font = pygame.font.Font("fonts/Pixeltype.ttf", 80)
@@ -169,6 +191,7 @@ def title():
     anim_index = 0
     anim_pause = 500
     current_bg = anim_frames[anim_index]
+    transition = True
     while True:
         cursor_rect.center = pygame.mouse.get_pos()
         for event in pygame.event.get():
@@ -204,6 +227,9 @@ def title():
             if (pygame.mouse.get_focused()):
                 screen.blit(sprites["cursor"], cursor_rect)
             pygame.display.update()
+            if (transition):
+                fade2()
+                transition = False
             clock.tick(60)
 #--------------------
 def checkfor_collision_dir(wall, player_x, player_y):
@@ -446,6 +472,7 @@ def game():
             torch_timer = 500
         if (dash_duration > 0):
             dash_duration -= clock.get_time()
+            moved = True
             if (296 >= dash_duration > 222):
                 if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
                     player_x -= player_stats["speed"]
@@ -1146,6 +1173,8 @@ def fade2():
         clock.tick(60)
 #--------------------
 def gameloop():
+    intro()
+    pygame.mouse.set_visible(False)
     while True:
         title()
         fade()
