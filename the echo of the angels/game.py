@@ -452,6 +452,7 @@ def game():
     footsteps_sound_cooldown = 1500
     tut_1 = tut_font.render("Arrow Keys to move, Space to attack", True, (255,255,255))
     in_door = False
+    updated_y = False
     while True:
         dark_surf.fill("black")
         dark_surf.set_alpha(45)
@@ -572,6 +573,7 @@ def game():
         old_x = copy.deepcopy(player_x)
         old_y = copy.deepcopy(player_y)
         if (keys[pygame.K_UP] and not wall_n_rect.colliderect(player_hitbox) and (not sword_pause) and (not resting) and (wall_move[0]) and (not dash_duration > 0)):
+            updated_y = True
             if ((keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and dash):
                 screenshake_duration = 200
                 player_y -= player_stats["speed"]*2
@@ -591,6 +593,7 @@ def game():
                  footsteps.spawn_particle()
             moved = True
         elif (keys[pygame.K_DOWN] and not wall_s_rect.colliderect(player_hitbox) and (not sword_pause) and (not resting) and (wall_move[1]) and (not dash_duration > 0)):
+            updated_y = True
             if ((keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and dash):
                 screenshake_duration = 200
                 player_y += player_stats["speed"]*2
@@ -610,7 +613,7 @@ def game():
                  footsteps.spawn_particle()
             moved = True
         if (keys[pygame.K_RIGHT]and not wall_l_rect.colliderect(player_hitbox) and (not sword_pause) and (not resting) and (wall_move[2]) and (not dash_duration > 0)):
-            updated_x = 1
+            updated_x = True
             if ((keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and dash):
                 screenshake_duration = 200
                 player_x += player_stats["speed"]*2
@@ -624,13 +627,16 @@ def game():
                     dash_particle.particlelist[-1].velocity_x = -1
                     dash_particle.particlelist[-1].velocity_y = 0
             else:
-                player_x += player_stats["speed"]
+                if (updated_y):
+                    player_x += player_stats["speed"]/2
+                else:
+                    player_x += player_stats["speed"]
             main_dir = sprites["player right"]
             if (randint(1,3) == 2):
                  footsteps.spawn_particle()
             moved = True
         elif (keys[pygame.K_LEFT] and not wall_r_rect.colliderect(player_hitbox) and (not sword_pause) and (not resting) and (wall_move[3] == True) and (not dash_duration > 0)):
-            updated_x = 2
+            updated_x = True
             if ((keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and dash):
                 player_x -= player_stats["speed"]*2
                 dash = not dash
@@ -644,7 +650,10 @@ def game():
                     dash_particle.particlelist[-1].velocity_x = 1
                     dash_particle.particlelist[-1].velocity_y = 0
             else:
-                player_x -= player_stats["speed"]
+                if (updated_y):
+                    player_x -= player_stats["speed"]/2
+                else:
+                    player_x -= player_stats["speed"]
             main_dir = sprites["player left"]
             if (randint(1,3) == 2):
                  footsteps.spawn_particle()
@@ -1131,6 +1140,8 @@ def game():
             transition = False
         clock.tick(60)
         moved = False
+        updated_x = False
+        updated_y = False
 #--------------------
 def fade():
     current_screen = screen.copy()
