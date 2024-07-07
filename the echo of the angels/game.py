@@ -929,11 +929,11 @@ def game():
                     if (not i.state == "chase"):
                         i.state = "chase"
                     if (randint(0, 10) == 10):
-                        damage = player_stats["attack"]*2 
+                        damage = (player_stats["attack"]*2) + randint(0,2) 
                         i.hp -= damage
                         combat_text.append([combat_text_font.render("Critical Hit!", True, (255, 15, 15)),[i.pos[0],i.pos[1]], 500])
                     else:
-                        damage = player_stats["attack"]
+                        damage = player_stats["attack"] + randint(0,2)
                         i.hp -= damage
                         combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 15, 15)),[i.pos[0],i.pos[1]], 500])
                     i.inv_frames = 15
@@ -1016,11 +1016,11 @@ def game():
                 sound_effects["hurt"].play()
                 screenshake_duration = 100
                 if (randint(0,10) == 10):
-                    enemy_damage = i.dmg*2
+                    enemy_damage = (i.dmg*2) + randint(0,2)
                     player_stats["hp"] -= enemy_damage
                     combat_text.append([combat_text_font.render("Critical Hit!", True, (15, 15, 255)),[i.pos[0],i.pos[1]], 500])
                 else:
-                    enemy_damage = i.dmg
+                    enemy_damage = i.dmg + randint(0,2)
                     player_stats["hp"] -= enemy_damage
                     combat_text.append([combat_text_font.render(f"-{enemy_damage} HP", True, (15, 15, 255)),[player_x, player_y], 500])
                 for j in range(enemy_damage):
