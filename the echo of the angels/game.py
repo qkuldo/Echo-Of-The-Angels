@@ -130,7 +130,8 @@ sound_effects = {
                  "defeat enemy":pygame.mixer.Sound("sounds/defeat_enemy.wav"),
                  "dash":pygame.mixer.Sound("sounds/dash.wav"),
                  "door":pygame.mixer.Sound("sounds/door_open.wav"),
-                 "footstep":pygame.mixer.Sound("sounds/footstep.wav")
+                 "footstep":pygame.mixer.Sound("sounds/footstep.wav"),
+                 "hurt":pygame.mixer.Sound("sounds/hurt.wav")
                 }
 pygame.mixer.music.set_volume(0.7)
 music = [
@@ -930,20 +931,21 @@ def game():
                     current_notification = notification_font.render("You damaged an enemy",True, (127,98,98))
                     notification_rect = current_notification.get_rect(midtop=(200, 450))
                     if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not i.hitbox.colliderect(wall_r_rect)):
-                        i.pos[0] -= 15
+                        i.pos[0] -= 25
                         i.direction = 0
                     if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not i.hitbox.colliderect(wall_l_rect)):
-                        i.pos[0] += 15
+                        i.pos[0] += 25
                         i.direction = 2
                     if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not i.hitbox.colliderect(wall_n_rect)):
-                        i.pos[1] -= 15
+                        i.pos[1] -= 25
                         i.direction = 1
                     if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not i.hitbox.colliderect(wall_s_rect)):
-                        i.pos[1] += 15
+                        i.pos[1] += 25
                         i.direction = 3
                     for j in range(damage):
                         damage_particle.pos = [i.hitbox.center[0]+randint(-20,20), i.hitbox.center[1]+randint(-20,20)]
                         damage_particle.spawn_particle()
+                    sound_effects["hurt"].play()
                     if (i.hp <= 0):
                         combat_text.pop()
                         sound_effects["defeat enemy"].play()
@@ -960,6 +962,8 @@ def game():
                         enemies.remove(i)
                         current_notification = notification_font.render("You defeated an enemy",True, (127,98,98))
                         notification_rect = current_notification.get_rect(midtop=(200, 450))
+                    else:
+                        sound_effects["hurt"].play()
         if (keys[pygame.K_SPACE] and sword_cooldown >= 470 and player_stats["current weapon"] == "sword" or sword_pause):
             if (not sword_pause):
                 sound_effects["swing sword"].play()
@@ -1000,6 +1004,7 @@ def game():
             if (i.lifetime <= 0):
                 enemy_projectiles.remove(i)
             elif ((player_hitbox.colliderect(i.hitbox) or i.hitbox.colliderect(player_hitbox) or player_hitbox.contains(i.hitbox)) and invincibility_frames <= 0):
+                sound_effects["hurt"].play()
                 screenshake_duration = 100
                 if (randint(0,10) == 10):
                     enemy_damage = i.dmg*2
