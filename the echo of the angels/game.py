@@ -854,6 +854,7 @@ def game():
         footsteps.setup(screen,clock)
         dash_particle.setup(screen,clock)
         for i in enemies:
+            enemy_moved_x = False
             i.hitbox = i.texture.get_rect(x=i.pos[0], y=i.pos[1])
             if (i.cooldown > 0):
                 i.cooldown -= clock.get_time()
@@ -886,18 +887,26 @@ def game():
                 if (i.line_of_sight.colliderect(player_hitbox)):
                     i.state = "chase"
                     combat_text.append([sprites["alert"],[i.pos[0],i.pos[1]], 200])
-            elif (i.state == "chase" and i.line_of_sight.colliderect(player_hitbox)):
+            elif (i.state == "chase"):
                 if (i.pos[0] > player_x and not i.hitbox.colliderect(wall_r_rect)):
                     i.pos[0] -= i.speed
                     i.direction = 0
+                    enemy_moved_x = True
                 if (i.pos[0] < player_x and not i.hitbox.colliderect(wall_l_rect)):
                     i.pos[0] += i.speed
                     i.direction = 2
+                    enemy_moved_x = True
                 if (i.pos[1] > player_y and not i.hitbox.colliderect(wall_n_rect)):
-                    i.pos[1] -= i.speed
+                    if (enemy_moved_x):
+                        i.pos[1] -= i.speed/2
+                    else:
+                        i.pos[1] -= i.speed
                     i.direction = 1
                 if (i.pos[1] < player_x and not i.hitbox.colliderect(wall_s_rect)):
-                    i.pos[1] += i.speed
+                    if (enemy_moved_x):
+                        i.pos[1] += i.speed/2
+                    else:
+                        i.pos[1] += i.speed
                     i.direction = 3
             if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,2]  and i.line_of_sight.colliderect(player_hitbox) and not i.inv_frames > 0):
                 i.cooldown = 1500
