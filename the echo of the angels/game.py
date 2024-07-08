@@ -300,25 +300,6 @@ def gameover(coins, died_msg):
         clock.tick(60)
         pygame.display.update()
 #--------------------
-def glowsurf(glow, radius, layers=25, color=255, main_color="n"):
-    surf = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
-    glow = pygame.math.clamp(glow, 0, color)
-    for i in range(layers):
-        k = i*glow
-        k = pygame.math.clamp(k,0,color)
-        if (main_color == "n"):
-            circle_color = (k,k,k,)
-        if (main_color == "r"):
-            circle_color = (color,k,k,)
-        if (main_color == "g"):
-            circle_color = (k,color,k,)
-        if (main_color == "b"):
-            circle_color = (k,k,color,)
-        if (main_color == "y"):
-            circle_color = (color,color,k,)
-        pygame.draw.circle(surf, circle_color, surf.get_rect().center, radius-i*3)
-    return surf
-#--------------------
 def pause(save_options):
     global cursor_rect
     button_font = pygame.font.Font("fonts/Pixeltype.ttf", 60)
@@ -454,6 +435,7 @@ def game():
     tut_1 = tut_font.render("Arrow Keys to move, Space to attack", True, (255,255,255))
     in_door = False
     updated_y = False
+    torch_lights = [classes.Glow((250+15,200+15),10,5),classes.Glow((376+15,200+15),10,5),classes.Glow((250+15,400+15),10,5),classes.Glow((376+15,400+15),10,5),classes.Glow((50+15,240+15),10,5),classes.Glow((50+15,368+15),10,5),classes.Glow((527+15,240+15),10,5),classes.Glow((527+15,368+15),10,5)]
     while True:
         dark_surf.fill("black")
         dark_surf.set_alpha(45)
@@ -788,10 +770,6 @@ def game():
         pygame.draw.rect(screen, (219, 182,182), max_hp_rect)
         pygame.draw.rect(screen, (142, 98, 98), hp_rect)
         screen.blit(sprites["floor"], (50, 200))
-        for i in wall_list:
-            wall_glow = glowsurf(20, 25, 20, 70,main_color="r")
-            wall_glowpos = [i.pos[0] - 10, i.pos[1] - 10]
-            screen.blit(wall_glow, wall_glowpos)
         for i in animations:
             i.update(clock)
             i.draw(screen)
@@ -809,22 +787,6 @@ def game():
         screen.blit(sprites["wall"][1], (50,400))
         screen.blit(sprites["wall"][0], (50,200))
         screen.blit(sprites["wall"][0], (520,200))
-        screen.blit(glowsurf(20, 15, 30), (250, 200), special_flags=pygame.BLEND_RGB_ADD)
-        screen.blit(current_torch[0], (250, 200))
-        screen.blit(glowsurf(20, 15, 30), (376, 200), special_flags=pygame.BLEND_RGB_ADD)
-        screen.blit(current_torch[0], (376, 200))
-        screen.blit(glowsurf(20, 15, 30), (250, 400), special_flags=pygame.BLEND_RGB_ADD)
-        screen.blit(current_torch[1], (250, 400))
-        screen.blit(glowsurf(20, 15, 30), (376, 400), special_flags=pygame.BLEND_RGB_ADD)
-        screen.blit(current_torch[1], (376, 400))
-        screen.blit(glowsurf(20, 15, 30), (50,240), special_flags=pygame.BLEND_RGB_ADD)
-        screen.blit(current_torch[3], (50, 240))
-        screen.blit(glowsurf(20, 15, 30), (50, 368), special_flags=pygame.BLEND_RGB_ADD)
-        screen.blit(current_torch[3], (50, 368))
-        screen.blit(glowsurf(20, 15, 30), (527,240), special_flags=pygame.BLEND_RGB_ADD)
-        screen.blit(current_torch[2], (527, 240))
-        screen.blit(glowsurf(20, 15, 30), (526, 368), special_flags=pygame.BLEND_RGB_ADD)
-        screen.blit(current_torch[2], (526, 368))
         if (randint(0,20) == 15):
                 flame_particle_1.pos[0] = choice([250, 376, 50,50,527,526])
                 flame_particle_1.pos[1] = choice([200, 200,263,368, 263,368])
@@ -1147,6 +1109,17 @@ def game():
             elif (current_music == music[4]):
                 current_music = music[0]
             play_music(current_music, False)
+        for glow in torch_lights:
+            glow.update(clock)
+            glow.draw(screen)
+        screen.blit(current_torch[0], (250, 200))
+        screen.blit(current_torch[0], (376, 200))
+        screen.blit(current_torch[1], (250, 400))
+        screen.blit(current_torch[1], (376, 400))
+        screen.blit(current_torch[3], (50, 240))
+        screen.blit(current_torch[3], (50, 368))
+        screen.blit(current_torch[2], (527, 240))
+        screen.blit(current_torch[2], (527, 368))
         screen.blit(dark_surf, (0,0))
         pygame.display.update()
         if (transition):
