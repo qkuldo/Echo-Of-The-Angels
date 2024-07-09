@@ -435,7 +435,10 @@ def game():
     tut_1 = tut_font.render("Arrow Keys to move, Space to attack", True, (255,255,255))
     in_door = False
     updated_y = False
-    torch_lights = [classes.Glow((250+15,200+15),10,5),classes.Glow((376+15,200+15),10,5),classes.Glow((250+15,400+15),10,5),classes.Glow((376+15,400+15),10,5),classes.Glow((50+15,240+15),10,5),classes.Glow((50+15,368+15),10,5),classes.Glow((527+15,240+15),10,5),classes.Glow((527+15,368+15),10,5)]
+    torch_lights = [classes.Glow((250+15,200+15),20,5,120),classes.Glow((376+15,200+15),20,5,120),classes.Glow((250+15,400+15),20,5,120),classes.Glow((376+15,400+15),20,5,120),classes.Glow((50+15,240+15),20,5,120),classes.Glow((50+15,368+15),20,5,120),classes.Glow((527+15,240+15),20,5,120),classes.Glow((527+15,368+15),20,5,120)]
+    wall_lights = []
+    for i in wall_list:
+        wall_lights.append(classes.Glow(i.hitbox.center,30,2,120))
     while True:
         dark_surf.fill("black")
         dark_surf.set_alpha(45)
@@ -666,8 +669,9 @@ def game():
                         else:
                             room_dict[current_room].load_room(enemies, sprites, wall_list, pot_list, False, False)
                             respawn_timer[current_room] -= 1
+                        wall_lights = []
                         for i in wall_list:
-                            roomwall_rects.append(i.hitbox)
+                            wall_lights.append(classes.Glow(i.hitbox.center,30,2,120))
                         if (direction == 0):
                             player_x = wall_s_rect.midtop[0]-5
                             player_y = wall_s_rect.midtop[1]-40
@@ -1020,6 +1024,8 @@ def game():
                 else:    
                       screen.blit(sprites["locked door"], i)
         for i in wall_list:
+            wall_lights[wall_list.index(i)].update(clock)
+            wall_lights[wall_list.index(i)].draw(screen)
             screen.blit(i.texture, i.pos)
             if (randint(0,20) == 15):
                 flame_particle_1.pos[0] = choice([i.hitbox.midleft[0], i.hitbox.midright[0], i.hitbox.center[0]])
