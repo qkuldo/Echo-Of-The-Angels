@@ -61,9 +61,9 @@ sprites = {
            "corrupted golem corpse":pygame.transform.scale(pygame.image.load("assets/enemy/corrupted_golem/corrupted_golem_corpse.png"), (60,60)).convert_alpha(),
            "flame particle 1":pygame.transform.scale(pygame.image.load("assets/particle/flame_particle1.png"), (5,5)).convert_alpha(),
            "flame particle 2":pygame.transform.scale(pygame.image.load("assets/particle/flame_particle2.png"), (5,5)).convert_alpha(),
-           "torch":(pygame.transform.scale(pygame.image.load("assets/torch.png"), (30, 30)),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/torch.png"), (30, 30)), 180),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/torch.png"), (30, 30)), 270),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/torch.png"), (30, 30)), 90),),
+           "torch":pygame.transform.scale(pygame.image.load("assets/torch.png"), (30, 30)),
            "title bg 2":pygame.transform.scale(pygame.image.load("assets/title2.png"), (600,600)).convert(),
-           "torch 2":(pygame.transform.scale(pygame.image.load("assets/torch2.png"), (30, 30)),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/torch2.png"), (30, 30)), 180),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/torch2.png"), (30, 30)), 270),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/torch2.png"), (30, 30)), 90),),
+           "torch 2":pygame.transform.scale(pygame.image.load("assets/torch2.png"), (30, 30)),
            "gameover 1":pygame.transform.scale(pygame.image.load("assets/ripbozo_dead.png"), (600,600)).convert(),
            "gameover 2":pygame.transform.scale(pygame.image.load("assets/ripbozo_dead2.png"), (600,600)).convert(),
            "key icon":pygame.transform.scale(pygame.image.load("assets/hud/key_icon.png"), (30, 30)).convert_alpha(),
@@ -108,14 +108,8 @@ sprites["slime corpse"].set_colorkey((255,255,255))
 sprites["corrupted golem corpse"].set_colorkey((255,255,255))
 sprites["flame particle 1"].set_colorkey((255,255,255))
 sprites["flame particle 2"].set_colorkey((255,255,255))
-sprites["torch"][0].set_colorkey((255,255,255))
-sprites["torch"][1].set_colorkey((255,255,255))
-sprites["torch"][2].set_colorkey((255,255,255))
-sprites["torch"][3].set_colorkey((255,255,255))
-sprites["torch 2"][0].set_colorkey((255,255,255))
-sprites["torch 2"][1].set_colorkey((255,255,255))
-sprites["torch 2"][2].set_colorkey((255,255,255))
-sprites["torch 2"][3].set_colorkey((255,255,255))
+sprites["torch"].set_colorkey((255,255,255))
+sprites["torch 2"].set_colorkey((255,255,255))
 sprites["key icon"].set_colorkey((255,255,255))
 sprites["pot"].set_colorkey((255,255,255))
 sprites["alert"].set_colorkey((255,255,255))
@@ -418,6 +412,7 @@ def game():
     spin_walk_cooldown = 0
     dark_surf = pygame.Surface((600, 600))
     dark_surf.fill("black")
+    dark_surf.set_alpha(220)
     combat_text_font = pygame.font.Font("fonts/Pixeltype.ttf", 25)
     combat_text = []
     current_torch = sprites["torch"]
@@ -1088,14 +1083,14 @@ def game():
             elif (current_music == music[4]):
                 current_music = music[0]
             play_music(current_music, False)
-        screen.blit(current_torch[0], (250, 200))
-        screen.blit(current_torch[0], (376, 200))
-        screen.blit(current_torch[1], (250, 400))
-        screen.blit(current_torch[1], (376, 400))
-        screen.blit(current_torch[3], (50, 240))
-        screen.blit(current_torch[3], (50, 368))
-        screen.blit(current_torch[2], (527, 240))
-        screen.blit(current_torch[2], (527, 368))
+        screen.blit(current_torch, (250, 200))
+        screen.blit(current_torch, (376, 200))
+        screen.blit(current_torch, (250, 400))
+        screen.blit(current_torch, (376, 400))
+        screen.blit(current_torch, (50, 240))
+        screen.blit(current_torch, (50, 368))
+        screen.blit(current_torch, (527, 240))
+        screen.blit(current_torch, (527, 368))
         nsurf = screen.copy()
         nsurf.blit(dark_surf, (0,0))
         for glow in torch_lights:
