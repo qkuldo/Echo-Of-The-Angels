@@ -365,9 +365,6 @@ def game():
     hp_surf = hud_font.render("HP:", True, (255,255,255))
     hp_rect = pygame.Rect(150, 30, player_stats["hp"]*2, 30)
     max_hp_rect = pygame.Rect(150, 30, player_stats["max hp"]*2, 30)
-    player_hitbox = main_dir.get_rect(x=player_x,y=player_y)
-    footsteps = classes.particle.ParticleGroup(sprites["footstep"], [player_hitbox.midbottom[0], player_hitbox.midbottom[1]-20], randint(-3, 3), randint(-3,3), 100)
-    dash_particle = classes.particle.ParticleGroup(sprites["dash"], [player_hitbox.midbottom[0], player_hitbox.midbottom[1]-20], randint(-3, 3), 0, 300)
     flame_particle_1 = classes.particle.ParticleGroup(sprites["flame particle 1"], [0,0], 0, -1, 500)
     flame_particle_2 = classes.particle.ParticleGroup(sprites["flame particle 2"], [0,0], 0, -1, 500)
     damage_particle = classes.particle.ParticleGroup(sprites["damage particle"], [0,0], 0, 1, 500)
@@ -417,10 +414,10 @@ def game():
     animations = []
     footstep_cooldown = 0
     player_blitscreen = main_dir
+    player_hitbox = player_blitscreen.get_rect(x=player_x,y=player_y)
     spin_walk_cooldown = 0
     dark_surf = pygame.Surface((600, 600))
     dark_surf.fill("black")
-    dark_surf.set_alpha(45)
     combat_text_font = pygame.font.Font("fonts/Pixeltype.ttf", 25)
     combat_text = []
     current_torch = sprites["torch"]
@@ -433,15 +430,13 @@ def game():
     transition = True
     footsteps_sound_cooldown = 1500
     tut_1 = tut_font.render("Arrow Keys to move, Space to attack", True, (255,255,255))
+    footsteps = classes.particle.ParticleGroup(sprites["footstep"], [player_hitbox.midbottom[0], player_hitbox.midbottom[1]-20], randint(-3, 3), randint(-3,3), 100)
+    dash_particle = classes.particle.ParticleGroup(sprites["dash"], [player_hitbox.midbottom[0], player_hitbox.midbottom[1]-20], randint(-3, 3), 0, 300)
     in_door = False
     updated_y = False
-    torch_lights = [classes.Glow((250+15,200+15),20,5,120),classes.Glow((376+15,200+15),20,5,120),classes.Glow((250+15,400+15),20,5,120),classes.Glow((376+15,400+15),20,5,120),classes.Glow((50+15,240+15),20,5,120),classes.Glow((50+15,368+15),20,5,120),classes.Glow((527+15,240+15),20,5,120),classes.Glow((527+15,368+15),20,5,120)]
-    wall_lights = []
-    for i in wall_list:
-        wall_lights.append(classes.Glow(i.hitbox.center,30,2,120))
+    torch_lights = [classes.Glow((250,200),20,5,50),classes.Glow((376,200),20,5,50),classes.Glow((250,400),20,5,50),classes.Glow((376,400),20,5,50),classes.Glow((50,240),20,5,50),classes.Glow((50,368),20,5,50),classes.Glow((527,240),20,5,50),classes.Glow((527,368),20,5,50)]
+    player_glow = classes.Glow((player_x,player_y),player_hitbox.width,5,50)
     while True:
-        dark_surf.fill("black")
-        dark_surf.set_alpha(45)
         coin_surf = hud_font.render("x"+str(player_stats["gold"]), True, (255,255,255))
         key_surf = hud_font.render("x"+str(player_stats["keys"]), True, (255,255,255))
         updated_x = 0
@@ -669,9 +664,6 @@ def game():
                         else:
                             room_dict[current_room].load_room(enemies, sprites, wall_list, pot_list, False, False)
                             respawn_timer[current_room] -= 1
-                        wall_lights = []
-                        for i in wall_list:
-                            wall_lights.append(classes.Glow(i.hitbox.center,30,2,120))
                         if (direction == 0):
                             player_x = wall_s_rect.midtop[0]-5
                             player_y = wall_s_rect.midtop[1]-40
@@ -764,15 +756,7 @@ def game():
         footsteps.pos = [player_hitbox.midbottom[0], player_hitbox.midbottom[1]-20]
         dash_particle.pos = [player_hitbox.midbottom[0], player_hitbox.midbottom[1]-20]
         sword_cooldown += clock.get_time()
-        screen.blit(sprites["hud bg"], (0, 0))
         screen.blit(sprites["game bg"], (0, 90))
-        screen.blit(sprites["coin icon"], (30, 30))
-        screen.blit(sprites["key icon"], (400, 30))
-        screen.blit(coin_surf, (56, 35))
-        screen.blit(hp_surf, (115, 35))
-        screen.blit(key_surf, (420,35))
-        pygame.draw.rect(screen, (219, 182,182), max_hp_rect)
-        pygame.draw.rect(screen, (142, 98, 98), hp_rect)
         screen.blit(sprites["floor"], (50, 200))
         for i in animations:
             i.update(clock)
@@ -1024,18 +1008,7 @@ def game():
                 else:    
                       screen.blit(sprites["locked door"], i)
         for i in wall_list:
-            wall_lights[wall_list.index(i)].update(clock)
-            wall_lights[wall_list.index(i)].draw(screen)
             screen.blit(i.texture, i.pos)
-            if (randint(0,20) == 15):
-                flame_particle_1.pos[0] = choice([i.hitbox.midleft[0], i.hitbox.midright[0], i.hitbox.center[0]])
-                flame_particle_1.pos[1] = choice([i.hitbox.midleft[1], i.hitbox.midright[1], i.hitbox.center[1]])
-                flame_particle_2.pos[0] = choice([i.hitbox.midleft[0], i.hitbox.midright[0], i.hitbox.center[0]])
-                flame_particle_2.pos[1] = choice([i.hitbox.midleft[1], i.hitbox.midright[1], i.hitbox.center[1]])
-                if (randint(0,1) == 1):
-                    flame_particle_1.spawn_particle()
-                elif (randint(0,1) == 0):
-                    flame_particle_2.spawn_particle()
             if (i.hitbox.colliderect(player_hitbox)):
                  direction_of_collide = checkfor_collision_dir(i, player_hitbox.center[0], player_hitbox.center[1])
                  if (direction_of_collide == "up"):
@@ -1115,9 +1088,6 @@ def game():
             elif (current_music == music[4]):
                 current_music = music[0]
             play_music(current_music, False)
-        for glow in torch_lights:
-            glow.update(clock)
-            glow.draw(screen)
         screen.blit(current_torch[0], (250, 200))
         screen.blit(current_torch[0], (376, 200))
         screen.blit(current_torch[1], (250, 400))
@@ -1126,7 +1096,23 @@ def game():
         screen.blit(current_torch[3], (50, 368))
         screen.blit(current_torch[2], (527, 240))
         screen.blit(current_torch[2], (527, 368))
-        screen.blit(dark_surf, (0,0))
+        nsurf = screen.copy()
+        nsurf.blit(dark_surf, (0,0))
+        for glow in torch_lights:
+            glow.update(clock)
+            glow.draw(nsurf)
+        player_glow.center = (player_x,player_y)
+        player_glow.update(clock)
+        player_glow.draw(nsurf)
+        screen.blit(nsurf,(0,0),special_flags=pygame.BLEND_RGB_MULT)
+        screen.blit(sprites["hud bg"], (0, 0))
+        screen.blit(sprites["coin icon"], (30, 30))
+        screen.blit(sprites["key icon"], (400, 30))
+        screen.blit(coin_surf, (56, 35))
+        screen.blit(hp_surf, (115, 35))
+        screen.blit(key_surf, (420,35))
+        pygame.draw.rect(screen, (219, 182,182), max_hp_rect)
+        pygame.draw.rect(screen, (142, 98, 98), hp_rect)
         pygame.display.update()
         if (transition):
             fade2()
