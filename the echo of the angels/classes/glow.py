@@ -11,7 +11,7 @@ class Glow:
         self.outer_rect = pygame.Rect(self.center[0]-self.outer_dist,self.center[1]-self.outer_dist,self.outer_dist,self.outer_dist)
         self.outer_rect.center = self.center
         self.timer = 500
-        self.light = light
+        self.light = pygame.math.clamp(light,0,255)
     def update(self,clock):
         self.timer -= clock.get_time()
         if (self.timer <= 0):
@@ -29,11 +29,10 @@ class Glow:
             self.rect.center = self.center
             self.timer = 500
     def draw(self,screen):
-        surf = pygame.Surface(self.rect.size).convert_alpha()
-        surf.fill((220, 230, 0))
-        surf.set_alpha(self.light)
-        surf2 = pygame.Surface(self.outer_rect.size).convert_alpha()
-        surf2.fill((0,90,90))
-        surf2.set_alpha(self.light-20)
-        screen.blit(surf2,self.outer_rect)
-        screen.blit(surf,self.rect)
+        self.surf = pygame.Surface((self.outer_dist*2,self.outer_dist*2), pygame.SRCALPHA)
+        self.layers = 2
+        for i in range(self.layers):
+            k = i*self.light
+            k = pygame.math.clamp(k,0,255)
+            pygame.draw.circle(self.surf,(k,k,k), self.surf.get_rect().center, self.outer_dist-i * 3)
+        screen.blit(self.surf,(self.outer_rect.x,self.outer_rect.y), special_flags=pygame.BLEND_RGBA_MAX)
