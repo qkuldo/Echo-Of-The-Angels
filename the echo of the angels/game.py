@@ -36,7 +36,7 @@ sprites = {
            "door":pygame.transform.scale(pygame.image.load("assets/door.png"), (35,30)).convert_alpha(),
            "floor":pygame.transform.scale(pygame.image.load("assets/floor.png"), (500, 200)).convert_alpha(),
            "player rest":pygame.transform.scale(pygame.image.load("assets/player/player_rest.png"), (50,50)).convert_alpha(),
-           "small wall":pygame.transform.scale(pygame.image.load("assets/small_wall.png"), (30,30)).convert_alpha(),
+           "small wall":pygame.transform.scale(pygame.image.load("assets/small_wall.png"), (50,50)).convert_alpha(),
            "slime 2":pygame.transform.scale(pygame.image.load("assets/enemy/slime/slime_2.png"), (50,50)).convert_alpha(),
            "sword swing2":{
                           "up":pygame.transform.scale(pygame.image.load("assets/sword_swing2.png"), (40,40)).convert_alpha(),
@@ -412,7 +412,7 @@ def game():
     spin_walk_cooldown = 0
     dark_surf = pygame.Surface((600, 600))
     dark_surf.fill("black")
-    dark_surf.set_alpha(220)
+    dark_surf.set_alpha(245)
     combat_text_font = pygame.font.Font("fonts/Pixeltype.ttf", 25)
     combat_text = []
     current_torch = sprites["torch"]
@@ -1071,8 +1071,6 @@ def game():
              invincibility_frames = invincibility_frames - 1
         if (screenshake_duration > 0):
             screenshake()
-        if (pygame.mouse.get_focused()):
-             screen.blit(sprites["cursor"], cursor_rect)
         if (not pygame.mixer.music.get_busy()):
             if (current_music == music[0]):
                 current_music = music[2]
@@ -1108,6 +1106,8 @@ def game():
         screen.blit(key_surf, (420,35))
         pygame.draw.rect(screen, (219, 182,182), max_hp_rect)
         pygame.draw.rect(screen, (142, 98, 98), hp_rect)
+        if (pygame.mouse.get_focused()):
+             screen.blit(sprites["cursor"], cursor_rect)
         pygame.display.update()
         if (transition):
             fade2()
