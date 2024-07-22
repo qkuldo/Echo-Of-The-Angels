@@ -19,12 +19,12 @@ sprites = {
            "player down":pygame.transform.scale(pygame.image.load("assets/player/player_down.png"), (50,50)).convert_alpha(),
            "player up":pygame.transform.scale(pygame.image.load("assets/player/player_up.png"), (50,50)).convert_alpha(),
            "wall":(pygame.transform.scale(pygame.image.load("assets/wall.png"), (30, 230)).convert_alpha(), pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/wall.png"), (30, 500)), 90).convert_alpha()),
-           "cursor":pygame.transform.scale(pygame.image.load("assets/cursor.png"), (40,40)).convert_alpha(),
+           "cursor":pygame.transform.scale(pygame.image.load("assets/cursor.png"), (20,20)).convert_alpha(),
            "sword swing":{
-                          "down":pygame.transform.scale(pygame.image.load("assets/sword_swing.png"), (40,40)).convert_alpha(),
-                          "up":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing.png"), (40,40)), 180).convert_alpha(),
-                          "right":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing.png"), (40,40)), -90).convert_alpha(),
-                          "left":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing.png"), (40,40)), 270).convert_alpha(),
+                          "down":pygame.transform.scale(pygame.image.load("assets/sword_swing.png"), (30,30)).convert_alpha(),
+                          "up":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing.png"), (30,30)), 180).convert_alpha(),
+                          "right":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing.png"), (30,30)), -90).convert_alpha(),
+                          "left":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing.png"), (30,30)), 270).convert_alpha(),
                          },
            "hud bg":pygame.transform.scale(pygame.image.load("assets/hud/hud_bg.png"), (600, 90)).convert_alpha(),
            "coin icon":pygame.transform.scale(pygame.image.load("assets/hud/coin_icon.png"), (30, 30)).convert_alpha(),
@@ -39,10 +39,10 @@ sprites = {
            "small wall":pygame.transform.scale(pygame.image.load("assets/small_wall.png"), (50,50)).convert_alpha(),
            "slime 2":pygame.transform.scale(pygame.image.load("assets/enemy/slime/slime_2.png"), (50,50)).convert_alpha(),
            "sword swing2":{
-                          "up":pygame.transform.scale(pygame.image.load("assets/sword_swing2.png"), (40,40)).convert_alpha(),
-                          "down":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing2.png"), (40,40)), 180).convert_alpha(),
-                          "right":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing2.png"), (40,40)), 270).convert_alpha(),
-                          "left":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing2.png"), (40,40)), 90).convert_alpha(),
+                          "up":pygame.transform.scale(pygame.image.load("assets/sword_swing2.png"), (30,30)).convert_alpha(),
+                          "down":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing2.png"), (30,30)), 180).convert_alpha(),
+                          "right":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing2.png"), (30,30)), 270).convert_alpha(),
+                          "left":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing2.png"), (30,30)), 90).convert_alpha(),
                          },
            "enemy death":{
                           1:pygame.transform.scale(pygame.image.load("assets/particle/enemy_death1.png"), (40,40)).convert_alpha(),
@@ -125,7 +125,8 @@ sound_effects = {
                  "dash":pygame.mixer.Sound("sounds/dash.wav"),
                  "door":pygame.mixer.Sound("sounds/door_open.wav"),
                  "footstep":pygame.mixer.Sound("sounds/footstep.wav"),
-                 "hurt":pygame.mixer.Sound("sounds/hurt.wav")
+                 "hurt":pygame.mixer.Sound("sounds/hurt.wav"),
+                 "click":pygame.mixer.Sound("sounds/click.wav")
                 }
 pygame.mixer.music.set_volume(0.7)
 music = [
@@ -194,8 +195,10 @@ def title():
                 pygame.quit()
                 sys.exit()
             elif (event.type == pygame.MOUSEBUTTONDOWN and start_rect.colliderect(cursor_rect)):
+                sound_effects["click"].play()
                 return
             elif (event.type == pygame.MOUSEBUTTONDOWN and new_rect.colliderect(cursor_rect)):
+                sound_effects["click"].play()
                 save({"pos":{"x":300, "y":300}, "room":"spawn room", "stats": {"hp": 100, "max hp": 100, "gold": 0, "inventory": [], "max inventory capacity": 20, "current weapon":"sword", "weapons":["sword"],"keys":0,"speed":5,"attack":1,"key enemies":[True],"locked rooms":[True]}, "respawn timer":{}})
                 return
             anim_pause -= clock.get_time()
@@ -925,27 +928,30 @@ def game():
                 sword_dir = sprites["sword swing"]["up"]
                 if (sword_pause_timer >= 80):
                     sword_dir = sprites["sword swing2"]["up"]
-                sword_coords = (player_hitbox.topleft[0], player_hitbox.topleft[1]-20)
+                if (not sword_pause):
+                    sword_coords = (player_hitbox.topleft[0], player_hitbox.topleft[1]-20)
                 sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
             elif (main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]):
                 sword_dir = sprites["sword swing"]["down"]
                 if (sword_pause_timer >= 80):
                     sword_dir = sprites["sword swing2"]["down"]
-                sword_coords = player_hitbox.bottomleft
+                if (not sword_pause):
+                    sword_coords = player_hitbox.bottomleft
                 sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
             elif (main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]):
                 sword_dir = sprites["sword swing"]["left"]
                 if (sword_pause_timer >= 80):
                     sword_dir = sprites["sword swing2"]["left"]
-                sword_coords = (player_hitbox.midleft[0]-20, player_hitbox.midleft[1]-20)
+                if (not sword_pause):
+                    sword_coords = (player_hitbox.midleft[0]-20, player_hitbox.midleft[1]-20)
                 sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
             elif (main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]):
                 sword_dir = sprites["sword swing"]["right"]
                 if (sword_pause_timer >= 80):
                     sword_dir = sprites["sword swing2"]["right"]
-                sword_coords = (player_hitbox.midright[0]-20, player_hitbox.midright[1]-20)
+                if (not sword_pause):
+                    sword_coords = (player_hitbox.midright[0]-20, player_hitbox.midright[1]-20)
                 sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
-            sword_dir = pygame.transform.rotate(sword_dir, randint(-5,5))
             sword_dir.set_colorkey((255,255,255))
             screen.blit(sword_dir, sword_coords)
             sword_cooldown = 0
