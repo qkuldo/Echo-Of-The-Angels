@@ -120,7 +120,7 @@ sprites["hud bg"].set_alpha(177)
 pygame.display.set_icon(sprites["player down"])
 cursor_rect = sprites["cursor"].get_rect()
 sound_effects = {
-                 "swing sword":pygame.mixer.Sound("sounds/sword_swing.wav"),
+                 "swing sword":[pygame.mixer.Sound("sounds/sword_swing3.wav"),pygame.mixer.Sound("sounds/sword_swing2.wav"),pygame.mixer.Sound("sounds/sword_swing.wav")],
                  "defeat enemy":pygame.mixer.Sound("sounds/defeat_enemy.wav"),
                  "dash":pygame.mixer.Sound("sounds/dash.wav"),
                  "door":pygame.mixer.Sound("sounds/door_open.wav"),
@@ -434,6 +434,7 @@ def game():
     updated_y = False
     torch_lights = [classes.Glow((250,200),20,5,50),classes.Glow((376,200),20,5,50),classes.Glow((250,400),20,5,50),classes.Glow((376,400),20,5,50),classes.Glow((50,240),20,5,50),classes.Glow((50,368),20,5,50),classes.Glow((527,240),20,5,50),classes.Glow((527,368),20,5,50)]
     player_glow = classes.Glow((player_x,player_y),player_hitbox.width,5,50)
+    sword_times = 0
     while True:
         coin_surf = hud_font.render("x"+str(player_stats["gold"]), True, (255,255,255))
         key_surf = hud_font.render("x"+str(player_stats["keys"]), True, (255,255,255))
@@ -923,7 +924,10 @@ def game():
                         sound_effects["hurt"].play()
         if (keys[pygame.K_SPACE] and sword_cooldown >= 470 and player_stats["current weapon"] == "sword" or sword_pause):
             if (not sword_pause):
-                sound_effects["swing sword"].play()
+                sound_effects["swing sword"][sword_times].play()
+                sword_times += 1
+                if (sword_times > 2):
+                    sword_times = 0
             if (main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]):
                 sword_dir = sprites["sword swing"]["up"]
                 if (sword_pause_timer >= 80):
