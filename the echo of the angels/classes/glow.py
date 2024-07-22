@@ -30,7 +30,7 @@ class Glow:
             self.timer = 500
     def draw(self,screen):
         self.surf = pygame.Surface((self.outer_dist*2,self.outer_dist*2), pygame.SRCALPHA)
-        self.layers = 2
+        self.layers = 3
         for i in range(self.layers):
             k = i*self.light
             k = pygame.math.clamp(k,0,255)
