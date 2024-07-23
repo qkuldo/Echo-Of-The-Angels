@@ -1108,7 +1108,7 @@ def game():
         player_glow.center = (player_x,player_y)
         player_glow.update(clock)
         player_glow.draw(nsurf)
-        #screen.blit(nsurf,(0,0),special_flags=pygame.BLEND_RGB_MULT)
+        screen.blit(nsurf,(0,0),special_flags=pygame.BLEND_RGB_MULT)
         screen.blit(sprites["hud bg"], (0, 0))
         screen.blit(sprites["coin icon"], (30, 30))
         screen.blit(sprites["key icon"], (400, 30))
