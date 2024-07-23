@@ -72,7 +72,8 @@ sprites = {
            "alert":pygame.transform.scale(pygame.image.load("assets/alert.png"),(20,20)).convert_alpha(),
            "damage particle":pygame.transform.scale(pygame.image.load("assets/particle/damage_particle.png"),(30,30)).convert_alpha(),
            "game bg":pygame.transform.scale(pygame.image.load("assets/background.png"), (600,510)).convert_alpha(),
-           "qk":pygame.transform.scale(pygame.image.load("assets/qkuldo.png"), (100,100)).convert_alpha()
+           "qk":pygame.transform.scale(pygame.image.load("assets/qkuldo.png"), (100,100)).convert_alpha(),
+           "small wall2":pygame.transform.scale(pygame.image.load("assets/small_wall2.png"), (25,25)).convert_alpha()
           }
 sprites["player left"].set_colorkey((255,255,255))
 sprites["player right"].set_colorkey((255,255,255))
@@ -376,9 +377,9 @@ def game():
     room_dict = {
                  "spawn room":classes.room.Room([classes.room.Spawner(classes.enemy.enemy_ids["slime"], [250, 300])], ["dungeon room 2", None, None, "dungeon room 3"]),
                  "dungeon room 2":classes.room.Room([classes.room.Spawner(classes.enemy.enemy_ids["slime"], [250, 300]), classes.room.Spawner(classes.enemy.enemy_ids["corrupted golem"], [390, 300])], [None, "spawn room", None, "dungeon room 4"]),
-                 "dungeon room 4":classes.room.Room([classes.room.Spawner(classes.enemy.enemy_ids["slime"], [250, 300])], [classes.room.Lock("dungeon room 6"), "dungeon room 3", "dungeon room 2", "dungeon room 5"], [classes.room.Wall([350, 290], sprites["small wall"]), classes.room.Wall([200, 300], sprites["small wall"])]),
+                 "dungeon room 4":classes.room.Room([classes.room.Spawner(classes.enemy.enemy_ids["slime"], [250, 300])], [classes.room.Lock("dungeon room 6"), "dungeon room 3", "dungeon room 2", "dungeon room 5"], [classes.room.Wall([200, 350], sprites["small wall2"]), classes.room.Wall([200, 300], sprites["small wall"])]),
                  "dungeon room 3":classes.room.Room([], ["dungeon room 4", None, "spawn room", None], [classes.room.Wall([250, 290], sprites["small wall"]), classes.room.Wall([350, 300], sprites["small wall"])]),
-                 "dungeon room 5":classes.room.Room([classes.room.Spawner(classes.enemy.enemy_ids["slime"], [300, 350], key_item="key"),classes.room.Spawner(classes.enemy.enemy_ids["slime"], [200, 350])], [None, None, "dungeon room 4", None], [classes.room.Wall([340, 250], sprites["small wall"]), classes.room.Wall([240, 300], sprites["small wall"])]),
+                 "dungeon room 5":classes.room.Room([classes.room.Spawner(classes.enemy.enemy_ids["slime"], [300, 350], key_item="key"),classes.room.Spawner(classes.enemy.enemy_ids["slime"], [200, 350])], [None, None, "dungeon room 4", None], [classes.room.Wall([340, 230], sprites["small wall2"]), classes.room.Wall([240, 300], sprites["small wall"])]),
                  "dungeon room 6":classes.room.Room([], [None, "dungeon room 4", None, None], pots=[classes.room.Pot([100, 350],texture=sprites["pot"]),classes.room.Pot([240,300],texture=sprites["pot"])])
                 }
     if (player_stats["locked rooms"][0] == False):
@@ -802,6 +803,44 @@ def game():
                 i.texture = pygame.transform.scale(i.texture, (20,20))
         footsteps.setup(screen,clock)
         dash_particle.setup(screen,clock)
+        if (keys[pygame.K_SPACE] and sword_cooldown >= 470 and player_stats["current weapon"] == "sword" or sword_pause):
+            if (not sword_pause):
+                sound_effects["swing sword"][sword_times].play()
+                sword_times += 1
+                if (sword_times > 2):
+                    sword_times = 0
+            if (main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]):
+                sword_dir = sprites["sword swing"]["up"]
+                if (sword_pause_timer >= 80):
+                    sword_dir = sprites["sword swing2"]["up"]
+                if (not sword_pause):
+                    sword_coords = (player_hitbox.topleft[0], player_hitbox.topleft[1]-20)
+                sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
+            elif (main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]):
+                sword_dir = sprites["sword swing"]["down"]
+                if (sword_pause_timer >= 80):
+                    sword_dir = sprites["sword swing2"]["down"]
+                if (not sword_pause):
+                    sword_coords = player_hitbox.bottomleft
+                sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
+            elif (main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]):
+                sword_dir = sprites["sword swing"]["left"]
+                if (sword_pause_timer >= 80):
+                    sword_dir = sprites["sword swing2"]["left"]
+                if (not sword_pause):
+                    sword_coords = (player_hitbox.midleft[0]-20, player_hitbox.midleft[1]-20)
+                sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
+            elif (main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]):
+                sword_dir = sprites["sword swing"]["right"]
+                if (sword_pause_timer >= 80):
+                    sword_dir = sprites["sword swing2"]["right"]
+                if (not sword_pause):
+                    sword_coords = (player_hitbox.midright[0]-20, player_hitbox.midright[1]-20)
+                sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
+            sword_dir.set_colorkey((255,255,255))
+            screen.blit(sword_dir, sword_coords)
+            sword_cooldown = 0
+            sword_pause = True
         for i in enemies:
             enemy_moved_x = False
             i.hitbox = i.texture.get_rect(x=i.pos[0], y=i.pos[1])
@@ -922,44 +961,6 @@ def game():
                         notification_rect = current_notification.get_rect(midtop=(200, 450))
                     else:
                         sound_effects["hurt"].play()
-        if (keys[pygame.K_SPACE] and sword_cooldown >= 470 and player_stats["current weapon"] == "sword" or sword_pause):
-            if (not sword_pause):
-                sound_effects["swing sword"][sword_times].play()
-                sword_times += 1
-                if (sword_times > 2):
-                    sword_times = 0
-            if (main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]):
-                sword_dir = sprites["sword swing"]["up"]
-                if (sword_pause_timer >= 80):
-                    sword_dir = sprites["sword swing2"]["up"]
-                if (not sword_pause):
-                    sword_coords = (player_hitbox.topleft[0], player_hitbox.topleft[1]-20)
-                sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
-            elif (main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]):
-                sword_dir = sprites["sword swing"]["down"]
-                if (sword_pause_timer >= 80):
-                    sword_dir = sprites["sword swing2"]["down"]
-                if (not sword_pause):
-                    sword_coords = player_hitbox.bottomleft
-                sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
-            elif (main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]):
-                sword_dir = sprites["sword swing"]["left"]
-                if (sword_pause_timer >= 80):
-                    sword_dir = sprites["sword swing2"]["left"]
-                if (not sword_pause):
-                    sword_coords = (player_hitbox.midleft[0]-20, player_hitbox.midleft[1]-20)
-                sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
-            elif (main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]):
-                sword_dir = sprites["sword swing"]["right"]
-                if (sword_pause_timer >= 80):
-                    sword_dir = sprites["sword swing2"]["right"]
-                if (not sword_pause):
-                    sword_coords = (player_hitbox.midright[0]-20, player_hitbox.midright[1]-20)
-                sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
-            sword_dir.set_colorkey((255,255,255))
-            screen.blit(sword_dir, sword_coords)
-            sword_cooldown = 0
-            sword_pause = True
         for i in enemy_projectiles:
             i.draw(screen)
             i.lifetime -= clock.get_time()
@@ -1107,7 +1108,7 @@ def game():
         player_glow.center = (player_x,player_y)
         player_glow.update(clock)
         player_glow.draw(nsurf)
-        screen.blit(nsurf,(0,0),special_flags=pygame.BLEND_RGB_MULT)
+        #screen.blit(nsurf,(0,0),special_flags=pygame.BLEND_RGB_MULT)
         screen.blit(sprites["hud bg"], (0, 0))
         screen.blit(sprites["coin icon"], (30, 30))
         screen.blit(sprites["key icon"], (400, 30))
