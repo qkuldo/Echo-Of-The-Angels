@@ -430,6 +430,7 @@ def game():
     torch_lights = [classes.Glow((250,200),20,5,50),classes.Glow((376,200),20,5,50),classes.Glow((250,400),20,5,50),classes.Glow((376,400),20,5,50),classes.Glow((50,240),20,5,50),classes.Glow((50,368),20,5,50),classes.Glow((527,240),20,5,50),classes.Glow((527,368),20,5,50)]
     player_glow = classes.Glow((player_x,player_y),player_hitbox.width,5,50)
     sword_times = 0
+    spin_length = -5
     while True:
         coin_surf = hud_font.render("x"+str(player_stats["gold"]), True, (255,255,255))
         key_surf = hud_font.render("x"+str(player_stats["keys"]), True, (255,255,255))
@@ -450,6 +451,7 @@ def game():
             dash_duration -= clock.get_time()
             moved = True
             if (296 >= dash_duration > 222):
+                player_blitscreen = main_dir
                 if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
                     player_x -= player_stats["speed"]
                 if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
@@ -461,11 +463,15 @@ def game():
             if (222 >= dash_duration > 148):
                 if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
                     player_x -= player_stats["speed"]*2
+                    player_blitscreen = pygame.transform.scale(main_dir,(70,25))
                 if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
                     player_x += player_stats["speed"]*2
+                    player_blitscreen = pygame.transform.scale(main_dir,(70,25))
                 if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
+                    player_blitscreen = pygame.transform.scale(main_dir,(25,70))
                     player_y -= player_stats["speed"]*2
                 if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
+                    player_blitscreen = pygame.transform.scale(main_dir,(25,70))
                     player_y += player_stats["speed"]*2
             if (148 >= dash_duration > 111):
                 if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
@@ -486,6 +492,7 @@ def game():
                 if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
                     player_y += player_stats["speed"]*2
             else:
+                player_blitscreen = main_dir
                 if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
                     player_x -= player_stats["speed"]
                 if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
@@ -494,7 +501,7 @@ def game():
                     player_y -= player_stats["speed"]
                 if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
                     player_y += player_stats["speed"]
-            
+            player_blitscreen.set_colorkey((255,255,255))
         if (invincibility_frames > 0):
             invincibility_frames -= 1
         if (room_cooldown > 0):
@@ -732,9 +739,13 @@ def game():
             if (main_dir == sprites["player right"]):
                 main_dir = sprites["player right invincible"]
             if (spin_walk_cooldown <= 0):
-                player_blitscreen = pygame.transform.rotate(main_dir, randint(-5, 5))
+                player_blitscreen = main_dir
+                player_blitscreen = pygame.transform.rotate(main_dir, spin_length)
+                spin_length += 3
+                if (spin_length > 5):
+                    spin_length = -5
                 player_blitscreen.set_colorkey((255, 255, 255))
-                spin_walk_cooldown = 100
+                spin_walk_cooldown = 300
             if (moved and footsteps_sound_cooldown <= 0):
                 sound_effects["footstep"].play()
                 footsteps_sound_cooldown = 1500
@@ -804,7 +815,6 @@ def game():
             else:
                 i.texture = pygame.transform.scale(i.texture, (20,20))
         footsteps.setup(screen,clock)
-        dash_particle.setup(screen,clock)
         if (keys[pygame.K_SPACE] and sword_cooldown >= 470 and player_stats["current weapon"] == "sword" or sword_pause):
             if (not sword_pause):
                 sound_effects["swing sword"][sword_times].play()
@@ -901,6 +911,30 @@ def game():
                     else:
                         i.pos[1] += i.speed
                     i.direction = 3
+            elif (i.state == "runaway"):
+                i.runaway -= clock.get_time()
+                if (i.runaway <= 0):
+                    i.state = "chase"
+                if (i.pos[0] < player_x and not i.hitbox.colliderect(wall_r_rect)):
+                    i.pos[0] -= i.speed
+                    i.direction = 0
+                    enemy_moved_x = True
+                if (i.pos[0] > player_x and not i.hitbox.colliderect(wall_l_rect)):
+                    i.pos[0] += i.speed
+                    i.direction = 2
+                    enemy_moved_x = True
+                if (i.pos[1] < player_y and not i.hitbox.colliderect(wall_n_rect)):
+                    if (enemy_moved_x):
+                        i.pos[1] -= i.speed/2
+                    else:
+                        i.pos[1] -= i.speed
+                    i.direction = 1
+                if (i.pos[1] > player_x and not i.hitbox.colliderect(wall_s_rect)):
+                    if (enemy_moved_x):
+                        i.pos[1] += i.speed/2
+                    else:
+                        i.pos[1] += i.speed
+                    i.direction = 3
             if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,2]  and i.line_of_sight.colliderect(player_hitbox) and not i.inv_frames > 0):
                 i.cooldown = 1500
                 enemy_attack = True
@@ -918,9 +952,9 @@ def game():
                     enemy_projectiles.append(classes.enemy.Projectile(sprites["slimeball"], 5, 0, i.dmg, 5000, [i.pos[0], i.pos[1]]))
             if (sword_pause):
                 if (i.hitbox.colliderect(sword_rect) and i.inv_frames <= 0):
+                    i.runaway = 2000
                     screenshake_duration = 100
-                    if (not i.state == "chase"):
-                        i.state = "chase"
+                    i.state = "runaway"
                     if (randint(0, 10) == 10):
                         damage = (player_stats["attack"]*2) + randint(0,2) 
                         i.hp -= damage
@@ -956,8 +990,8 @@ def game():
                         combat_text.append([combat_text_font.render(f"+{i.point_drop} coins", True, (255, 196, 0)),[i.pos[0],i.pos[1]], 500])
                         animations.append(classes.animation_effect.Effect((sprites["enemy death"][1], sprites["enemy death"][2], sprites["enemy death"][3]), 500, (i.pos[0], i.pos[1])))
                         if (i.key_item == "key"):
-                            combat_text.append([sprites["key icon"],[player_hitbox.topleft[0],player_hitbox.topleft[1]], 1000])
                             if (current_room == "dungeon room 5" and player_stats["key enemies"][0]==True):
+                                combat_text.append([sprites["key icon"],[player_hitbox.topleft[0],player_hitbox.topleft[1]], 1000])
                                 player_stats["keys"] += 1
                                 player_stats["key enemies"][0] = False
                         animations.append(classes.animation_effect.Effect((sprites[i.corpse],), 2000, (i.pos[0], i.pos[1])))
@@ -1085,7 +1119,6 @@ def game():
                 pot_list.remove(i)
         flame_particle_1.setup(screen,clock)
         flame_particle_2.setup(screen,clock)
-        damage_particle.setup(screen,clock)
         if (player_stats["hp"] <= 0):
             pygame.event.post(pygame.event.Event(player_death))
         if (invincibility_frames > 0):
@@ -1126,6 +1159,8 @@ def game():
                 combat_text.remove(i)
         if (not current_notification == None):
              screen.blit(current_notification, notification_rect)
+        dash_particle.setup(screen,clock)
+        damage_particle.setup(screen,clock)
         screen.blit(sprites["hud bg"], (0, 0))
         screen.blit(sprites["coin icon"], (30, 30))
         screen.blit(sprites["key icon"], (400, 30))
