@@ -28,6 +28,7 @@ class Enemy:
 		self.spin_walk_cooldown = 0
 		self.corpse = corpse
 		self.key_item = key_item
+		self.runaway = 0
 	def draw(self, screen):
 		screen.blit(self.texture, self.pos)
 	def update(self, clock):
