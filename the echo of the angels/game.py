@@ -21,10 +21,10 @@ sprites = {
            "wall":(pygame.transform.scale(pygame.image.load("assets/wall.png"), (30, 230)).convert_alpha(), pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/wall.png"), (30, 500)), 90).convert_alpha()),
            "cursor":pygame.transform.scale(pygame.image.load("assets/cursor.png"), (20,20)).convert_alpha(),
            "sword swing":{
-                          "down":pygame.transform.scale(pygame.image.load("assets/sword_swing.png"), (30,30)).convert_alpha(),
-                          "up":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing.png"), (30,30)), 180).convert_alpha(),
-                          "right":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing.png"), (30,30)), -90).convert_alpha(),
-                          "left":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing.png"), (30,30)), 270).convert_alpha(),
+                          "up":pygame.transform.scale(pygame.image.load("assets/sword_swing.png"), (20,30)).convert_alpha(),
+                          "down":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing.png"), (20,30)), 180).convert_alpha(),
+                          "left":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing.png"), (20,30)), 90).convert_alpha(),
+                          "right":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing.png"), (20,30)), 270).convert_alpha(),
                          },
            "hud bg":pygame.transform.scale(pygame.image.load("assets/hud/hud_bg.png"), (600, 90)).convert_alpha(),
            "coin icon":pygame.transform.scale(pygame.image.load("assets/hud/coin_icon.png"), (30, 30)).convert_alpha(),
@@ -38,12 +38,7 @@ sprites = {
            "player rest":pygame.transform.scale(pygame.image.load("assets/player/player_rest.png"), (50,50)).convert_alpha(),
            "small wall":pygame.transform.scale(pygame.image.load("assets/small_wall.png"), (50,50)).convert_alpha(),
            "slime 2":pygame.transform.scale(pygame.image.load("assets/enemy/slime/slime_2.png"), (50,50)).convert_alpha(),
-           "sword swing2":{
-                          "up":pygame.transform.scale(pygame.image.load("assets/sword_swing2.png"), (30,30)).convert_alpha(),
-                          "down":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing2.png"), (30,30)), 180).convert_alpha(),
-                          "right":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing2.png"), (30,30)), 270).convert_alpha(),
-                          "left":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing2.png"), (30,30)), 90).convert_alpha(),
-                         },
+           "sword swing2":pygame.transform.scale(pygame.image.load("assets/sword_swing2.png"), (8,8)).convert_alpha(),
            "enemy death":{
                           1:pygame.transform.scale(pygame.image.load("assets/particle/enemy_death1.png"), (40,40)).convert_alpha(),
                           2:pygame.transform.scale(pygame.image.load("assets/particle/enemy_death2.png"), (40,40)).convert_alpha(),
@@ -73,7 +68,8 @@ sprites = {
            "damage particle":pygame.transform.scale(pygame.image.load("assets/particle/damage_particle.png"),(30,30)).convert_alpha(),
            "game bg":pygame.transform.scale(pygame.image.load("assets/background.png"), (600,510)).convert_alpha(),
            "qk":pygame.transform.scale(pygame.image.load("assets/qkuldo.png"), (100,100)).convert_alpha(),
-           "small wall2":pygame.transform.scale(pygame.image.load("assets/small_wall2.png"), (25,25)).convert_alpha()
+           "small wall2":pygame.transform.scale(pygame.image.load("assets/small_wall2.png"), (25,25)).convert_alpha(),
+           "barricaded door":pygame.transform.scale(pygame.image.load("assets/barricaded_door.png"), (35,30)).convert_alpha()
           }
 sprites["player left"].set_colorkey((255,255,255))
 sprites["player right"].set_colorkey((255,255,255))
@@ -90,10 +86,7 @@ sprites["slimeball"].set_colorkey((255,255,255))
 sprites["invincible slime"].set_colorkey((255,255,255))
 sprites["player rest"].set_colorkey((255,255,255))
 sprites["slime 2"].set_colorkey((255,255,255))
-sprites["sword swing2"]["up"].set_colorkey((255,255,255))
-sprites["sword swing2"]["down"].set_colorkey((255,255,255))
-sprites["sword swing2"]["left"].set_colorkey((255,255,255))
-sprites["sword swing2"]["right"].set_colorkey((255,255,255))
+sprites["sword swing2"].set_colorkey((255,255,255))
 sprites["enemy death"][1].set_colorkey((255,255,255))
 sprites["enemy death"][2].set_colorkey((255,255,255))
 sprites["enemy death"][3].set_colorkey((255,255,255))
@@ -380,7 +373,8 @@ def game():
                  "dungeon room 4":classes.room.Room([classes.room.Spawner(classes.enemy.enemy_ids["slime"], [250, 300])], [classes.room.Lock("dungeon room 6"), "dungeon room 3", "dungeon room 2", "dungeon room 5"], [classes.room.Wall([200, 350], sprites["small wall2"]), classes.room.Wall([200, 300], sprites["small wall"])]),
                  "dungeon room 3":classes.room.Room([], ["dungeon room 4", None, "spawn room", None], [classes.room.Wall([250, 290], sprites["small wall"]), classes.room.Wall([350, 300], sprites["small wall"])]),
                  "dungeon room 5":classes.room.Room([classes.room.Spawner(classes.enemy.enemy_ids["slime"], [300, 350], key_item="key"),classes.room.Spawner(classes.enemy.enemy_ids["slime"], [200, 350])], [None, None, "dungeon room 4", None], [classes.room.Wall([340, 230], sprites["small wall2"]), classes.room.Wall([240, 300], sprites["small wall"])]),
-                 "dungeon room 6":classes.room.Room([], [None, "dungeon room 4", None, None], pots=[classes.room.Pot([100, 350],texture=sprites["pot"]),classes.room.Pot([240,300],texture=sprites["pot"])])
+                 "dungeon room 6":classes.room.Room([], ["dungeon room 7", "dungeon room 4", None, None], pots=[classes.room.Pot([100, 350],texture=sprites["pot"]),classes.room.Pot([240,300],texture=sprites["pot"])]),
+                 "dungeon room 7":classes.room.Room([],[None,"dungeon room 6", None, None], pots=[classes.room.Pot([200, 355],texture=sprites["pot"]),classes.room.Pot([260,350],texture=sprites["pot"])])
                 }
     if (player_stats["locked rooms"][0] == False):
         room_dict["dungeon room 4"].exits[0] = "dungeon room 6"
@@ -639,7 +633,7 @@ def game():
             if (randint(1,3) == 2):
                  footsteps.spawn_particle()
             moved = True
-        if (keys[pygame.K_e] and room_cooldown <= 0 and not resting):
+        if (keys[pygame.K_e] and room_cooldown <= 0 and (not resting) and (not len(enemies) > 0)):
             for i in exits:
                 """
                    I took so much time trying to figure out how to code something that delays coin farming.
@@ -694,6 +688,9 @@ def game():
                             room_dict["dungeon room 4"].exits[0] = "dungeon room 6"
                             player_stats["locked rooms"][0] = False
                         player_stats["keys"] -= 1
+        elif (len(enemies) > 0):
+               current_notification = notification_font.render("This door is barricaded.",True, (127,98,98))
+               notification_rect = current_notification.get_rect(midtop=(200, 450)) 
         if (keys[pygame.K_r] and rest_cooldown <= 0):
             if (len(enemies) == 0):
                  resting = not resting
@@ -763,8 +760,6 @@ def game():
             i.draw(screen)
             if (i.lifetime <= 0):
                 animations.remove(i)
-        if (not current_notification == None):
-             screen.blit(current_notification, notification_rect)
         if (current_room == "spawn room"):
             screen.blit(tut_1, (150,300))
         if (not in_door):
@@ -812,30 +807,33 @@ def game():
             if (main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]):
                 sword_dir = sprites["sword swing"]["up"]
                 if (sword_pause_timer >= 80):
-                    sword_dir = sprites["sword swing2"]["up"]
+                    sword_dir = sprites["sword swing2"]
+                    sword_coords = (player_hitbox.midtop[0], player_hitbox.midtop[1]+10)
                 if (not sword_pause):
-                    sword_coords = (player_hitbox.topleft[0], player_hitbox.topleft[1]-20)
+                    sword_coords = (player_hitbox.topleft[0]+10, player_hitbox.midtop[1]-10)
                 sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
             elif (main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]):
                 sword_dir = sprites["sword swing"]["down"]
                 if (sword_pause_timer >= 80):
-                    sword_dir = sprites["sword swing2"]["down"]
+                    sword_dir = sprites["sword swing2"]
                 if (not sword_pause):
-                    sword_coords = player_hitbox.bottomleft
+                    sword_coords = (player_hitbox.bottomleft[0]+10, player_hitbox.midbottom[1]-10)
                 sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
             elif (main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]):
                 sword_dir = sprites["sword swing"]["left"]
                 if (sword_pause_timer >= 80):
-                    sword_dir = sprites["sword swing2"]["left"]
+                    sword_dir = sprites["sword swing2"]
+                    sword_coords = (player_hitbox.midleft[0]+10, player_hitbox.midleft[1]-5)
                 if (not sword_pause):
-                    sword_coords = (player_hitbox.midleft[0]-20, player_hitbox.midleft[1]-20)
+                    sword_coords = (player_hitbox.midleft[0]-10, player_hitbox.midleft[1]-5)
                 sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
             elif (main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]):
                 sword_dir = sprites["sword swing"]["right"]
                 if (sword_pause_timer >= 80):
-                    sword_dir = sprites["sword swing2"]["right"]
+                    sword_dir = sprites["sword swing2"]
+                    sword_coords = (player_hitbox.midright[0]+10, player_hitbox.midright[1]-5)
                 if (not sword_pause):
-                    sword_coords = (player_hitbox.midright[0]-20, player_hitbox.midright[1]-20)
+                    sword_coords = (player_hitbox.midright[0]-10, player_hitbox.midright[1]-5)
                 sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
             sword_dir.set_colorkey((255,255,255))
             screen.blit(sword_dir, sword_coords)
@@ -928,16 +926,16 @@ def game():
                     current_notification = notification_font.render("You damaged an enemy",True, (127,98,98))
                     notification_rect = current_notification.get_rect(midtop=(200, 450))
                     if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not i.hitbox.colliderect(wall_r_rect)):
-                        i.pos[0] -= 25
+                        i.pos[0] -= 45
                         i.direction = 0
                     if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not i.hitbox.colliderect(wall_l_rect)):
-                        i.pos[0] += 25
+                        i.pos[0] += 45
                         i.direction = 2
                     if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not i.hitbox.colliderect(wall_n_rect)):
-                        i.pos[1] -= 25
+                        i.pos[1] -= 45
                         i.direction = 1
                     if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not i.hitbox.colliderect(wall_s_rect)):
-                        i.pos[1] += 25
+                        i.pos[1] += 45
                         i.direction = 3
                     for j in range(damage):
                         damage_particle.pos = [i.hitbox.center[0]+randint(-20,20), i.hitbox.center[1]+randint(-20,20)]
@@ -991,7 +989,7 @@ def game():
                 elif (player_stats["hp"] <= 0 and i.texture == sprites["stomp"]):
                      died_to = "Player was stomped to death" 
         for i in exits:
-            if (room_dict[current_room].exits[exits.index(i)] != None and type(room_dict[current_room].exits[exits.index(i)]) != classes.room.Lock):
+            if (room_dict[current_room].exits[exits.index(i)] != None and type(room_dict[current_room].exits[exits.index(i)]) != classes.room.Lock and len(enemies) == 0):
                  if (exits.index(i) == 0):
                       screen.blit(sprites["door"], (i[0], i[1] - 30))
                  elif (exits.index(i) == 1):
@@ -1002,17 +1000,28 @@ def game():
                       screen.blit(pygame.transform.rotate(sprites["door"], 90), (i[0]-30, i[1]))
                  else:    
                       screen.blit(sprites["door"], i)
-            elif (type(room_dict[current_room].exits[exits.index(i)]) == classes.room.Lock):
+            elif (type(room_dict[current_room].exits[exits.index(i)]) == classes.room.Lock and len(enemies) == 0):
                 if (exits.index(i) == 0):
                       screen.blit(sprites["locked door"], (i[0], i[1] - 30))
                 elif (exits.index(i) == 1):
-                      screen.blit(pygame.transform.rotate(sprites["door"], 180), i)
+                      screen.blit(pygame.transform.rotate(sprites["locked door"], 180), i)
                 elif (exits.index(i) == 2):
-                      screen.blit(pygame.transform.rotate(sprites["door"], -90), i)
+                      screen.blit(pygame.transform.rotate(sprites["locked door"], -90), i)
                 elif (exits.index(i) == 3):
                       screen.blit(pygame.transform.rotate(sprites["locked door"], 90), (i[0]-30, i[1]))
                 else:    
                       screen.blit(sprites["locked door"], i)
+            elif (room_dict[current_room].exits[exits.index(i)] != None and len(enemies) > 0):
+                if (exits.index(i) == 0):
+                      screen.blit(sprites["barricaded door"], (i[0], i[1] - 30))
+                elif (exits.index(i) == 1):
+                      screen.blit(pygame.transform.rotate(sprites["barricaded door"], 180), i)
+                elif (exits.index(i) == 2):
+                      screen.blit(pygame.transform.rotate(sprites["barricaded door"], -90), i)
+                elif (exits.index(i) == 3):
+                      screen.blit(pygame.transform.rotate(sprites["barricaded door"], 90), (i[0]-30, i[1]))
+                else:    
+                      screen.blit(sprites["barricaded door"], i)
         for i in wall_list:
             screen.blit(i.texture, i.pos)
             if (i.hitbox.colliderect(player_hitbox)):
@@ -1067,12 +1076,6 @@ def game():
                     player_stats["gold"] += drop[1]
                     combat_text.append([combat_text_font.render(f"+{drop[1]} coins", True, (255, 196, 0)),[i.pos[0],i.pos[1]], 500])
                 pot_list.remove(i)
-        for i in combat_text:
-            screen.blit(i[0], i[1])
-            i[1][1] -= 2
-            i[2] -= clock.get_time()
-            if (i[2] <= 0):
-                combat_text.remove(i)
         flame_particle_1.setup(screen,clock)
         flame_particle_2.setup(screen,clock)
         damage_particle.setup(screen,clock)
@@ -1080,8 +1083,6 @@ def game():
             pygame.event.post(pygame.event.Event(player_death))
         if (invincibility_frames > 0):
              invincibility_frames = invincibility_frames - 1
-        if (screenshake_duration > 0):
-            screenshake()
         if (not pygame.mixer.music.get_busy()):
             if (current_music == music[0]):
                 current_music = music[2]
@@ -1109,6 +1110,14 @@ def game():
         player_glow.update(clock)
         player_glow.draw(nsurf)
         screen.blit(nsurf,(0,0),special_flags=pygame.BLEND_RGB_MULT)
+        for i in combat_text:
+            screen.blit(i[0], i[1])
+            i[1][1] -= 2
+            i[2] -= clock.get_time()
+            if (i[2] <= 0):
+                combat_text.remove(i)
+        if (not current_notification == None):
+             screen.blit(current_notification, notification_rect)
         screen.blit(sprites["hud bg"], (0, 0))
         screen.blit(sprites["coin icon"], (30, 30))
         screen.blit(sprites["key icon"], (400, 30))
@@ -1117,6 +1126,8 @@ def game():
         screen.blit(key_surf, (420,35))
         pygame.draw.rect(screen, (219, 182,182), max_hp_rect)
         pygame.draw.rect(screen, (142, 98, 98), hp_rect)
+        if (screenshake_duration > 0):
+            screenshake()
         if (pygame.mouse.get_focused()):
              screen.blit(sprites["cursor"], cursor_rect)
         pygame.display.update()
