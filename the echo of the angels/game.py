@@ -494,6 +494,7 @@ def game():
                     player_y -= player_stats["speed"]
                 if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
                     player_y += player_stats["speed"]
+            
         if (invincibility_frames > 0):
             invincibility_frames -= 1
         if (room_cooldown > 0):
@@ -522,6 +523,7 @@ def game():
                     player_y += knockback
                 if (knockback == 15 and not wall_s_rect.colliderect(player_hitbox)):
                     player_y += knockback
+                
                 current_notification = notification_font.render("You were hit!", True, (127, 98, 98))
                 notification_rect = current_notification.get_rect(midtop=(200, 450))
             elif (event.type == player_death):
@@ -549,6 +551,7 @@ def game():
         old_y = copy.deepcopy(player_y)
         if (keys[pygame.K_UP] and not wall_n_rect.colliderect(player_hitbox) and (not sword_pause) and (not resting) and (wall_move[0]) and (not dash_duration > 0)):
             updated_y = True
+            
             if ((keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and dash):
                 screenshake_duration = 200
                 player_y -= player_stats["speed"]*2
@@ -569,6 +572,7 @@ def game():
             moved = True
         elif (keys[pygame.K_DOWN] and not wall_s_rect.colliderect(player_hitbox) and (not sword_pause) and (not resting) and (wall_move[1]) and (not dash_duration > 0)):
             updated_y = True
+            
             if ((keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and dash):
                 screenshake_duration = 200
                 player_y += player_stats["speed"]*2
@@ -589,6 +593,7 @@ def game():
             moved = True
         if (keys[pygame.K_RIGHT]and not wall_l_rect.colliderect(player_hitbox) and (not sword_pause) and (not resting) and (wall_move[2]) and (not dash_duration > 0)):
             updated_x = True
+            
             if ((keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and dash):
                 screenshake_duration = 200
                 player_x += player_stats["speed"]*2
@@ -612,6 +617,7 @@ def game():
             moved = True
         elif (keys[pygame.K_LEFT] and not wall_r_rect.colliderect(player_hitbox) and (not sword_pause) and (not resting) and (wall_move[3] == True) and (not dash_duration > 0)):
             updated_x = True
+            
             if ((keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and dash):
                 player_x -= player_stats["speed"]*2
                 dash = not dash
@@ -673,12 +679,13 @@ def game():
                         save({"pos":{"x":player_x, "y":player_y}, "room":current_room, "stats":player_stats, "respawn timer":respawn_timer})
                         room_cooldown = 1000
                         in_door = True
+                        
                         fade()
                         transition = True
                     elif (type(room_dict[current_room].exits[direction]) == classes.room.Lock and player_stats["keys"] == 0):
                         current_notification = notification_font.render("This door is locked.",True, (127,98,98))
                         notification_rect = current_notification.get_rect(midtop=(200, 450))
-                    elif (type(room_dict[current_room].exits[direction]) == classes.room.Lock and player_stats["keys"] > 0):
+                    elif (type(room_dict[current_room].exits[direction]) == classes.room.Lock and ((room_dict[current_room].exits[direction].key_item=="key" and player_stats["keys"] > 0)) or (room_dict[current_room].exits[direction].key_item in player_stats["inventory"])):
                         screenshake_duration = 100
                         current_notification = notification_font.render("You unlock the door.",True, (127,98,98))
                         sound_effects["door"].play()
@@ -831,7 +838,7 @@ def game():
                 sword_dir = sprites["sword swing"]["right"]
                 if (sword_pause_timer >= 80):
                     sword_dir = sprites["sword swing2"]
-                    sword_coords = (player_hitbox.midright[0]+10, player_hitbox.midright[1]-5)
+                    sword_coords = (player_hitbox.midright[0]-20, player_hitbox.midright[1]-5)
                 if (not sword_pause):
                     sword_coords = (player_hitbox.midright[0]-10, player_hitbox.midright[1]-5)
                 sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
@@ -917,7 +924,7 @@ def game():
                     if (randint(0, 10) == 10):
                         damage = (player_stats["attack"]*2) + randint(0,2) 
                         i.hp -= damage
-                        combat_text.append([combat_text_font.render("Critical Hit!", True, (255, 15, 15)),[i.pos[0],i.pos[1]], 500])
+                        combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 215, 0)),[i.pos[0],i.pos[1]], 500])
                     else:
                         damage = player_stats["attack"] + randint(0,2)
                         i.hp -= damage
@@ -949,7 +956,7 @@ def game():
                         combat_text.append([combat_text_font.render(f"+{i.point_drop} coins", True, (255, 196, 0)),[i.pos[0],i.pos[1]], 500])
                         animations.append(classes.animation_effect.Effect((sprites["enemy death"][1], sprites["enemy death"][2], sprites["enemy death"][3]), 500, (i.pos[0], i.pos[1])))
                         if (i.key_item == "key"):
-                            combat_text.append([combat_text_font.render("+1 Key", True, (255, 196, 0)),[i.pos[0],i.pos[1]], 500])
+                            combat_text.append([sprites["key icon"],[player_hitbox.topleft[0],player_hitbox.topleft[1]], 1000])
                             if (current_room == "dungeon room 5" and player_stats["key enemies"][0]==True):
                                 player_stats["keys"] += 1
                                 player_stats["key enemies"][0] = False
@@ -1106,7 +1113,8 @@ def game():
         for glow in torch_lights:
             glow.update(clock)
             glow.draw(nsurf)
-        player_glow.center = (player_x,player_y)
+        player_glow.outer_rect.center = [player_x,player_y]
+        player_glow.center = [player_x,player_y]
         player_glow.update(clock)
         player_glow.draw(nsurf)
         screen.blit(nsurf,(0,0),special_flags=pygame.BLEND_RGB_MULT)
