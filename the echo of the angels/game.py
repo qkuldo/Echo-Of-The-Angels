@@ -65,11 +65,21 @@ sprites = {
            "locked door":pygame.transform.scale(pygame.image.load("assets/locked_door.png"), (35,30)).convert_alpha(),
            "pot":pygame.transform.scale(pygame.image.load("assets/pot.png"),(40,40)).convert_alpha(),
            "alert":pygame.transform.scale(pygame.image.load("assets/alert.png"),(20,20)).convert_alpha(),
-           "damage particle":pygame.transform.scale(pygame.image.load("assets/particle/damage_particle.png"),(30,30)).convert_alpha(),
+           "damage particle":pygame.transform.scale(pygame.image.load("assets/particle/damage_particle.png"),(20,20)).convert_alpha(),
            "game bg":pygame.transform.scale(pygame.image.load("assets/background.png"), (600,510)).convert_alpha(),
            "qk":pygame.transform.scale(pygame.image.load("assets/qkuldo.png"), (100,100)).convert_alpha(),
            "small wall2":pygame.transform.scale(pygame.image.load("assets/small_wall2.png"), (25,25)).convert_alpha(),
-           "barricaded door":pygame.transform.scale(pygame.image.load("assets/barricaded_door.png"), (35,30)).convert_alpha()
+           "barricaded door":pygame.transform.scale(pygame.image.load("assets/barricaded_door.png"), (35,30)).convert_alpha(),
+           "foliage":{
+              "grass":{
+               1:pygame.transform.scale(pygame.image.load("assets/particle/grass-1.png"),(30,30)),
+               2:pygame.transform.scale(pygame.image.load("assets/particle/grass-2.png"),(30,30))
+              },
+              "vine":{
+               1:pygame.transform.scale(pygame.image.load("assets/particle/vine-1.png"),(20,20)),
+               2:pygame.transform.scale(pygame.image.load("assets/particle/vine-2.png"),(20,20))
+              }
+           }
           }
 sprites["player left"].set_colorkey((255,255,255))
 sprites["player right"].set_colorkey((255,255,255))
@@ -111,6 +121,10 @@ sprites["damage particle"].set_colorkey((255,255,255))
 sprites["dash"].set_colorkey((255,255,255))
 sprites["qk"].set_colorkey((255,255,255))
 sprites["hud bg"].set_alpha(177)
+sprites["foliage"]["grass"][1].set_colorkey((255,255,255))
+sprites["foliage"]["grass"][2].set_colorkey((255,255,255))
+sprites["foliage"]["vine"][1].set_colorkey((255,255,255))
+sprites["foliage"]["vine"][2].set_colorkey((255,255,255))
 pygame.display.set_icon(sprites["player down"])
 cursor_rect = sprites["cursor"].get_rect()
 sound_effects = {
@@ -438,6 +452,9 @@ def game():
     player_glow = classes.Glow((player_x,player_y),player_hitbox.width,5,50)
     sword_times = 0
     spin_length = -5
+    foliage = []
+    for i in range(randint(1,5)):
+        foliage.append(classes.room.Foliage(sprites["foliage"][choice(["grass","vine"])][randint(1,2)], (randint(280,400),randint(280,400))))
     while True:
         coin_surf = hud_font.render("x"+str(player_stats["gold"]), True, (255,255,255))
         key_surf = hud_font.render("x"+str(player_stats["keys"]), True, (255,255,255))
@@ -693,7 +710,9 @@ def game():
                         save({"pos":{"x":player_x, "y":player_y}, "room":current_room, "stats":player_stats, "respawn timer":respawn_timer})
                         room_cooldown = 1000
                         in_door = True
-                        
+                        foliage = []
+                        for i in range(randint(1,5)):
+                            foliage.append(classes.room.Foliage(sprites["foliage"][choice(["grass","vine"])][randint(1,2)], (randint(280,400),randint(280,400))))
                         fade()
                         transition = True
                     elif (type(room_dict[current_room].exits[direction]) == classes.room.Lock and player_stats["keys"] == 0):
@@ -1123,6 +1142,9 @@ def game():
                     player_stats["gold"] += drop[1]
                     combat_text.append([combat_text_font.render(f"+{drop[1]} coins", True, (255, 196, 0)),[i.pos[0],i.pos[1]], 500])
                 pot_list.remove(i)
+        for plant in foliage:
+            plant.move(clock)
+            plant.draw(screen)
         if (player_stats["hp"] <= 0):
             pygame.event.post(pygame.event.Event(player_death))
         if (invincibility_frames > 0):
