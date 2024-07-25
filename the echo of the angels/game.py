@@ -261,25 +261,29 @@ def gameover(coins, died_msg):
         gameover_font = pygame.font.Font("fonts/Pixeltype.ttf", 100)
         stats_font = pygame.font.Font("fonts/Pixeltype.ttf", 40)
         button_font = pygame.font.Font("fonts/Pixeltype.ttf", 40)
-        back_to_title_surf = button_font.render("-Return To Title Screen-", True, (127,98,98))
-        back_to_game_surf = button_font.render("-Return To Last Save-", True, (127,98,98))
+        back_to_title_surf = button_font.render("-Return To Title Screen-", True, (255,255,255))
+        back_to_game_surf = button_font.render("-Return To Last Save-", True, (255,255,255))
         back_to_title_rect = back_to_title_surf.get_rect(midtop=(300, 200))
         back_to_game_rect = back_to_title_surf.get_rect(midtop=(300, 260))
         if (back_to_title_rect.colliderect(cursor_rect)):
-            back_to_title_surf = button_font.render("[Return To Title Screen]", True, (178, 157, 157))
+            back_to_title_rect = back_to_title_surf.get_rect(midtop=(300, 200))
+            back_to_title_surf = button_font.render("[Return To Title Screen]", True, (255,255,255))
         else:
-            back_to_title_surf = button_font.render("-Return To Title Screen-", True, (127,98,98))
+            back_to_title_rect = back_to_title_surf.get_rect(midtop=(300, 200))
+            back_to_title_surf = button_font.render("-Return To Title Screen-", True, (255,255,255))
         if (back_to_game_rect.colliderect(cursor_rect)):
-            back_to_game_surf = button_font.render("[Return To Last Save]", True, (178, 157, 157))
+            back_to_game_rect = back_to_title_surf.get_rect(midtop=(300, 260))
+            back_to_game_surf = button_font.render("[Return To Last Save]", True, (255,255,255))
         else:
-            back_to_game_surf = button_font.render("-Return To Last Save-", True, (127,98,98))
+            back_to_game_rect = back_to_title_surf.get_rect(midtop=(300, 260))
+            back_to_game_surf = button_font.render("-Return To Last Save-", True, (255,255,255))
         back_to_title_rect = back_to_title_surf.get_rect(midtop=(300, 200))
         back_to_game_rect = back_to_title_surf.get_rect(midtop=(300, 300))
-        gameover_surf = gameover_font.render("Game Over", True, (127,98,98))
+        gameover_surf = gameover_font.render("Game Over", True, (255,255,255))
         gameover_rect = gameover_surf.get_rect(midtop=(300, 100))
-        coins_surf = stats_font.render("Gold:"+str(coins), True, (127,98,98))
+        coins_surf = stats_font.render("Gold:"+str(coins), True, (255,255,255))
         coin_rect = coins_surf.get_rect(midtop=(300, 360))
-        death_msg = stats_font.render(died_msg, True, (127,98,98))
+        death_msg = stats_font.render(died_msg, True, (255,255,255))
         death_rect = death_msg.get_rect(midtop=(300,400))
         screen.blit(gameover_surf, gameover_rect)
         screen.blit(coins_surf, coin_rect)
@@ -374,7 +378,10 @@ def game():
                  "dungeon room 3":classes.room.Room([], ["dungeon room 4", None, "spawn room", None], [classes.room.Wall([250, 290], sprites["small wall"]), classes.room.Wall([350, 300], sprites["small wall"])]),
                  "dungeon room 5":classes.room.Room([classes.room.Spawner(classes.enemy.enemy_ids["slime"], [300, 350], key_item="key"),classes.room.Spawner(classes.enemy.enemy_ids["slime"], [200, 350])], [None, None, "dungeon room 4", None], [classes.room.Wall([340, 230], sprites["small wall2"]), classes.room.Wall([240, 300], sprites["small wall"])]),
                  "dungeon room 6":classes.room.Room([], ["dungeon room 7", "dungeon room 4", None, None], pots=[classes.room.Pot([100, 350],texture=sprites["pot"]),classes.room.Pot([240,300],texture=sprites["pot"])]),
-                 "dungeon room 7":classes.room.Room([],[None,"dungeon room 6", None, None], pots=[classes.room.Pot([200, 355],texture=sprites["pot"]),classes.room.Pot([260,350],texture=sprites["pot"])])
+                 "dungeon room 7":classes.room.Room([],[None,"dungeon room 6", "dungeon room 8", None], pots=[classes.room.Pot([200, 355],texture=sprites["pot"]),classes.room.Pot([260,350],texture=sprites["pot"])]),
+                 "dungeon room 8":classes.room.Room([classes.room.Spawner(classes.enemy.enemy_ids["slime"], [250, 300])], [None,None,"dungeon room 9","dungeon room 7"], []),
+                 "dungeon room 9":classes.room.Room([classes.room.Spawner(classes.enemy.enemy_ids["slime"], [290, 350]),classes.room.Spawner(classes.enemy.enemy_ids["corrupted golem"], [290, 320])], [None,None,"dungeon room 10","dungeon room 8"], []),
+                 "dungeon room 10":classes.room.Room([], [None,None,None,"dungeon room 9"], [])
                 }
     if (player_stats["locked rooms"][0] == False):
         room_dict["dungeon room 4"].exits[0] = "dungeon room 6"
@@ -692,7 +699,7 @@ def game():
                     elif (type(room_dict[current_room].exits[direction]) == classes.room.Lock and player_stats["keys"] == 0):
                         current_notification = notification_font.render("This door is locked.",True, (127,98,98))
                         notification_rect = current_notification.get_rect(midtop=(200, 450))
-                    elif (type(room_dict[current_room].exits[direction]) == classes.room.Lock and ((room_dict[current_room].exits[direction].key_item=="key" and player_stats["keys"] > 0)) or (room_dict[current_room].exits[direction].key_item in player_stats["inventory"])):
+                    elif (type(room_dict[current_room].exits[direction]) == classes.room.Lock and ((room_dict[current_room].exits[direction].key_item=="key" and player_stats["keys"] > 0) or (room_dict[current_room].exits[direction].key_item in player_stats["inventory"]))):
                         screenshake_duration = 100
                         current_notification = notification_font.render("You unlock the door.",True, (127,98,98))
                         sound_effects["door"].play()
@@ -721,7 +728,6 @@ def game():
                 current_notification = notification_font.render("You tried to sleep, but the noises of the monsters distract you.",True, (127,98,98))
                 notification_rect = current_notification.get_rect(midtop=(200, 450))
         if (keys[pygame.K_s]):
-            save({"pos":{"x":player_x, "y":player_y}, "room":current_room, "stats":player_stats, "respawn timer":respawn_timer})
             current_notification = notification_font.render("Game saved!",True, (127,98,98))
             notification_rect = current_notification.get_rect(midtop=(200, 450))
         if (keys[pygame.K_ESCAPE]):
@@ -1117,8 +1123,6 @@ def game():
                     player_stats["gold"] += drop[1]
                     combat_text.append([combat_text_font.render(f"+{drop[1]} coins", True, (255, 196, 0)),[i.pos[0],i.pos[1]], 500])
                 pot_list.remove(i)
-        flame_particle_1.setup(screen,clock)
-        flame_particle_2.setup(screen,clock)
         if (player_stats["hp"] <= 0):
             pygame.event.post(pygame.event.Event(player_death))
         if (invincibility_frames > 0):
@@ -1161,6 +1165,8 @@ def game():
              screen.blit(current_notification, notification_rect)
         dash_particle.setup(screen,clock)
         damage_particle.setup(screen,clock)
+        flame_particle_1.setup(screen,clock)
+        flame_particle_2.setup(screen,clock)
         screen.blit(sprites["hud bg"], (0, 0))
         screen.blit(sprites["coin icon"], (30, 30))
         screen.blit(sprites["key icon"], (400, 30))
