@@ -1,5 +1,6 @@
 import pygame
 import classes.enemy
+import random
 class Room:
     """A class to define rooms"""
     def __init__(self, spawners, exits=None, walls = [],pots=[]):
@@ -32,8 +33,9 @@ class Wall:
         self.hitbox = self.texture.get_rect(x=pos[0], y=pos[1])
 class Lock:
     """A class to define locks"""
-    def __init__(self, locked_room):
+    def __init__(self, locked_room, key_item="key"):
         self.locked_room = locked_room
+        self.key_item = key_item
 class Pot:
     """A class to define pots that can be broken"""
     def __init__(self, pos=[0,0], drops=[("coins",5),None], texture=None):
@@ -41,5 +43,21 @@ class Pot:
         self.drops = drops
         self.texture = texture
         self.hitbox = self.texture.get_rect(x=self.pos[0],y=self.pos[1])
+class Foliage:
+    """A class to define foliage that appears randomly."""
+    def __init__(self, texture,pos=[0,0]):
+        self.pos = pos
+        self.texture = texture
+        self.blit_texture = texture
+        self.spin = 0
+    def move(self,clock):
+        self.spin += clock.get_time()
+        if (self.spin >= 500):
+            self.blit_texture = pygame.transform.rotate(self.texture,random.randint(-5,5))
+            self.blit_texture.set_colorkey((255,255,255))
+            self.spin = 0
+    def draw(self,screen):
+        screen.blit(self.blit_texture,self.pos)
+        
         
         
