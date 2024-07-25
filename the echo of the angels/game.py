@@ -40,9 +40,9 @@ sprites = {
            "slime 2":pygame.transform.scale(pygame.image.load("assets/enemy/slime/slime_2.png"), (50,50)).convert_alpha(),
            "sword swing2":pygame.transform.scale(pygame.image.load("assets/sword_swing2.png"), (8,8)).convert_alpha(),
            "enemy death":{
-                          1:pygame.transform.scale(pygame.image.load("assets/particle/enemy_death1.png"), (40,40)).convert_alpha(),
-                          2:pygame.transform.scale(pygame.image.load("assets/particle/enemy_death2.png"), (40,40)).convert_alpha(),
-                          3:pygame.transform.scale(pygame.image.load("assets/particle/enemy_death3.png"), (40,40)).convert_alpha()
+                          1:pygame.transform.scale(pygame.image.load("assets/particle/enemy_death1.png"), (60,60)).convert_alpha(),
+                          2:pygame.transform.scale(pygame.image.load("assets/particle/enemy_death2.png"), (60,60)).convert_alpha(),
+                          3:pygame.transform.scale(pygame.image.load("assets/particle/enemy_death3.png"), (60,60)).convert_alpha()
                          },
            "player left invincible":pygame.transform.scale(pygame.image.load("assets/player/player_idle_inv.png"), (50,50)).convert_alpha(),
            "player right invincible":pygame.transform.scale(pygame.image.load("assets/player/player_right_inv.png"), (50,50)).convert_alpha(),
@@ -309,6 +309,11 @@ def gameover(coins, died_msg):
         clock.tick(60)
         pygame.display.update()
 #--------------------
+def dropshadow(org_surf,org_pos,alpha=155,extension=10):
+    shadow = org_surf.copy()
+    shadow.set_alpha(alpha)
+    screen.blit(shadow, (org_pos[0],org_pos[1]+extension))
+#--------------------
 def pause(save_options):
     global cursor_rect
     button_font = pygame.font.Font("fonts/Pixeltype.ttf", 60)
@@ -355,7 +360,7 @@ def pause(save_options):
 def screenshake():
     buffersurf = screen.copy()
     screen.fill("black")
-    screen.blit(buffersurf, (randint(-10,10),randint(-10,10)))
+    screen.blit(buffersurf, (randint(-20,20),randint(-20,20)))
 #--------------------
 def game():
     global cursor_rect
@@ -719,7 +724,7 @@ def game():
                         current_notification = notification_font.render("This door is locked.",True, (127,98,98))
                         notification_rect = current_notification.get_rect(midtop=(200, 450))
                     elif (type(room_dict[current_room].exits[direction]) == classes.room.Lock and ((room_dict[current_room].exits[direction].key_item=="key" and player_stats["keys"] > 0) or (room_dict[current_room].exits[direction].key_item in player_stats["inventory"]))):
-                        screenshake_duration = 100
+                        screenshake_duration = 200
                         current_notification = notification_font.render("You unlock the door.",True, (127,98,98))
                         sound_effects["door"].play()
                         notification_rect = current_notification.get_rect(midtop=(200, 450))
@@ -806,6 +811,7 @@ def game():
         if (current_room == "spawn room"):
             screen.blit(tut_1, (150,300))
         if (not in_door):
+            dropshadow(player_blitscreen,(player_x,player_y),80,5)
             screen.blit(player_blitscreen, (player_x,player_y))
         else:
             in_door = not in_door
@@ -898,6 +904,7 @@ def game():
                 i.update(clock)
             if (i.ID == [0,2]):
                 i.state = "chase"
+            dropshadow(i.texture,i.pos,80,5)
             i.draw(screen)
             coord_list = [player_x, player_y]
             i.old_pos = copy.deepcopy(i.pos)
@@ -977,8 +984,8 @@ def game():
                     enemy_projectiles.append(classes.enemy.Projectile(sprites["slimeball"], 5, 0, i.dmg, 5000, [i.pos[0], i.pos[1]]))
             if (sword_pause):
                 if (i.hitbox.colliderect(sword_rect) and i.inv_frames <= 0):
-                    i.runaway = 2000
-                    screenshake_duration = 100
+                    i.runaway = 1500
+                    screenshake_duration = 200
                     i.state = "runaway"
                     if (randint(0, 10) == 10):
                         damage = (player_stats["attack"]*2) + randint(0,2) 
@@ -1008,10 +1015,10 @@ def game():
                         damage_particle.spawn_particle()
                     sound_effects["hurt"].play()
                     if (i.hp <= 0):
+                        pygame.time.delay(300)
                         combat_text.pop()
                         sound_effects["defeat enemy"].play()
                         player_stats["gold"] += i.point_drop
-                        pygame.time.delay(300)
                         combat_text.append([combat_text_font.render(f"+{i.point_drop} coins", True, (255, 196, 0)),[i.pos[0],i.pos[1]], 500])
                         animations.append(classes.animation_effect.Effect((sprites["enemy death"][1], sprites["enemy death"][2], sprites["enemy death"][3]), 500, (i.pos[0], i.pos[1])))
                         if (i.key_item == "key"):
@@ -1034,7 +1041,7 @@ def game():
                 enemy_projectiles.remove(i)
             elif ((player_hitbox.colliderect(i.hitbox) or i.hitbox.colliderect(player_hitbox) or player_hitbox.contains(i.hitbox)) and invincibility_frames <= 0):
                 sound_effects["hurt"].play()
-                screenshake_duration = 100
+                screenshake_duration = 200
                 if (randint(0,10) == 10):
                     enemy_damage = (i.dmg*2) + randint(0,2)
                     player_stats["hp"] -= enemy_damage
@@ -1089,6 +1096,7 @@ def game():
                 else:    
                       screen.blit(sprites["barricaded door"], i)
         for i in wall_list:
+            dropshadow(i.texture,i.pos,80,5)
             screen.blit(i.texture, i.pos)
             if (i.hitbox.colliderect(player_hitbox)):
                  direction_of_collide = checkfor_collision_dir(i, player_hitbox.center[0], player_hitbox.center[1])
@@ -1112,6 +1120,7 @@ def game():
                  if (direction_of_collide == "right"):
                     j.pos[0] = i.hitbox.midleft[0] - 50
         for i in pot_list:
+            dropshadow(i.texture,i.pos,80,5)
             screen.blit(i.texture, i.pos)
             if (i.hitbox.colliderect(player_hitbox)):
                  direction_of_collide = checkfor_collision_dir(i, player_hitbox.center[0], player_hitbox.center[1])
@@ -1135,6 +1144,7 @@ def game():
                  if (direction_of_collide == "right"):
                     j.pos[0] = i.hitbox.midleft[0] - 50
             if (sword_pause and i.hitbox.colliderect(sword_rect)):
+                screenshake_duration = 200
                 animations.append(classes.animation_effect.Effect((sprites["enemy death"][1], sprites["enemy death"][2], sprites["enemy death"][3]), 500, (i.pos[0], i.pos[1])))
                 sound_effects["defeat enemy"].play()
                 drop = choice(i.drops)
@@ -1144,6 +1154,7 @@ def game():
                 pot_list.remove(i)
         for plant in foliage:
             plant.move(clock)
+            dropshadow(plant.texture,plant.pos,80,5)
             plant.draw(screen)
         if (player_stats["hp"] <= 0):
             pygame.event.post(pygame.event.Event(player_death))
@@ -1189,8 +1200,11 @@ def game():
         damage_particle.setup(screen,clock)
         flame_particle_1.setup(screen,clock)
         flame_particle_2.setup(screen,clock)
+        dropshadow(sprites["hud bg"],(0,0),80,5)
         screen.blit(sprites["hud bg"], (0, 0))
+        dropshadow(sprites["coin icon"],(30,30),80,5)
         screen.blit(sprites["coin icon"], (30, 30))
+        dropshadow(sprites["key icon"],(400,30),80,5)
         screen.blit(sprites["key icon"], (400, 30))
         screen.blit(coin_surf, (56, 35))
         screen.blit(hp_surf, (115, 35))
