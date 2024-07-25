@@ -14,15 +14,16 @@ class Particle:
 		self.lifetime -= clock.get_time()
 class ParticleGroup:
 	"""A class to define groups of particles"""
-	def __init__(self, texture, pos, velocity_x, velocity_y, lifetime,fade=False):
+	def __init__(self, texture, pos, velocity_x, velocity_y, lifetime,fade=False,spin=False):
 		self.particlelist = []
 		self.texture = texture
 		self.pos = pos
 		self.velocity_x = velocity_x
 		self.velocity_y = velocity_y
 		self.lifetime = lifetime
+		self.spin = spin
 	def spawn_particle(self):
-		self.particlelist.append(Particle(copy.copy(self.texture),self.pos,self.velocity_x,self.velocity_y,self.lifetime))
+		self.particlelist.append(Particle(copy.copy(self.texture),self.pos,copy.deepcopy(self.velocity_x),copy.deepcopy(self.velocity_y),self.lifetime))
 	def update_group(self, clock):
 		for particle in self.particlelist:
 			particle.move(clock)
@@ -30,6 +31,12 @@ class ParticleGroup:
 				self.particlelist.remove(particle)
 	def draw(self, screen):
 		for particle in self.particlelist:
+			if (self.spin):
+			    particle.texture = pygame.transform.rotate(particle.texture, 5)
+			    particle.texture.set_colorkey((255,255,255))
+			dropshadow = particle.texture.copy()
+			dropshadow.set_alpha(80)
+			screen.blit(dropshadow,(particle.pos[0],particle.pos[1]+5))
 			screen.blit(particle.texture, particle.pos)
 	def setup(self, screen, clock):
 		self.update_group(clock)
