@@ -81,7 +81,13 @@ sprites = {
               }
            },
            "death attack remind":pygame.transform.scale(pygame.image.load("assets/deathattack_remind1.png"),(50,50)),
-           "keypress remind":pygame.transform.scale(pygame.image.load("assets/keypress_remind.png"),(50,50))
+           "keypress remind":pygame.transform.scale(pygame.image.load("assets/keypress_remind.png"),(50,50)),
+           "sword swing3":{
+                          "up":pygame.transform.scale(pygame.image.load("assets/deathattack_swordswing.png"), (20,30)).convert_alpha(),
+                          "down":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_swordswing.png"), (20,30)), 180).convert_alpha(),
+                          "left":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_swordswing.png"), (20,30)), 90).convert_alpha(),
+                          "right":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_swordswing.png"), (20,30)), 270).convert_alpha(),
+                         }
           }
 sprites["player left"].set_colorkey((255,255,255))
 sprites["player right"].set_colorkey((255,255,255))
@@ -129,6 +135,10 @@ sprites["foliage"]["vine"][1].set_colorkey((255,255,255))
 sprites["foliage"]["vine"][2].set_colorkey((255,255,255))
 sprites["keypress remind"].set_colorkey((255,255,255))
 sprites["death attack remind"].set_colorkey((255,255,255))
+sprites["sword swing3"]["up"].set_colorkey((255,255,255))
+sprites["sword swing3"]["down"].set_colorkey((255,255,255))
+sprites["sword swing3"]["left"].set_colorkey((255,255,255))
+sprites["sword swing3"]["right"].set_colorkey((255,255,255))
 pygame.display.set_icon(sprites["player down"])
 cursor_rect = sprites["cursor"].get_rect()
 sound_effects = {
@@ -465,6 +475,8 @@ def game():
     for i in range(randint(1,5)):
         foliage.append(classes.room.Foliage(sprites["foliage"][choice(["grass","vine"])][randint(1,2)], (randint(280,400),randint(280,400))))
     shift_notification = notification_font.render("Shift",True,(255,255,255))
+    shift_attack = False
+    collided = False
     while True:
         coin_surf = hud_font.render("x"+str(player_stats["gold"]), True, (255,255,255))
         key_surf = hud_font.render("x"+str(player_stats["keys"]), True, (255,255,255))
@@ -838,6 +850,9 @@ def game():
             if (sword_pause_timer >= 100):
                 sword_pause_timer = 0
                 sword_pause = False
+                if (shift_attack):
+                    shift_attack = False
+                    collided = False
         for i in dash_particle.particlelist:
             if (60 < i.lifetime <= 90):
                 i.texture.set_alpha(40)
@@ -851,7 +866,7 @@ def game():
             else:
                 i.texture = pygame.transform.scale(i.texture, (20,20))
         footsteps.setup(screen,clock)
-        if (keys[pygame.K_SPACE] and sword_cooldown >= 470 and player_stats["current weapon"] == "sword" or sword_pause):
+        if (keys[pygame.K_SPACE] and sword_cooldown >= 470 and player_stats["current weapon"] == "sword" or (sword_pause and not shift_attack)):
             if (not sword_pause):
                 sound_effects["swing sword"][sword_times].play()
                 sword_times += 1
@@ -892,6 +907,54 @@ def game():
             screen.blit(sword_dir, sword_coords)
             sword_cooldown = 0
             sword_pause = True
+        if ((keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]) and sword_cooldown >= 470 and player_stats["current weapon"] == "sword" or (sword_pause and shift_attack)):
+            if ((not shift_attack) and (not sword_pause)):
+                for i in enemies:
+                    if (player_hitbox.colliderect(i.hitbox) or i.hitbox.colliderect(player_hitbox)):
+                        if (i.death_attack_hp >= i.hp):
+                            collided = True
+                if (collided):
+                    sound_effects["swing sword"][sword_times].play()
+                    sword_times += 1
+                    sword_pause = True
+                    shift_attack = True
+                    if (sword_times > 2):
+                        sword_times = 0
+            if (collided and main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]):
+                sword_dir = sprites["sword swing3"]["up"]
+                if (sword_pause_timer >= 80):
+                    sword_dir = sprites["sword swing2"]
+                    sword_coords = (player_hitbox.midtop[0], player_hitbox.midtop[1]+10)
+                if (not sword_pause):
+                    sword_coords = (player_hitbox.topleft[0]+10, player_hitbox.midtop[1]-10)
+                sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
+            elif (collided and main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]):
+                sword_dir = sprites["sword swing3"]["down"]
+                if (sword_pause_timer >= 80):
+                    sword_dir = sprites["sword swing2"]
+                if (not sword_pause):
+                    sword_coords = (player_hitbox.bottomleft[0]+10, player_hitbox.midbottom[1]-10)
+                sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
+            elif (collided and main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]):
+                sword_dir = sprites["sword swing3"]["left"]
+                if (sword_pause_timer >= 80):
+                    sword_dir = sprites["sword swing2"]
+                    sword_coords = (player_hitbox.midleft[0]+10, player_hitbox.midleft[1]-5)
+                if (not sword_pause):
+                    sword_coords = (player_hitbox.midleft[0]-10, player_hitbox.midleft[1]-5)
+                sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
+            elif (collided and main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]):
+                sword_dir = sprites["sword swing3"]["right"]
+                if (sword_pause_timer >= 80):
+                    sword_dir = sprites["sword swing2"]
+                    sword_coords = (player_hitbox.midright[0]-20, player_hitbox.midright[1]-5)
+                if (not sword_pause):
+                    sword_coords = (player_hitbox.midright[0]-10, player_hitbox.midright[1]-5)
+                sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
+            if (collided):
+                sword_dir.set_colorkey((255,255,255))
+                screen.blit(sword_dir, sword_coords)
+                sword_cooldown = 0
         for i in enemies:
             enemy_moved_x = False
             i.hitbox = i.texture.get_rect(x=i.pos[0], y=i.pos[1])
@@ -989,6 +1052,9 @@ def game():
                     enemy_projectiles.append(classes.enemy.Projectile(sprites["slimeball"], 5, 0, i.dmg, 5000, [i.pos[0], i.pos[1]]))
             if (sword_pause):
                 if (i.hitbox.colliderect(sword_rect) and i.inv_frames <= 0):
+                    if (shift_attack):
+                        shift_attack = False
+                        collided = False
                     i.runaway = 1500
                     screenshake_duration = 200
                     i.state = "runaway"
