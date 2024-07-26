@@ -1,5 +1,6 @@
 import pygame
 import random
+import copy
 enemy_ids = {
              "slime":[0,1],
              "corrupted golem":[0,2]
@@ -29,6 +30,7 @@ class Enemy:
 		self.corpse = corpse
 		self.key_item = key_item
 		self.runaway = 0
+		self.death_attack_hp = copy.deepcopy(self.hp) // 2
 	def draw(self, screen):
 		screen.blit(self.texture, self.pos)
 	def update(self, clock):
