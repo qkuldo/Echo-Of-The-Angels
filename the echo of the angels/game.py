@@ -79,7 +79,9 @@ sprites = {
                1:pygame.transform.scale(pygame.image.load("assets/particle/vine-1.png"),(20,20)),
                2:pygame.transform.scale(pygame.image.load("assets/particle/vine-2.png"),(20,20))
               }
-           }
+           },
+           "death attack remind":pygame.transform.scale(pygame.image.load("assets/deathattack_remind1.png"),(50,50)),
+           "keypress remind":pygame.transform.scale(pygame.image.load("assets/keypress_remind.png"),(50,50))
           }
 sprites["player left"].set_colorkey((255,255,255))
 sprites["player right"].set_colorkey((255,255,255))
@@ -125,6 +127,8 @@ sprites["foliage"]["grass"][1].set_colorkey((255,255,255))
 sprites["foliage"]["grass"][2].set_colorkey((255,255,255))
 sprites["foliage"]["vine"][1].set_colorkey((255,255,255))
 sprites["foliage"]["vine"][2].set_colorkey((255,255,255))
+sprites["keypress remind"].set_colorkey((255,255,255))
+sprites["death attack remind"].set_colorkey((255,255,255))
 pygame.display.set_icon(sprites["player down"])
 cursor_rect = sprites["cursor"].get_rect()
 sound_effects = {
@@ -460,6 +464,7 @@ def game():
     foliage = []
     for i in range(randint(1,5)):
         foliage.append(classes.room.Foliage(sprites["foliage"][choice(["grass","vine"])][randint(1,2)], (randint(280,400),randint(280,400))))
+    shift_notification = notification_font.render("Shift",True,(255,255,255))
     while True:
         coin_surf = hud_font.render("x"+str(player_stats["gold"]), True, (255,255,255))
         key_surf = hud_font.render("x"+str(player_stats["keys"]), True, (255,255,255))
@@ -1196,6 +1201,12 @@ def game():
                 combat_text.remove(i)
         if (not current_notification == None):
              screen.blit(current_notification, notification_rect)
+        for i in enemies:
+            if (i.hp <= i.death_attack_hp):
+                screen.blit(sprites["death attack remind"],i.pos)
+                dropshadow(sprites["keypress remind"],(sprites["death attack remind"].get_rect(x=i.pos[0],y=i.pos[1]).topleft[0],sprites["death attack remind"].get_rect(x=i.pos[0],y=i.pos[1]).topleft[1]-40), 80,5)
+                screen.blit(sprites["keypress remind"],(sprites["death attack remind"].get_rect(x=i.pos[0],y=i.pos[1]).topleft[0],sprites["death attack remind"].get_rect(x=i.pos[0],y=i.pos[1]).topleft[1]-40))
+                screen.blit(shift_notification,(sprites["death attack remind"].get_rect(x=i.pos[0],y=i.pos[1]).topleft[0]+5,sprites["death attack remind"].get_rect(x=i.pos[0],y=i.pos[1]).topleft[1]-35))
         dash_particle.setup(screen,clock)
         damage_particle.setup(screen,clock)
         flame_particle_1.setup(screen,clock)
