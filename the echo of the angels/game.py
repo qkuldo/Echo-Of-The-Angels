@@ -1052,20 +1052,25 @@ def game():
                     enemy_projectiles.append(classes.enemy.Projectile(sprites["slimeball"], 5, 0, i.dmg, 5000, [i.pos[0], i.pos[1]]))
             if (sword_pause):
                 if (i.hitbox.colliderect(sword_rect) and i.inv_frames <= 0):
-                    if (shift_attack):
-                        shift_attack = False
-                        collided = False
                     i.runaway = 1500
                     screenshake_duration = 200
                     i.state = "runaway"
-                    if (randint(0, 10) == 10):
+                    if (randint(0, 10) == 10 and not shift_attack and not collided):
                         damage = (player_stats["attack"]*2) + randint(0,2) 
                         i.hp -= damage
                         combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 215, 0)),[i.pos[0],i.pos[1]], 500])
-                    else:
+                    elif (not shift_attack and not collided):
                         damage = player_stats["attack"] + randint(0,2)
                         i.hp -= damage
                         combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 15, 15)),[i.pos[0],i.pos[1]], 500])
+                    if (randint(0, 5) == 5 and shift_attack and collided):
+                        damage = ((player_stats["attack"]*2) + randint(0,2))*5 
+                        i.hp -= damage
+                        combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 215, 0)),[i.pos[0],i.pos[1]], 500])
+                    elif (shift_attack and collided):
+                        damage = (player_stats["attack"] + randint(0,2))*5
+                        i.hp -= damage
+                        combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 15, 15)),[i.pos[0],i.pos[1]], 500])  
                     i.inv_frames = 15
                     current_notification = notification_font.render("You damaged an enemy",True, (127,98,98))
                     notification_rect = current_notification.get_rect(midtop=(200, 450))
@@ -1086,7 +1091,10 @@ def game():
                         damage_particle.spawn_particle()
                     sound_effects["hurt"].play()
                     if (i.hp <= 0):
-                        pygame.time.delay(300)
+                        if (not shift_attack):
+                            pygame.time.delay(300)
+                        else:
+                            pygame.time.delay(400)
                         combat_text.pop()
                         sound_effects["defeat enemy"].play()
                         player_stats["gold"] += i.point_drop
@@ -1103,6 +1111,9 @@ def game():
                         notification_rect = current_notification.get_rect(midtop=(200, 450))
                     else:
                         sound_effects["hurt"].play()
+                    if (shift_attack):
+                        shift_attack = False
+                        collided = False
         for i in enemy_projectiles:
             i.draw(screen)
             i.lifetime -= clock.get_time()
@@ -1286,7 +1297,10 @@ def game():
         screen.blit(coin_surf, (56, 35))
         screen.blit(hp_surf, (115, 35))
         screen.blit(key_surf, (420,35))
+        border_rect = hp_rect.inflate(10,10)
+        max_hp_rect = max_hp_rect.inflate(10,10)
         pygame.draw.rect(screen, (219, 182,182), max_hp_rect)
+        pygame.draw.rect(screen, (219, 182,182), border_rect)
         pygame.draw.rect(screen, (142, 98, 98), hp_rect)
         if (screenshake_duration > 0):
             screenshake()
