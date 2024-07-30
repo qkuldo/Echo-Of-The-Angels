@@ -72,22 +72,23 @@ sprites = {
            "barricaded door":pygame.transform.scale(pygame.image.load("assets/barricaded_door.png"), (35,30)).convert_alpha(),
            "foliage":{
               "grass":{
-               1:pygame.transform.scale(pygame.image.load("assets/particle/grass-1.png"),(30,30)),
-               2:pygame.transform.scale(pygame.image.load("assets/particle/grass-2.png"),(30,30))
+               1:pygame.transform.scale(pygame.image.load("assets/particle/grass-1.png"),(30,30)).convert_alpha(),
+               2:pygame.transform.scale(pygame.image.load("assets/particle/grass-2.png"),(30,30)).convert_alpha()
               },
               "vine":{
-               1:pygame.transform.scale(pygame.image.load("assets/particle/vine-1.png"),(20,20)),
-               2:pygame.transform.scale(pygame.image.load("assets/particle/vine-2.png"),(20,20))
+               1:pygame.transform.scale(pygame.image.load("assets/particle/vine-1.png"),(20,20)).convert_alpha(),
+               2:pygame.transform.scale(pygame.image.load("assets/particle/vine-2.png"),(20,20)).convert_alpha()
               }
            },
-           "death attack remind":pygame.transform.scale(pygame.image.load("assets/deathattack_remind1.png"),(50,50)),
-           "keypress remind":pygame.transform.scale(pygame.image.load("assets/keypress_remind.png"),(50,50)),
+           "death attack remind":pygame.transform.scale(pygame.image.load("assets/deathattack_remind1.png"),(50,50)).convert_alpha(),
+           "keypress remind":pygame.transform.scale(pygame.image.load("assets/keypress_remind.png"),(50,50)).convert_alpha(),
            "sword swing3":{
                           "up":pygame.transform.scale(pygame.image.load("assets/deathattack_swordswing.png"), (20,30)).convert_alpha(),
                           "down":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_swordswing.png"), (20,30)), 180).convert_alpha(),
                           "left":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_swordswing.png"), (20,30)), 90).convert_alpha(),
                           "right":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_swordswing.png"), (20,30)), 270).convert_alpha(),
-                         }
+                         },
+           "deathattack slice":(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,200)).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,200)),90).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,200)),180).convert_alpha())
           }
 sprites["player left"].set_colorkey((255,255,255))
 sprites["player right"].set_colorkey((255,255,255))
@@ -139,6 +140,9 @@ sprites["sword swing3"]["up"].set_colorkey((255,255,255))
 sprites["sword swing3"]["down"].set_colorkey((255,255,255))
 sprites["sword swing3"]["left"].set_colorkey((255,255,255))
 sprites["sword swing3"]["right"].set_colorkey((255,255,255))
+sprites["deathattack slice"][0].set_colorkey((255,255,255))
+sprites["deathattack slice"][1].set_colorkey((255,255,255))
+sprites["deathattack slice"][2].set_colorkey((255,255,255))
 pygame.display.set_icon(sprites["player down"])
 cursor_rect = sprites["cursor"].get_rect()
 sound_effects = {
@@ -477,6 +481,7 @@ def game():
     shift_notification = notification_font.render("Shift",True,(255,255,255))
     shift_attack = False
     collided = False
+    death_delay = False
     while True:
         coin_surf = hud_font.render("x"+str(player_stats["gold"]), True, (255,255,255))
         key_surf = hud_font.render("x"+str(player_stats["keys"]), True, (255,255,255))
@@ -820,11 +825,6 @@ def game():
         sword_cooldown += clock.get_time()
         screen.blit(sprites["game bg"], (0, 90))
         screen.blit(sprites["floor"], (50, 200))
-        for i in animations:
-            i.update(clock)
-            i.draw(screen)
-            if (i.lifetime <= 0):
-                animations.remove(i)
         if (current_room == "spawn room"):
             screen.blit(tut_1, (150,300))
         if (not in_door):
@@ -913,6 +913,14 @@ def game():
                     if (player_hitbox.colliderect(i.hitbox) or i.hitbox.colliderect(player_hitbox)):
                         if (i.death_attack_hp >= i.hp):
                             collided = True
+                            player_y = i.pos[1]
+                            if (player_x > i.pos[0]):
+                                main_dir = sprites["player left"]
+                            elif (player_x < i.pos[0]):
+                                main_dir = sprites["player right"]
+                            else:
+                                main_dir = sprites["player down"]
+                            break
                 if (collided):
                     sound_effects["swing sword"][sword_times].play()
                     sword_times += 1
@@ -1077,24 +1085,27 @@ def game():
                     if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not i.hitbox.colliderect(wall_r_rect)):
                         i.pos[0] -= 45
                         i.direction = 0
+                        if (shift_attack):
+                            animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][0],),500,(i.pos[0],i.pos[1]-40)))
                     if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not i.hitbox.colliderect(wall_l_rect)):
                         i.pos[0] += 45
                         i.direction = 2
+                        if (shift_attack):
+                            animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][2],),500,(i.pos[0],i.pos[1]-40)))
                     if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not i.hitbox.colliderect(wall_n_rect)):
                         i.pos[1] -= 45
                         i.direction = 1
                     if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not i.hitbox.colliderect(wall_s_rect)):
                         i.pos[1] += 45
                         i.direction = 3
+                        if (shift_attack):
+                            animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][1],),500,(i.pos[0]-40,i.pos[1])))
                     for j in range(damage):
                         damage_particle.pos = [i.hitbox.center[0]+randint(-20,20), i.hitbox.center[1]+randint(-20,20)]
                         damage_particle.spawn_particle()
                     sound_effects["hurt"].play()
                     if (i.hp <= 0):
-                        if (not shift_attack):
-                            pygame.time.delay(300)
-                        else:
-                            pygame.time.delay(400)
+                        death_delay = True
                         combat_text.pop()
                         sound_effects["defeat enemy"].play()
                         player_stats["gold"] += i.point_drop
@@ -1288,6 +1299,12 @@ def game():
         damage_particle.setup(screen,clock)
         flame_particle_1.setup(screen,clock)
         flame_particle_2.setup(screen,clock)
+        for i in animations:
+            i.update(clock)
+            dropshadow(i.current_frame,i.pos,80,5)
+            i.draw(screen)
+            if (i.lifetime <= 0):
+                animations.remove(i)
         dropshadow(sprites["hud bg"],(0,0),80,5)
         screen.blit(sprites["hud bg"], (0, 0))
         dropshadow(sprites["coin icon"],(30,30),80,5)
@@ -1307,6 +1324,9 @@ def game():
         if (pygame.mouse.get_focused()):
              screen.blit(sprites["cursor"], cursor_rect)
         pygame.display.update()
+        if (death_delay):
+            pygame.time.delay(300)
+            death_delay = False
         if (transition):
             fade2()
             transition = False
