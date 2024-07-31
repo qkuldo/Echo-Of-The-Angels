@@ -88,7 +88,7 @@ sprites = {
                           "left":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_swordswing.png"), (20,30)), 90).convert_alpha(),
                           "right":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_swordswing.png"), (20,30)), 270).convert_alpha(),
                          },
-           "deathattack slice":(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,200)).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,200)),90).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,200)),180).convert_alpha())
+           "deathattack slice":(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,200)).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,200)),90).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,200)),180).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,200)),90).convert_alpha())
           }
 sprites["player left"].set_colorkey((255,255,255))
 sprites["player right"].set_colorkey((255,255,255))
@@ -143,6 +143,7 @@ sprites["sword swing3"]["right"].set_colorkey((255,255,255))
 sprites["deathattack slice"][0].set_colorkey((255,255,255))
 sprites["deathattack slice"][1].set_colorkey((255,255,255))
 sprites["deathattack slice"][2].set_colorkey((255,255,255))
+sprites["deathattack slice"][3].set_colorkey((255,255,255))
 pygame.display.set_icon(sprites["player down"])
 cursor_rect = sprites["cursor"].get_rect()
 sound_effects = {
@@ -827,6 +828,17 @@ def game():
         screen.blit(sprites["floor"], (50, 200))
         if (current_room == "spawn room"):
             screen.blit(tut_1, (150,300))
+        for i in animations:
+            if (i.current_frame == sprites["slime corpse"] or i.current_frame == sprites["corrupted golem corpse"]):
+                i.update(clock)
+                dropshadow(i.current_frame,i.pos,80,5)
+                i.draw(screen)
+                if (i.lifetime <= 0):
+                    animations.remove(i)
+        for plant in foliage:
+            plant.move(clock)
+            dropshadow(plant.texture,plant.pos,80,5)
+            plant.draw(screen)
         if (not in_door):
             dropshadow(player_blitscreen,(player_x,player_y),80,5)
             screen.blit(player_blitscreen, (player_x,player_y))
@@ -918,8 +930,10 @@ def game():
                                 main_dir = sprites["player left"]
                             elif (player_x < i.pos[0]):
                                 main_dir = sprites["player right"]
-                            else:
+                            elif (player_y < i.pos[1]):
                                 main_dir = sprites["player down"]
+                            elif (player_y > i.pos[1]):
+                                main_dir = sprites["player up"]
                             break
                 if (collided):
                     sound_effects["swing sword"][sword_times].play()
@@ -1095,6 +1109,8 @@ def game():
                     if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not i.hitbox.colliderect(wall_n_rect)):
                         i.pos[1] -= 45
                         i.direction = 1
+                        if (shift_attack):
+                            animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][3],),500,(i.pos[0]-40,i.pos[1])))
                     if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not i.hitbox.colliderect(wall_s_rect)):
                         i.pos[1] += 45
                         i.direction = 3
@@ -1245,10 +1261,6 @@ def game():
                     player_stats["gold"] += drop[1]
                     combat_text.append([combat_text_font.render(f"+{drop[1]} coins", True, (255, 196, 0)),[i.pos[0],i.pos[1]], 500])
                 pot_list.remove(i)
-        for plant in foliage:
-            plant.move(clock)
-            dropshadow(plant.texture,plant.pos,80,5)
-            plant.draw(screen)
         if (player_stats["hp"] <= 0):
             pygame.event.post(pygame.event.Event(player_death))
         if (invincibility_frames > 0):
@@ -1300,11 +1312,12 @@ def game():
         flame_particle_1.setup(screen,clock)
         flame_particle_2.setup(screen,clock)
         for i in animations:
-            i.update(clock)
-            dropshadow(i.current_frame,i.pos,80,5)
-            i.draw(screen)
-            if (i.lifetime <= 0):
-                animations.remove(i)
+            if (not i.current_frame == sprites["slime corpse"] or i.current_frame == sprites["corrupted golem corpse"]):
+                i.update(clock)
+                dropshadow(i.current_frame,i.pos,80,5)
+                i.draw(screen)
+                if (i.lifetime <= 0):
+                    animations.remove(i)
         dropshadow(sprites["hud bg"],(0,0),80,5)
         screen.blit(sprites["hud bg"], (0, 0))
         dropshadow(sprites["coin icon"],(30,30),80,5)
