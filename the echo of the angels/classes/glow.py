@@ -35,4 +35,5 @@ class Glow:
             k = i*self.light
             k = pygame.math.clamp(k,0,255)
             pygame.draw.circle(self.surf,(k,k,k), self.surf.get_rect().center, self.outer_dist-i * 3)
+        self.surf.set_alpha(self.light)
         screen.blit(self.surf,(self.outer_rect.x,self.outer_rect.y), special_flags=pygame.BLEND_RGBA_MAX)

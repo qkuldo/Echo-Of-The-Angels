@@ -1,5 +1,6 @@
 import pygame
 import copy
+from random import randint
 class Particle:
 	"""A class to define individual particles"""
 	def __init__(self, texture,pos=[0,0], velocity_x=1, velocity_y=1, lifetime=400):
@@ -32,12 +33,14 @@ class ParticleGroup:
 	def draw(self, screen):
 		for particle in self.particlelist:
 			if (self.spin):
-			    particle.texture = pygame.transform.rotate(particle.texture, 5)
-			    particle.texture.set_colorkey((255,255,255))
-			dropshadow = particle.texture.copy()
+			    draw_txt = pygame.transform.rotate(particle.texture, randint(-5,5))
+			    draw_txt.set_colorkey((255,255,255))
+			else:
+				draw_txt = particle.texture.copy()
+			dropshadow = draw_txt.copy()
 			dropshadow.set_alpha(80)
 			screen.blit(dropshadow,(particle.pos[0],particle.pos[1]+5))
-			screen.blit(particle.texture, particle.pos)
+			screen.blit(draw_txt, particle.pos)
 	def setup(self, screen, clock):
 		self.update_group(clock)
 		self.draw(screen)
