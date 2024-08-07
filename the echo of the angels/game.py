@@ -88,7 +88,7 @@ sprites = {
                           "left":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_swordswing.png"), (20,30)), 90).convert_alpha(),
                           "right":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_swordswing.png"), (20,30)), 270).convert_alpha(),
                          },
-           "deathattack slice":(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,200)).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,200)),90).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,200)),180).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,200)),90).convert_alpha())
+           "deathattack slice":(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),90).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),180).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),90).convert_alpha())
           }
 sprites["player left"].set_colorkey((255,255,255))
 sprites["player right"].set_colorkey((255,255,255))
@@ -400,7 +400,8 @@ def game():
     max_hp_rect = pygame.Rect(150, 30, player_stats["max hp"]*2, 30)
     flame_particle_1 = classes.particle.ParticleGroup(sprites["flame particle 1"], [0,0], 0, -1, 500)
     flame_particle_2 = classes.particle.ParticleGroup(sprites["flame particle 2"], [0,0], 0, -1, 500)
-    damage_particle = classes.particle.ParticleGroup(sprites["damage particle"], [0,0], 0, 1, 500)
+    damage_particle = classes.particle.ParticleGroup(sprites["damage particle"], [0,0], 0, 1, 500,spin=True)
+    deathattack_particle = classes.particle.ParticleGroup(pygame.transform.scale(sprites["damage particle"], (32,32)), [0,0], 0, 1, 500,spin=True)
     increment_x = 0
     increment_y = 0
     dash_pause = 0
@@ -536,7 +537,7 @@ def game():
                     player_y += player_stats["speed"]*2.5
             if (111 >= dash_duration > 74):
                 if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
-                    player_x -= player_stats["speed"]*2.5
+                    player_x -= player_stats["speed"]*2
                 if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
                     player_x += player_stats["speed"]*2
                 if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
@@ -1075,7 +1076,10 @@ def game():
             if (sword_pause):
                 if (i.hitbox.colliderect(sword_rect) and i.inv_frames <= 0):
                     i.runaway = 1500
-                    screenshake_duration = 200
+                    if (shift_attack):
+                        screenshake_duration = 400
+                    if (shift_attack):
+                        screenshake_duration = 200
                     i.state = "runaway"
                     if (randint(0, 10) == 10 and not shift_attack and not collided):
                         damage = (player_stats["attack"]*2) + randint(0,2) 
@@ -1100,32 +1104,41 @@ def game():
                         i.pos[0] -= 45
                         i.direction = 0
                         if (shift_attack):
-                            animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][0],),500,(i.pos[0],i.pos[1]-40)))
+                            animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][0],),500,(i.pos[0],i.pos[1]-10)))
                     if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not i.hitbox.colliderect(wall_l_rect)):
                         i.pos[0] += 45
                         i.direction = 2
                         if (shift_attack):
-                            animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][2],),500,(i.pos[0],i.pos[1]-40)))
+                            animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][2],),500,(i.pos[0],i.pos[1]+10)))
                     if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not i.hitbox.colliderect(wall_n_rect)):
                         i.pos[1] -= 45
                         i.direction = 1
                         if (shift_attack):
-                            animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][3],),500,(i.pos[0]-40,i.pos[1])))
+                            animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][3],),500,(i.pos[0]-10,i.pos[1])))
                     if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not i.hitbox.colliderect(wall_s_rect)):
                         i.pos[1] += 45
                         i.direction = 3
                         if (shift_attack):
-                            animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][1],),500,(i.pos[0]-40,i.pos[1])))
-                    for j in range(damage):
-                        damage_particle.pos = [i.hitbox.center[0]+randint(-20,20), i.hitbox.center[1]+randint(-20,20)]
-                        damage_particle.spawn_particle()
+                            animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][1],),500,(i.pos[0]+10,i.pos[1])))
+                    if (not shift_attack):
+                        for j in range(damage):
+                            damage_particle.pos = [i.hitbox.center[0]+randint(-20,20), i.hitbox.center[1]+randint(-20,20)]
+                            damage_particle.spawn_particle()
+                    else:
+                        for j in range(damage):
+                            deathattack_particle.pos = [i.hitbox.center[0]+randint(-20,20), i.hitbox.center[1]+randint(-20,20)]
+                            deathattack_particle.spawn_particle()
                     sound_effects["hurt"].play()
                     if (i.hp <= 0):
                         death_delay = True
                         combat_text.pop()
                         sound_effects["defeat enemy"].play()
-                        player_stats["gold"] += i.point_drop
-                        combat_text.append([combat_text_font.render(f"+{i.point_drop} coins", True, (255, 196, 0)),[i.pos[0],i.pos[1]], 500])
+                        if (not shift_attack):
+                            player_stats["gold"] += i.point_drop
+                            combat_text.append([combat_text_font.render(f"+{i.point_drop} coins", True, (255, 196, 0)),[i.pos[0],i.pos[1]], 500])
+                        else:
+                            player_stats["gold"] += i.point_drop + 2
+                            combat_text.append([combat_text_font.render(f"+{i.point_drop+2} coins", True, (255, 196, 0)),[i.pos[0],i.pos[1]], 500])
                         animations.append(classes.animation_effect.Effect((sprites["enemy death"][1], sprites["enemy death"][2], sprites["enemy death"][3]), 500, (i.pos[0], i.pos[1])))
                         if (i.key_item == "key"):
                             if (current_room == "dungeon room 5" and player_stats["key enemies"][0]==True):
@@ -1309,10 +1322,11 @@ def game():
                 screen.blit(shift_notification,(sprites["death attack remind"].get_rect(x=i.pos[0],y=i.pos[1]).topleft[0]+5,sprites["death attack remind"].get_rect(x=i.pos[0],y=i.pos[1]).topleft[1]-35))
         dash_particle.setup(screen,clock)
         damage_particle.setup(screen,clock)
+        deathattack_particle.setup(screen,clock)
         flame_particle_1.setup(screen,clock)
         flame_particle_2.setup(screen,clock)
         for i in animations:
-            if (not i.current_frame == sprites["slime corpse"] or i.current_frame == sprites["corrupted golem corpse"]):
+            if (not i.current_frame == sprites["slime corpse"] or not i.current_frame == sprites["corrupted golem corpse"]):
                 i.update(clock)
                 dropshadow(i.current_frame,i.pos,80,5)
                 i.draw(screen)
@@ -1338,7 +1352,10 @@ def game():
              screen.blit(sprites["cursor"], cursor_rect)
         pygame.display.update()
         if (death_delay):
-            pygame.time.delay(300)
+            if (shift_attack):
+                pygame.time.delay(600)
+            else:
+                pygame.time.delay(300)
             death_delay = False
         if (transition):
             fade2()
