@@ -456,7 +456,7 @@ def game():
     spin_walk_cooldown = 0
     dark_surf = pygame.Surface((600, 600))
     dark_surf.fill("black")
-    dark_surf.set_alpha(245)
+    dark_surf.set_alpha(244)
     combat_text_font = pygame.font.Font("fonts/Pixeltype.ttf", 25)
     combat_text = []
     current_torch = sprites["torch"]
@@ -484,6 +484,7 @@ def game():
     shift_attack = False
     collided = False
     death_delay = False
+    current_deathattack_target = -1
     while True:
         coin_surf = hud_font.render("x"+str(player_stats["gold"]), True, (255,255,255))
         key_surf = hud_font.render("x"+str(player_stats["keys"]), True, (255,255,255))
@@ -744,6 +745,7 @@ def game():
                             foliage.append(classes.room.Foliage(sprites["foliage"][choice(["grass","vine"])][randint(1,2)], (randint(280,400),randint(280,400))))
                         fade()
                         transition = True
+                        current_deathattack_target = -1
                     elif (type(room_dict[current_room].exits[direction]) == classes.room.Lock and player_stats["keys"] == 0):
                         current_notification = notification_font.render("This door is locked.",True, (127,98,98))
                         notification_rect = current_notification.get_rect(midtop=(200, 450))
@@ -935,6 +937,7 @@ def game():
                                 main_dir = sprites["player down"]
                             elif (player_y > i.pos[1]):
                                 main_dir = sprites["player up"]
+                            current_deathattack_target = enemies.index(i)
                             break
                 if (collided):
                     sound_effects["swing sword"][sword_times].play()
@@ -1089,11 +1092,11 @@ def game():
                         damage = player_stats["attack"] + randint(0,2)
                         i.hp -= damage
                         combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 15, 15)),[i.pos[0],i.pos[1]], 500])
-                    if (randint(0, 5) == 5 and shift_attack and collided):
+                    if (randint(0, 5) == 5 and shift_attack and collided and enemies.index(i) == current_deathattack_target):
                         damage = ((player_stats["attack"]*2) + randint(0,2))*5 
                         i.hp -= damage
                         combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 215, 0)),[i.pos[0],i.pos[1]], 500])
-                    elif (shift_attack and collided):
+                    elif (shift_attack and collided and enemies.index(i) == current_deathattack_target):
                         damage = (player_stats["attack"] + randint(0,2))*5
                         i.hp -= damage
                         combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 15, 15)),[i.pos[0],i.pos[1]], 500])  
@@ -1103,31 +1106,35 @@ def game():
                     if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not i.hitbox.colliderect(wall_r_rect)):
                         i.pos[0] -= 45
                         i.direction = 0
-                        if (shift_attack):
+                        if (shift_attack and enemies.index(i) == current_deathattack_target):
                             animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][0],),500,(i.pos[0],i.pos[1]-10)))
                     if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not i.hitbox.colliderect(wall_l_rect)):
                         i.pos[0] += 45
                         i.direction = 2
-                        if (shift_attack):
+                        if (shift_attack and enemies.index(i) == current_deathattack_target):
                             animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][2],),500,(i.pos[0],i.pos[1]+10)))
                     if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not i.hitbox.colliderect(wall_n_rect)):
                         i.pos[1] -= 45
                         i.direction = 1
-                        if (shift_attack):
+                        if (shift_attack and enemies.index(i) == current_deathattack_target):
                             animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][3],),500,(i.pos[0]-10,i.pos[1])))
                     if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not i.hitbox.colliderect(wall_s_rect)):
                         i.pos[1] += 45
                         i.direction = 3
-                        if (shift_attack):
+                        if (shift_attack and enemies.index(i) == current_deathattack_target):
                             animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][1],),500,(i.pos[0]+10,i.pos[1])))
-                    if (not shift_attack):
+                    if (shift_attack != True or not enemies.index(i) == current_deathattack_target):
                         for j in range(damage):
                             damage_particle.pos = [i.hitbox.center[0]+randint(-20,20), i.hitbox.center[1]+randint(-20,20)]
                             damage_particle.spawn_particle()
+                            damage_particle.particlelist[-1].velocity_x += choice([-1,1])
+                            damage_particle.particlelist[-1].velocity_y += choice([-1,1])
                     else:
                         for j in range(damage):
                             deathattack_particle.pos = [i.hitbox.center[0]+randint(-20,20), i.hitbox.center[1]+randint(-20,20)]
                             deathattack_particle.spawn_particle()
+                            deathattack_particle.particlelist[-1].velocity_x += choice([-1,1])
+                            deathattack_particle.particlelist[-1].velocity_y += choice([-1,1])
                     sound_effects["hurt"].play()
                     if (i.hp <= 0):
                         death_delay = True
@@ -1175,6 +1182,8 @@ def game():
                 for j in range(enemy_damage):
                     damage_particle.pos = [player_hitbox.center[0]+randint(-20,20), player_hitbox.center[1]+randint(-20,20)]
                     damage_particle.spawn_particle()
+                    damage_particle.particlelist[-1].velocity_x += choice([-1,1])
+                    damage_particle.particlelist[-1].velocity_y += choice([-1,1])
                 pygame.event.post(pygame.event.Event(player_gothit))
                 enemy_projectiles.remove(i)
                 invincibility_frames = 20
@@ -1273,6 +1282,11 @@ def game():
                 if (drop != None and drop[0] == "coins"):
                     player_stats["gold"] += drop[1]
                     combat_text.append([combat_text_font.render(f"+{drop[1]} coins", True, (255, 196, 0)),[i.pos[0],i.pos[1]], 500])
+                for j in range(player_stats["attack"]):
+                    damage_particle.pos = [player_hitbox.center[0]+randint(-20,20), player_hitbox.center[1]+randint(-20,20)]
+                    damage_particle.spawn_particle()
+                    damage_particle.particlelist[-1].velocity_x += choice([-1,1])
+                    damage_particle.particlelist[-1].velocity_y += choice([-1,1])
                 pot_list.remove(i)
         if (player_stats["hp"] <= 0):
             pygame.event.post(pygame.event.Event(player_death))
@@ -1326,7 +1340,7 @@ def game():
         flame_particle_1.setup(screen,clock)
         flame_particle_2.setup(screen,clock)
         for i in animations:
-            if (not i.current_frame == sprites["slime corpse"] or not i.current_frame == sprites["corrupted golem corpse"]):
+            if (i.current_frame != sprites["slime corpse"] and i.current_frame != sprites["corrupted golem corpse"]):
                 i.update(clock)
                 dropshadow(i.current_frame,i.pos,80,5)
                 i.draw(screen)
