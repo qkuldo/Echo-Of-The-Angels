@@ -485,6 +485,7 @@ def game():
     collided = False
     death_delay = False
     current_deathattack_target = -1
+    lost_hp = 0
     while True:
         coin_surf = hud_font.render("x"+str(player_stats["gold"]), True, (255,255,255))
         key_surf = hud_font.render("x"+str(player_stats["keys"]), True, (255,255,255))
@@ -596,6 +597,7 @@ def game():
             break
         hp_rect = pygame.Rect(150, 30, player_stats["hp"]*2, 30)
         max_hp_rect = pygame.Rect(150, 30, player_stats["max hp"]*2, 30)
+        lost_hp_rect = pygame.Rect(hp_rect.midright[0], 30, lost_hp*2, 30)
         player_hitbox = player_blitscreen.get_rect(x=player_x,y=player_y)
         keys = pygame.key.get_pressed()
         wall_n_rect = sprites["wall"][1].get_rect(x=50,y=200)
@@ -702,6 +704,7 @@ def game():
             moved = True
         if (keys[pygame.K_e] and room_cooldown <= 0 and (not resting) and (not len(enemies) > 0)):
             for i in exits:
+                lost_hp = 0
                 """
                    I took so much time trying to figure out how to code something that delays coin farming.
                    if only players were dumb.
@@ -770,7 +773,8 @@ def game():
                  current_notification = notification_font.render("You rest for a bit.",True, (127,98,98))
                  notification_rect = current_notification.get_rect(midtop=(200, 450))
                  if (player_stats["hp"] < 100):
-                      player_stats["hp"] += 2
+                      player_stats["hp"] += lost_hp
+                 lost_hp = 0
                  main_dir = sprites["player rest"]
                  player_blitscreen = pygame.transform.rotate(main_dir, randint(-5,5))
                  player_blitscreen.set_colorkey((255, 255, 255))
@@ -785,6 +789,7 @@ def game():
         if (resting and time_till_wakeup <= 0):
             resting = not resting
             main_dir = sprites["player down"]
+            moved = True
         if (invincibility_frames > 0):
             if (main_dir == sprites["player up"]):
                 main_dir = sprites["player up invincible"]
@@ -1184,6 +1189,7 @@ def game():
                     damage_particle.spawn_particle()
                     damage_particle.particlelist[-1].velocity_x += choice([-1,1])
                     damage_particle.particlelist[-1].velocity_y += choice([-1,1])
+                lost_hp += enemy_damage // 2
                 pygame.event.post(pygame.event.Event(player_gothit))
                 enemy_projectiles.remove(i)
                 invincibility_frames = 20
@@ -1356,10 +1362,11 @@ def game():
         screen.blit(hp_surf, (115, 35))
         screen.blit(key_surf, (420,35))
         border_rect = hp_rect.inflate(10,10)
-        max_hp_rect = max_hp_rect.inflate(10,10)
+        max_hp_rect = max_hp_rect.inflate(10,10) 
         pygame.draw.rect(screen, (219, 182,182), max_hp_rect)
         pygame.draw.rect(screen, (219, 182,182), border_rect)
         pygame.draw.rect(screen, (142, 98, 98), hp_rect)
+        pygame.draw.rect(screen, (255,98,98), lost_hp_rect)
         if (screenshake_duration > 0):
             screenshake()
         if (pygame.mouse.get_focused()):
