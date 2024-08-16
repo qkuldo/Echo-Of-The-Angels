@@ -153,7 +153,8 @@ sound_effects = {
                  "door":pygame.mixer.Sound("sounds/door_open.wav"),
                  "footstep":pygame.mixer.Sound("sounds/footstep.wav"),
                  "hurt":pygame.mixer.Sound("sounds/hurt.wav"),
-                 "click":pygame.mixer.Sound("sounds/click.wav")
+                 "click":pygame.mixer.Sound("sounds/click.wav"),
+                 "heal":pygame.mixer.Sound("sounds/heal.wav")
                 }
 pygame.mixer.music.set_volume(0.7)
 music = [
@@ -704,7 +705,6 @@ def game():
             moved = True
         if (keys[pygame.K_e] and room_cooldown <= 0 and (not resting) and (not len(enemies) > 0)):
             for i in exits:
-                lost_hp = 0
                 """
                    I took so much time trying to figure out how to code something that delays coin farming.
                    if only players were dumb.
@@ -714,6 +714,7 @@ def game():
                         respawn_timer[current_room] = 10
                     direction = exits.index(i)
                     if (room_dict[current_room].exits[direction] != None and type(room_dict[current_room].exits[direction]) != classes.room.Lock):
+                        lost_hp = 0
                         current_room = room_dict[current_room].exits[direction]
                         enemies = []
                         enemy_projectiles = []
@@ -765,16 +766,13 @@ def game():
         elif (len(enemies) > 0):
                current_notification = notification_font.render("This door is barricaded.",True, (127,98,98))
                notification_rect = current_notification.get_rect(midtop=(200, 450)) 
-        if (keys[pygame.K_r] and rest_cooldown <= 0):
+        if (keys[pygame.K_r] and rest_cooldown <= 0 and lost_hp > 0):
             if (len(enemies) == 0):
                  resting = not resting
                  rest_cooldown = 10000
-                 time_till_wakeup = 1000
+                 time_till_wakeup = 3000
                  current_notification = notification_font.render("You rest for a bit.",True, (127,98,98))
                  notification_rect = current_notification.get_rect(midtop=(200, 450))
-                 if (player_stats["hp"] < 100):
-                      player_stats["hp"] += lost_hp
-                 lost_hp = 0
                  main_dir = sprites["player rest"]
                  player_blitscreen = pygame.transform.rotate(main_dir, randint(-5,5))
                  player_blitscreen.set_colorkey((255, 255, 255))
@@ -790,6 +788,11 @@ def game():
             resting = not resting
             main_dir = sprites["player down"]
             moved = True
+            sound_effects["heal"].play()
+        if (resting and not time_till_wakeup <= 0):
+            if (player_stats["hp"] < 100):
+                player_stats["hp"] += int(lost_hp*0.8)//10
+                lost_hp -= int(lost_hp*0.8)//10
         if (invincibility_frames > 0):
             if (main_dir == sprites["player up"]):
                 main_dir = sprites["player up invincible"]
@@ -1083,7 +1086,7 @@ def game():
                     enemy_projectiles.append(classes.enemy.Projectile(sprites["slimeball"], 5, 0, i.dmg, 5000, [i.pos[0], i.pos[1]]))
             if (sword_pause):
                 if (i.hitbox.colliderect(sword_rect) and i.inv_frames <= 0):
-                    i.runaway = 1500
+                    i.runaway = 900
                     if (shift_attack):
                         screenshake_duration = 400
                     if (shift_attack):
