@@ -1102,19 +1102,19 @@ def game():
                     if (randint(0, 10) == 10 and not shift_attack and not collided):
                         damage = (player_stats["attack"]*2) + randint(0,2) 
                         i.hp -= damage
-                        combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 215, 0)),[i.pos[0],i.pos[1]], 500])
+                        combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 215, 98)),[i.pos[0],i.pos[1]], 500])
                     elif (not shift_attack and not collided):
                         damage = player_stats["attack"] + randint(0,2)
                         i.hp -= damage
-                        combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 15, 15)),[i.pos[0],i.pos[1]], 500])
+                        combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 15, 98)),[i.pos[0],i.pos[1]], 500])
                     if (randint(0, 5) == 5 and shift_attack and collided and enemies.index(i) == current_deathattack_target):
                         damage = ((player_stats["attack"]*2) + randint(0,2))*5 
                         i.hp -= damage
-                        combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 215, 0)),[i.pos[0],i.pos[1]], 500])
+                        combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 215, 98)),[i.pos[0],i.pos[1]], 500])
                     elif (shift_attack and collided and enemies.index(i) == current_deathattack_target):
                         damage = (player_stats["attack"] + randint(0,2))*5
                         i.hp -= damage
-                        combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 15, 15)),[i.pos[0],i.pos[1]], 500])  
+                        combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 15, 98)),[i.pos[0],i.pos[1]], 500])  
                     i.inv_frames = 15
                     current_notification = notification_font.render("You damaged an enemy",True, (127,98,98))
                     notification_rect = current_notification.get_rect(midtop=(200, 450))
@@ -1157,10 +1157,10 @@ def game():
                         sound_effects["defeat enemy"].play()
                         if (not shift_attack):
                             player_stats["gold"] += i.point_drop
-                            combat_text.append([combat_text_font.render(f"+{i.point_drop} coins", True, (255, 196, 0)),[i.pos[0],i.pos[1]], 500])
+                            combat_text.append([combat_text_font.render(f"+{i.point_drop} coins", True, (255, 196, 98)),[i.pos[0],i.pos[1]], 500])
                         else:
                             player_stats["gold"] += i.point_drop + 2
-                            combat_text.append([combat_text_font.render(f"+{i.point_drop+2} coins", True, (255, 196, 0)),[i.pos[0],i.pos[1]], 500])
+                            combat_text.append([combat_text_font.render(f"+{i.point_drop+2} coins", True, (255, 196, 98)),[i.pos[0],i.pos[1]], 500])
                         animations.append(classes.animation_effect.Effect((sprites["enemy death"][1], sprites["enemy death"][2], sprites["enemy death"][3]), 500, (i.pos[0], i.pos[1])))
                         if (i.key_item == "key"):
                             if (current_room == "dungeon room 5" and player_stats["key enemies"][0]==True):
@@ -1189,7 +1189,7 @@ def game():
                 if (randint(0,10) == 10):
                     enemy_damage = (i.dmg*2) + randint(0,2)
                     player_stats["hp"] -= enemy_damage
-                    combat_text.append([combat_text_font.render("Critical Hit!", True, (15, 15, 255)),[i.pos[0],i.pos[1]], 500])
+                    combat_text.append([combat_text_font.render(f"-{enemy_damage} HP", True, (15, 215, 255)),[i.pos[0],i.pos[1]], 500])
                 else:
                     enemy_damage = i.dmg + randint(0,2)
                     player_stats["hp"] -= enemy_damage
@@ -1297,7 +1297,7 @@ def game():
                 drop = choice(i.drops)
                 if (drop != None and drop[0] == "coins"):
                     player_stats["gold"] += drop[1]
-                    combat_text.append([combat_text_font.render(f"+{drop[1]} coins", True, (255, 196, 0)),[i.pos[0],i.pos[1]], 500])
+                    combat_text.append([combat_text_font.render(f"+{drop[1]} coins", True, (255, 196, 98)),[i.pos[0],i.pos[1]], 500])
                 for j in range(player_stats["attack"]):
                     damage_particle.pos = [player_hitbox.center[0]+randint(-20,20), player_hitbox.center[1]+randint(-20,20)]
                     damage_particle.spawn_particle()
@@ -1336,12 +1336,6 @@ def game():
         player_glow.update(clock)
         player_glow.draw(nsurf)
         screen.blit(nsurf,(0,0),special_flags=pygame.BLEND_RGB_MULT)
-        for i in combat_text:
-            screen.blit(i[0], i[1])
-            i[1][1] -= 2
-            i[2] -= clock.get_time()
-            if (i[2] <= 0):
-                combat_text.remove(i)
         if (not current_notification == None):
              screen.blit(current_notification, notification_rect)
         for i in enemies:
@@ -1355,6 +1349,12 @@ def game():
         deathattack_particle.setup(screen,clock)
         flame_particle_1.setup(screen,clock)
         flame_particle_2.setup(screen,clock)
+        for i in combat_text:
+            screen.blit(i[0], i[1])
+            i[1][1] -= 2
+            i[2] -= clock.get_time()
+            if (i[2] <= 0):
+                combat_text.remove(i)
         for i in animations:
             if (i.current_frame != sprites["slime corpse"] and i.current_frame != sprites["corrupted golem corpse"]):
                 i.update(clock)
