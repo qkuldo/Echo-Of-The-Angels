@@ -576,15 +576,15 @@ def game():
                 pygame.quit()
                 sys.exit()
             elif (event.type == player_gothit):
-                knockback = choice([-15,15])
-                if (knockback == -15 and not wall_r_rect.colliderect(player_hitbox)):
+                knockback = choice([-45,45])
+                if (knockback == -45 and not wall_r_rect.colliderect(player_hitbox)):
+                    player_x -= knockback
+                if (knockback == 45 and not wall_l_rect.colliderect(player_hitbox)):
                     player_x += knockback
-                if (knockback == 15 and not wall_l_rect.colliderect(player_hitbox)):
-                    player_x += knockback
-                knockback = choice([-15,15])
-                if (knockback == -15 and not wall_n_rect.colliderect(player_hitbox)):
-                    player_y += knockback
-                if (knockback == 15 and not wall_s_rect.colliderect(player_hitbox)):
+                knockback = choice([-45,45])
+                if (knockback == -45 and not wall_n_rect.colliderect(player_hitbox)):
+                    player_y -= knockback
+                if (knockback == 45 and not wall_s_rect.colliderect(player_hitbox)):
                     player_y += knockback
                 
                 current_notification = notification_font.render("You were hit!", True, (127, 98, 98))
@@ -789,10 +789,11 @@ def game():
             main_dir = sprites["player down"]
             moved = True
             sound_effects["heal"].play()
+            lost_hp = 0
         if (resting and not time_till_wakeup <= 0):
             if (player_stats["hp"] < 100):
-                player_stats["hp"] += int(lost_hp*0.8)//10
-                lost_hp -= int(lost_hp*0.8)//10
+                player_stats["hp"] += lost_hp/180
+                lost_hp -= lost_hp/180
         if (invincibility_frames > 0):
             if (main_dir == sprites["player up"]):
                 main_dir = sprites["player up invincible"]
@@ -1070,11 +1071,11 @@ def game():
                         i.pos[1] += i.speed
                     i.direction = 3
             if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,2]  and i.line_of_sight.colliderect(player_hitbox) and not i.inv_frames > 0):
-                i.cooldown = 1500
+                i.cooldown = 700
                 enemy_attack = True
                 enemy_projectiles.append(classes.enemy.Projectile(sprites["stomp"], 0, 0, i.dmg, 100, [i.hitbox.bottomleft[0], i.hitbox.bottomleft[1]-30]))
             if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,1] and not i.inv_frames > 0):
-                i.cooldown = 1000
+                i.cooldown = 700
                 enemy_attack = True
                 if (i.direction == 0):
                     enemy_projectiles.append(classes.enemy.Projectile(sprites["slimeball"], 0, -5, i.dmg, 5000, [i.pos[0], i.pos[1]]))
