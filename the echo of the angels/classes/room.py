@@ -11,9 +11,9 @@ class Room:
     def load_room(self, enemy_list, sprite_dict, wall_list, pot_list, spawn_enemy=True, spawn_pot = True):
         for i in self.spawners:
             if (i.enemy_id == [0,1] and spawn_enemy):
-                 enemy_list.append(classes.enemy.Enemy(sprite_dict["slime"], i.pos, ID = classes.enemy.enemy_ids["slime"], knockback = 25, hp = 5, anim_frames=(sprite_dict["slime"], sprite_dict["slime 2"],),key_item=i.key_item))
+                 enemy_list.append(classes.enemy.Enemy(sprite_dict["slime"], i.pos, ID = classes.enemy.enemy_ids["slime"], knockback = 25, hp = 5, anim_frames=(sprite_dict["slime"], sprite_dict["slime 2"],),key_item=i.key_item,dmg=2))
             elif (i.enemy_id == [0,2] and spawn_enemy):
-                 enemy_list.append(classes.enemy.Enemy(sprite_dict["corrupted golem 1"], i.pos, ID = classes.enemy.enemy_ids["corrupted golem"], knockback = 25, hp = 10, anim_frames=(sprite_dict["corrupted golem 1"], sprite_dict["corrupted golem 2"]), speed=1, point_drop=5, dmg=3, corpse="corrupted golem corpse", key_item=i.key_item))
+                 enemy_list.append(classes.enemy.Enemy(sprite_dict["corrupted golem 1"], i.pos, ID = classes.enemy.enemy_ids["corrupted golem"], knockback = 25, hp = 10, anim_frames=(sprite_dict["corrupted golem 1"], sprite_dict["corrupted golem 2"]), speed=1, point_drop=5, dmg=4, corpse="corrupted golem corpse", key_item=i.key_item))
         for i in self.walls:
             wall_list.append(i)
         if (spawn_pot == True):
