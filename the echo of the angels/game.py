@@ -88,7 +88,8 @@ sprites = {
                           "left":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_swordswing.png"), (20,30)), 90).convert_alpha(),
                           "right":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_swordswing.png"), (20,30)), 270).convert_alpha(),
                          },
-           "deathattack slice":(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),90).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),180).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),90).convert_alpha())
+           "deathattack slice":(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),90).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),180).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),90).convert_alpha()),
+           "loading":pygame.transform.scale(pygame.image.load("assets/hud/loading.png"), (50,50)).convert_alpha()
           }
 sprites["player left"].set_colorkey((255,255,255))
 sprites["player right"].set_colorkey((255,255,255))
@@ -144,6 +145,7 @@ sprites["deathattack slice"][0].set_colorkey((255,255,255))
 sprites["deathattack slice"][1].set_colorkey((255,255,255))
 sprites["deathattack slice"][2].set_colorkey((255,255,255))
 sprites["deathattack slice"][3].set_colorkey((255,255,255))
+sprites["loading"].set_colorkey((255,255,255))
 pygame.display.set_icon(sprites["player down"])
 cursor_rect = sprites["cursor"].get_rect()
 sound_effects = {
@@ -185,16 +187,20 @@ def intro():
     title = font.render("qkuldo presents...",True,(175,70,0))
     title_rect = title.get_rect(midtop=(300,100))
     surf.blit(title,title_rect)
-    time = 900
+    time = 1050
     while time>0:
         time -= clock.get_time()
         for event in pygame.event.get():
             if (event.type == pygame.QUIT):
                 pygame.quit()
                 sys.exit()
+        keys = pygame.key.get_pressed()
         screen.blit(surf, (0,0))
+        if (keys[pygame.K_SPACE]):
+            time = 0
         pygame.display.update()
         clock.tick(60)
+    fade()
 #---------------------
 def title():
     global cursor_rect
@@ -1406,7 +1412,28 @@ def fade():
             break
         surf.set_alpha(alpha)
         screen.blit(current_screen, (0,0))
-        screen.blit(surf,(0,0))
+        screen.blit(surf,(0,0)) 
+        pygame.display.update()
+        clock.tick(60)
+#--------------------
+def loadscreen():
+    cooldown = 0
+    duration = 1000
+    while duration>0:
+        screen.fill("black")
+        for event in pygame.event.get():
+            if (event.type == pygame.QUIT):
+                pygame.quit()
+                sys.exit()
+        duration -= clock.get_time()
+        if (cooldown > 0):
+            cooldown -= clock.get_time()
+        if (cooldown <= 0):
+            nload = pygame.transform.rotate(sprites["loading"],randint(-5,5)).convert_alpha()
+            cooldown = 100
+        else:
+            nload = sprites["loading"]
+        screen.blit(nload,(530,500))
         pygame.display.update()
         clock.tick(60)
 #--------------------
@@ -1432,9 +1459,11 @@ def fade2():
 #--------------------
 def gameloop():
     intro()
+    loadscreen()
     pygame.mouse.set_visible(False)
     while True:
         title()
         fade()
+        loadscreen()
         game()
 #--------------------
