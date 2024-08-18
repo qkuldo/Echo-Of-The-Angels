@@ -265,14 +265,17 @@ def title():
             clock.tick(60)
 #--------------------
 def checkfor_collision_dir(wall, player_x, player_y):
+    #udlr
+    dirlist = [False,False,False,False]
     if (player_x >= wall.pos[0]):
-        return "left"
-    elif (player_x < wall.pos[0]):
-        return "right"
-    elif (player_y > wall.pos[1]):
-        return "up"
-    elif (player_y < wall.pos[1]):
-        return "down"
+        dirlist[2] = True
+    if (player_y <= wall.pos[1]):
+        dirlist[0] = True
+    if (player_x <= wall.pos[0]):
+        dirlist[3] = True
+    if (player_y >= wall.pos[1]):
+        dirlist[1] = True
+    return dirlist
 #--------------------
 def gameover(coins, died_msg):
     current_bg = sprites["gameover 1"]
@@ -582,15 +585,15 @@ def game():
                 pygame.quit()
                 sys.exit()
             elif (event.type == player_gothit):
-                knockback = choice([-45,45])
-                if (knockback == -45 and not wall_r_rect.colliderect(player_hitbox)):
+                knockback = choice([-30,30])
+                if (knockback == -30 and not wall_r_rect.colliderect(player_hitbox)):
                     player_x -= knockback
-                if (knockback == 45 and not wall_l_rect.colliderect(player_hitbox)):
+                if (knockback == 30 and not wall_l_rect.colliderect(player_hitbox)):
                     player_x += knockback
-                knockback = choice([-45,45])
-                if (knockback == -45 and not wall_n_rect.colliderect(player_hitbox)):
+                knockback = choice([-30,30])
+                if (knockback == -30 and not wall_n_rect.colliderect(player_hitbox)):
                     player_y -= knockback
-                if (knockback == 45 and not wall_s_rect.colliderect(player_hitbox)):
+                if (knockback == 30 and not wall_s_rect.colliderect(player_hitbox)):
                     player_y += knockback
                 
                 current_notification = notification_font.render("You were hit!", True, (127, 98, 98))
@@ -1246,50 +1249,50 @@ def game():
             dropshadow(i.texture,i.pos,80,5)
             screen.blit(i.texture, i.pos)
             if (i.hitbox.colliderect(player_hitbox)):
-                 direction_of_collide = checkfor_collision_dir(i, player_hitbox.center[0], player_hitbox.center[1])
-                 if (direction_of_collide == "up"):
-                    player_y = i.hitbox.bottom
-                 if (direction_of_collide == "down"):
-                    player_y = i.hitbox.top - 50
-                 if (direction_of_collide == "left"):
-                    player_x = i.hitbox.midright[0]
-                 if (direction_of_collide == "right"):
-                    player_x = i.hitbox.midleft[0] - 50
+                 direction_of_collide = checkfor_collision_dir(i, player_x, player_y)
+                 if (direction_of_collide[1]):
+                    player_y += 5 
+                 if (direction_of_collide[0]):
+                    player_y -= 5
+                 if (direction_of_collide[2]):
+                    player_x += 5
+                 if (direction_of_collide[3]):
+                    player_x -= 5
             for j in enemies:
                 if (i.hitbox.colliderect(j.hitbox)):
-                 direction_of_collide = checkfor_collision_dir(i, j.hitbox.center[0], j.hitbox.center[1])
-                 if (direction_of_collide == "up"):
-                    j.pos[1] = i.hitbox.bottom
-                 if (direction_of_collide == "down"):
-                    j.pos[1] = i.hitbox.top - 50
-                 if (direction_of_collide == "left"):
-                    j.pos[0] = i.hitbox.midright[0]
-                 if (direction_of_collide == "right"):
-                    j.pos[0] = i.hitbox.midleft[0] - 50
+                 direction_of_collide = checkfor_collision_dir(i, j.pos[0], j.pos[1])
+                 if (direction_of_collide[1]):
+                    j.pos[1] += 5
+                 if (direction_of_collide[0]):
+                    j.pos[1] -= 5
+                 if (direction_of_collide[2]):
+                    j.pos[0] += 5
+                 if (direction_of_collide[3]):
+                    j.pos[0] -= 5
         for i in pot_list:
             dropshadow(i.texture,i.pos,80,5)
             screen.blit(i.texture, i.pos)
             if (i.hitbox.colliderect(player_hitbox)):
-                 direction_of_collide = checkfor_collision_dir(i, player_hitbox.center[0], player_hitbox.center[1])
-                 if (direction_of_collide == "up"):
-                    player_y = i.hitbox.bottom
-                 if (direction_of_collide == "down"):
-                    player_y = i.hitbox.top - 50
-                 if (direction_of_collide == "left"):
-                    player_x = i.hitbox.midright[0]
-                 if (direction_of_collide == "right"):
-                    player_x = i.hitbox.midleft[0] - 50
+                 direction_of_collide = checkfor_collision_dir(i, player_x, player_y)
+                 if (direction_of_collide[1]):
+                    player_y += 5
+                 if (direction_of_collide[0]):
+                    player_y -= 5
+                 if (direction_of_collide[2]):
+                    player_x += 5
+                 if (direction_of_collide[3]):
+                    player_x -= 5
             for j in enemies:
                 if (i.hitbox.colliderect(j.hitbox)):
-                 direction_of_collide = checkfor_collision_dir(i, player_hitbox.center[0], player_hitbox.center[1])
-                 if (direction_of_collide == "up"):
-                    j.pos[1] = i.hitbox.bottom
-                 if (direction_of_collide == "down"):
-                    j.pos[1] = i.hitbox.top - 50
-                 if (direction_of_collide == "left"):
-                    j.pos[0] = i.hitbox.midright[0]
-                 if (direction_of_collide == "right"):
-                    j.pos[0] = i.hitbox.midleft[0] - 50
+                 direction_of_collide = checkfor_collision_dir(i, j.pos[0], j.pos[1])
+                 if (direction_of_collide[1]):
+                    j.pos[1] += 5
+                 if (direction_of_collide[0]):
+                    j.pos[1] -= 5
+                 if (direction_of_collide[2]):
+                    j.pos[0] += 5
+                 if (direction_of_collide[3]):
+                    j.pos[0] -= 5
             if (sword_pause and i.hitbox.colliderect(sword_rect)):
                 screenshake_duration = 200
                 animations.append(classes.animation_effect.Effect((sprites["enemy death"][1], sprites["enemy death"][2], sprites["enemy death"][3]), 500, (i.pos[0], i.pos[1])))
