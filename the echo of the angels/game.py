@@ -424,7 +424,7 @@ def game():
                  "spawn room":classes.room.Room([classes.room.Spawner(classes.enemy.enemy_ids["slime"], [250, 300])], ["dungeon room 2", None, None, "dungeon room 3"]),
                  "dungeon room 2":classes.room.Room([classes.room.Spawner(classes.enemy.enemy_ids["slime"], [250, 300]), classes.room.Spawner(classes.enemy.enemy_ids["corrupted golem"], [390, 300])], [None, "spawn room", None, "dungeon room 4"]),
                  "dungeon room 4":classes.room.Room([classes.room.Spawner(classes.enemy.enemy_ids["slime"], [250, 300])], [classes.room.Lock("dungeon room 6"), "dungeon room 3", "dungeon room 2", "dungeon room 5"], [classes.room.Wall([200, 350], sprites["small wall2"]), classes.room.Wall([200, 300], sprites["small wall"])]),
-                 "dungeon room 3":classes.room.Room([], ["dungeon room 4", None, "spawn room", None], [classes.room.Wall([250, 290], sprites["small wall"]), classes.room.Wall([350, 300], sprites["small wall"])]),
+                 "dungeon room 3":classes.room.Room([], ["dungeon room 4", None, "spawn room", None], [classes.room.Wall([290, 290], sprites["small wall"]), classes.room.Wall([350, 300], sprites["small wall"])]),
                  "dungeon room 5":classes.room.Room([classes.room.Spawner(classes.enemy.enemy_ids["slime"], [300, 350], key_item="key"),classes.room.Spawner(classes.enemy.enemy_ids["slime"], [200, 350])], [None, None, "dungeon room 4", None], [classes.room.Wall([340, 230], sprites["small wall2"]), classes.room.Wall([240, 300], sprites["small wall"])]),
                  "dungeon room 6":classes.room.Room([], ["dungeon room 7", "dungeon room 4", None, None], pots=[classes.room.Pot([100, 350],texture=sprites["pot"]),classes.room.Pot([240,300],texture=sprites["pot"])]),
                  "dungeon room 7":classes.room.Room([],[None,"dungeon room 6", "dungeon room 8", None], pots=[classes.room.Pot([200, 355],texture=sprites["pot"]),classes.room.Pot([260,350],texture=sprites["pot"])]),
@@ -1251,13 +1251,13 @@ def game():
             screen.blit(i.texture, i.pos)
             if (i.hitbox.colliderect(player_hitbox)):
                  direction_of_collide = checkfor_collision_dir(i, player_x, player_y)
-                 if (direction_of_collide[1] and (main_dir == sprites["player up"] or main_dir == sprites["player up invincible"])):
+                 if (direction_of_collide[1] and updated_y):
                     player_y += 5 
-                 if (direction_of_collide[0] and (main_dir == sprites["player down"] or main_dir == sprites["player down invincible"])):
+                 if (direction_of_collide[0] and updated_y):
                     player_y -= 5
-                 if (direction_of_collide[2] and (main_dir == sprites["player left"] or main_dir == sprites["player left invincible"])):
+                 if (direction_of_collide[2] and updated_x):
                     player_x += 5
-                 if (direction_of_collide[3] and (main_dir == sprites["player right"] or main_dir == sprites["player right invincible"])):
+                 if (direction_of_collide[3] and updated_x):
                     player_x -= 5
             for j in enemies:
                 #uldr
@@ -1276,13 +1276,13 @@ def game():
             screen.blit(i.texture, i.pos)
             if (i.hitbox.colliderect(player_hitbox)):
                  direction_of_collide = checkfor_collision_dir(i, player_x, player_y)
-                 if (direction_of_collide[1] and (main_dir == sprites["player up"] or main_dir == sprites["player up invincible"])):
+                 if (direction_of_collide[1] and updated_y):
                     player_y += 5
-                 if (direction_of_collide[0] and (main_dir == sprites["player down"] or main_dir == sprites["player down invincible"])):
+                 if (direction_of_collide[0] and updated_y):
                     player_y -= 5
-                 if (direction_of_collide[2] and (main_dir == sprites["player left"] or main_dir == sprites["player left invincible"])):
+                 if (direction_of_collide[2] and updated_x):
                     player_x += 5
-                 if (direction_of_collide[3] and (main_dir == sprites["player right"] or main_dir == sprites["player right invincible"])):
+                 if (direction_of_collide[3] and updated_x):
                     player_x -= 5
             for j in enemies:
                 if (i.hitbox.colliderect(j.hitbox)):
