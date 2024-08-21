@@ -244,11 +244,11 @@ def title():
             current_bg = anim_frames[anim_index]
             screen.blit(current_bg, (0,0))
             if (start_rect.colliderect(cursor_rect)):
-                start_surf = button_font.render("[Load Game]", True, (178, 157, 157))
+                start_surf = button_font.render(">Load Game<", True, (178, 157, 157))
             else:
                 start_surf = button_font.render("-Load Game-", True, (127,98,98))
             if (new_rect.colliderect(cursor_rect)):
-                new_surf = button_font.render("[New Game]", True, (178, 157, 157))
+                new_surf = button_font.render(">New Game<", True, (178, 157, 157))
             else:
                 new_surf = button_font.render("-New Game-", True, (127,98,98))
             start_rect = start_surf.get_rect(midtop=(150, 200))
@@ -310,13 +310,13 @@ def gameover(coins, died_msg):
         back_to_game_rect = back_to_title_surf.get_rect(midtop=(300, 260))
         if (back_to_title_rect.colliderect(cursor_rect)):
             back_to_title_rect = back_to_title_surf.get_rect(midtop=(300, 200))
-            back_to_title_surf = button_font.render("[Return To Title Screen]", True, (255,255,255))
+            back_to_title_surf = button_font.render(">Return To Title Screen<", True, (255,255,255))
         else:
             back_to_title_rect = back_to_title_surf.get_rect(midtop=(300, 200))
             back_to_title_surf = button_font.render("-Return To Title Screen-", True, (255,255,255))
         if (back_to_game_rect.colliderect(cursor_rect)):
             back_to_game_rect = back_to_title_surf.get_rect(midtop=(300, 260))
-            back_to_game_surf = button_font.render("[Return To Last Save]", True, (255,255,255))
+            back_to_game_surf = button_font.render(">Return To Last Save<", True, (255,255,255))
         else:
             back_to_game_rect = back_to_title_surf.get_rect(midtop=(300, 260))
             back_to_game_surf = button_font.render("-Return To Last Save-", True, (255,255,255))
@@ -369,11 +369,11 @@ def pause(save_options):
             break
         screen.fill("black")
         if (resume_rect.colliderect(cursor_rect)):
-            resume_txt = button_font.render("[Resume]", True, (178, 157, 157))
+            resume_txt = button_font.render(">Resume<", True, (178, 157, 157))
         else:
             resume_txt = button_font.render("-Resume-", True, (127,98,98))
         if (save_rect.colliderect(cursor_rect)):
-            save_txt = button_font.render("[Save And Quit]", True, (178, 157, 157))
+            save_txt = button_font.render(">Save And Quit<", True, (178, 157, 157))
         else:
             save_txt = button_font.render("-Save And Quit-", True, (127,98,98))
         resume_rect = resume_txt.get_rect(midtop=(300,200))
@@ -1214,7 +1214,9 @@ def game():
                     enemy_damage = (i.dmg*2) + randint(0,2)
                     player_stats["hp"] -= enemy_damage
                     combat_text.append([combat_text_font.render(f"-{enemy_damage} HP", True, (15, 215, 255)),[i.pos[0],i.pos[1]], 500])
+                    screenshake_duration = 400
                 else:
+                    screenshake_duration = 200
                     enemy_damage = i.dmg + randint(0,2)
                     player_stats["hp"] -= enemy_damage
                     combat_text.append([combat_text_font.render(f"-{enemy_damage} HP", True, (15, 15, 255)),[player_x, player_y], 500])
