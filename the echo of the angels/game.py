@@ -519,53 +519,73 @@ def game():
                 player_blitscreen = main_dir
                 if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
                     player_x -= player_stats["speed"]
+                    updated_x = True
                 if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
                     player_x += player_stats["speed"]
+                    updated_x = True
                 if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
                     player_y -= player_stats["speed"]
+                    updated_y = True
                 if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
                     player_y += player_stats["speed"]
+                    updated_y = True
             if (222 >= dash_duration > 148):
                 if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
                     player_x -= player_stats["speed"]*2
                     player_blitscreen = pygame.transform.scale(main_dir,(70,25))
+                    updated_x = True
                 if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
                     player_x += player_stats["speed"]*2
+                    updated_x = True
                     player_blitscreen = pygame.transform.scale(main_dir,(70,25))
                 if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
                     player_blitscreen = pygame.transform.scale(main_dir,(25,70))
                     player_y -= player_stats["speed"]*2
+                    updated_y = True
                 if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
                     player_blitscreen = pygame.transform.scale(main_dir,(25,70))
                     player_y += player_stats["speed"]*2
+                    updated_y = True
             if (148 >= dash_duration > 111):
                 if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
                     player_x -= player_stats["speed"]*2.5
+                    updated_x = True
                 if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
                     player_x += player_stats["speed"]*2.5
+                    updated_x = True
                 if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
                     player_y -= player_stats["speed"]*2.5
+                    updated_y = True
                 if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
                     player_y += player_stats["speed"]*2.5
+                    updated_y = True
             if (111 >= dash_duration > 74):
                 if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
                     player_x -= player_stats["speed"]*2
+                    updated_x = True
                 if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
                     player_x += player_stats["speed"]*2
+                    updated_x = True
                 if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
                     player_y -= player_stats["speed"]*2
+                    updated_y = True
                 if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
                     player_y += player_stats["speed"]*2
+                    updated_y = True
             else:
                 player_blitscreen = main_dir
                 if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
                     player_x -= player_stats["speed"]
+                    updated_x = True
                 if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
                     player_x += player_stats["speed"]
+                    updated_x = True
                 if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
                     player_y -= player_stats["speed"]
+                    updated_y = True
                 if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
                     player_y += player_stats["speed"]
+                    updated_y = True
             player_blitscreen.set_colorkey((255,255,255))
         if (invincibility_frames > 0):
             invincibility_frames -= 1
