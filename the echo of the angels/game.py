@@ -68,7 +68,7 @@ sprites = {
            "pot":pygame.transform.scale(pygame.image.load("assets/pot.png"),(40,40)).convert_alpha(),
            "alert":pygame.transform.scale(pygame.image.load("assets/alert.png"),(20,20)).convert_alpha(),
            "damage particle":pygame.transform.scale(pygame.image.load("assets/particle/damage_particle.png"),(20,20)).convert_alpha(),
-           "game bg":pygame.transform.scale(pygame.image.load("assets/background.png"), (600,510)).convert_alpha(),
+           "game bg":pygame.transform.scale(pygame.image.load("assets/background.png"), pyautogui.size()).convert_alpha(),
            "qk":pygame.transform.scale(pygame.image.load("assets/qkuldo.png"), (100,100)).convert_alpha(),
            "small wall2":pygame.transform.scale(pygame.image.load("assets/small_wall2.png"), (25,25)).convert_alpha(),
            "barricaded door":pygame.transform.scale(pygame.image.load("assets/barricaded_door.png"), (35,30)).convert_alpha(),
@@ -202,9 +202,12 @@ def intro():
             time = 0
         if (WIN.get_width() != pyautogui.size()[0]):
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+            temprect = temp.get_rect(x=0,y=0)
         else:
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
-        WIN.blit(temp,(0,0))
+            temprect = temp.get_rect(midtop=(pyautogui.size()[0]/2,0))
+            WIN.blit(sprites["game bg"], (0, 90))
+        WIN.blit(temp,temprect)
         pygame.display.update()
         clock.tick(60)
     fade()
@@ -267,9 +270,12 @@ def title():
                 screen.blit(sprites["cursor"], cursor_rect)
             if (WIN.get_width() != pyautogui.size()[0]):
                 temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+                temprect = temp.get_rect(x=0,y=0)
             else:
                 temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
-            WIN.blit(temp,(0,0))
+                temprect = temp.get_rect(midtop=(pyautogui.size()[0]/2,0))
+                WIN.blit(sprites["game bg"], (0, 90))
+            WIN.blit(temp,temprect)
             pygame.display.update()
             if (transition):
                 fade2()
@@ -349,9 +355,12 @@ def gameover(coins, died_msg):
             screen.blit(sprites["cursor"], cursor_rect)
         if (WIN.get_width() != pyautogui.size()[0]):
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+            temprect = temp.get_rect(x=0,y=0)
         else:
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
-        WIN.blit(temp,(0,0))
+            temprect = temp.get_rect(midtop=(pyautogui.size()[0]/2,0))
+            WIN.blit(sprites["game bg"], (0, 90))
+        WIN.blit(temp,temprect)
         clock.tick(60)
         pygame.display.update()
 #--------------------
@@ -401,9 +410,12 @@ def pause(save_options):
         screen.blit(sprites["cursor"], cursor_rect)
         if (WIN.get_width() != pyautogui.size()[0]):
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+            temprect = temp.get_rect(x=0,y=0)
         else:
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
-        WIN.blit(temp,(0,0))
+            temprect = temp.get_rect(midtop=(pyautogui.size()[0]/2,0))
+            WIN.blit(sprites["game bg"], (0, 90))
+        WIN.blit(temp,temprect)
         clock.tick(60)
         pygame.display.update()
     return False
@@ -887,7 +899,6 @@ def game():
         footsteps.pos = [player_hitbox.midbottom[0], player_hitbox.midbottom[1]-20]
         dash_particle.pos = [player_hitbox.midbottom[0], player_hitbox.midbottom[1]-20]
         sword_cooldown += clock.get_time()
-        screen.blit(sprites["game bg"], (0, 90))
         screen.blit(sprites["floor"], (50, 200))
         if (current_room == "spawn room"):
             screen.blit(tut_1, (150,300))
@@ -1432,9 +1443,12 @@ def game():
              screen.blit(sprites["cursor"], cursor_rect)
         if (WIN.get_width() != pyautogui.size()[0]):
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+            temprect = temp.get_rect(x=0,y=0)
         else:
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
-        WIN.blit(temp,(0,0))
+            temprect = temp.get_rect(midtop=(pyautogui.size()[0]/2,0))
+            WIN.blit(sprites["game bg"], (0, 90))
+        WIN.blit(temp,temprect)
         pygame.display.update()
         if (death_delay):
             if (shift_attack):
@@ -1467,11 +1481,16 @@ def fade():
         surf.set_alpha(alpha)
         screen.blit(current_screen, (0,0))
         screen.blit(surf,(0,0))
+        if (pygame.mouse.get_focused()):
+            screen.blit(sprites["cursor"], cursor_rect)
         if (WIN.get_width() != pyautogui.size()[0]):
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+            temprect = temp.get_rect(x=0,y=0)
         else:
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
-        WIN.blit(temp,(0,0))
+            temprect = temp.get_rect(midtop=(pyautogui.size()[0]/2,0))
+            WIN.blit(sprites["game bg"], (0, 90))
+        WIN.blit(temp,temprect)
         pygame.display.update()
         clock.tick(60)
 #--------------------
@@ -1493,11 +1512,16 @@ def loadscreen():
         else:
             nload = sprites["loading"]
         screen.blit(nload,(530,500))
+        if (pygame.mouse.get_focused()):
+            screen.blit(sprites["cursor"], cursor_rect)
         if (WIN.get_width() != pyautogui.size()[0]):
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+            temprect = temp.get_rect(x=0,y=0)
         else:
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
-        WIN.blit(temp,(0,0))
+            temprect = temp.get_rect(midtop=(pyautogui.size()[0]/2,0))
+            WIN.blit(sprites["game bg"], (0, 90))
+        WIN.blit(temp,temprect)
         pygame.display.update()
         clock.tick(60)
 #--------------------
@@ -1518,11 +1542,16 @@ def fade2():
         surf.set_alpha(alpha)
         screen.blit(current_screen, (0,0))
         screen.blit(surf,(0,0))
+        if (pygame.mouse.get_focused()):
+            screen.blit(sprites["cursor"], cursor_rect)
         if (WIN.get_width() != pyautogui.size()[0]):
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+            temprect = temp.get_rect(x=0,y=0)
         else:
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
-        WIN.blit(temp,(0,0))
+            temprect = temp.get_rect(midtop=(pyautogui.size()[0]/2,0))
+            WIN.blit(sprites["game bg"], (0, 90))
+        WIN.blit(temp,temprect)
         pygame.display.update()
         clock.tick(60)
 #--------------------
