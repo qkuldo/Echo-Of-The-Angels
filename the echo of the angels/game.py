@@ -6,10 +6,12 @@ from random import choice
 import json
 import os
 import copy
+import pyautogui
 #---------------------
 pygame.init()
 pygame.mixer.init()
-screen = pygame.display.set_mode((600,600))
+WIN = pygame.display.set_mode((600,600),flags=pygame.RESIZABLE)
+screen = pygame.Surface((600,600))
 clock = pygame.time.Clock()
 pygame.display.set_caption("The Echo of The Angels")
 sprites = {
@@ -198,6 +200,11 @@ def intro():
         screen.blit(surf, (0,0))
         if (keys[pygame.K_SPACE]):
             time = 0
+        if (WIN.get_width() != pyautogui.size()[0]):
+            temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+        else:
+            temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
+        WIN.blit(temp,(0,0))
         pygame.display.update()
         clock.tick(60)
     fade()
@@ -258,6 +265,11 @@ def title():
             screen.blit(new_surf, new_rect)
             if (pygame.mouse.get_focused()):
                 screen.blit(sprites["cursor"], cursor_rect)
+            if (WIN.get_width() != pyautogui.size()[0]):
+                temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+            else:
+                temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
+            WIN.blit(temp,(0,0))
             pygame.display.update()
             if (transition):
                 fade2()
@@ -335,6 +347,11 @@ def gameover(coins, died_msg):
         screen.blit(back_to_game_surf, back_to_game_rect)
         if (pygame.mouse.get_focused()):
             screen.blit(sprites["cursor"], cursor_rect)
+        if (WIN.get_width() != pyautogui.size()[0]):
+            temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+        else:
+            temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
+        WIN.blit(temp,(0,0))
         clock.tick(60)
         pygame.display.update()
 #--------------------
@@ -382,6 +399,11 @@ def pause(save_options):
         screen.blit(resume_txt, resume_rect)
         screen.blit(save_txt, save_rect)
         screen.blit(sprites["cursor"], cursor_rect)
+        if (WIN.get_width() != pyautogui.size()[0]):
+            temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+        else:
+            temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
+        WIN.blit(temp,(0,0))
         clock.tick(60)
         pygame.display.update()
     return False
@@ -1408,6 +1430,11 @@ def game():
             screenshake()
         if (pygame.mouse.get_focused()):
              screen.blit(sprites["cursor"], cursor_rect)
+        if (WIN.get_width() != pyautogui.size()[0]):
+            temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+        else:
+            temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
+        WIN.blit(temp,(0,0))
         pygame.display.update()
         if (death_delay):
             if (shift_attack):
@@ -1439,7 +1466,12 @@ def fade():
             break
         surf.set_alpha(alpha)
         screen.blit(current_screen, (0,0))
-        screen.blit(surf,(0,0)) 
+        screen.blit(surf,(0,0))
+        if (WIN.get_width() != pyautogui.size()[0]):
+            temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+        else:
+            temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
+        WIN.blit(temp,(0,0))
         pygame.display.update()
         clock.tick(60)
 #--------------------
@@ -1461,6 +1493,11 @@ def loadscreen():
         else:
             nload = sprites["loading"]
         screen.blit(nload,(530,500))
+        if (WIN.get_width() != pyautogui.size()[0]):
+            temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+        else:
+            temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
+        WIN.blit(temp,(0,0))
         pygame.display.update()
         clock.tick(60)
 #--------------------
@@ -1481,6 +1518,11 @@ def fade2():
         surf.set_alpha(alpha)
         screen.blit(current_screen, (0,0))
         screen.blit(surf,(0,0))
+        if (WIN.get_width() != pyautogui.size()[0]):
+            temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+        else:
+            temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
+        WIN.blit(temp,(0,0))
         pygame.display.update()
         clock.tick(60)
 #--------------------
