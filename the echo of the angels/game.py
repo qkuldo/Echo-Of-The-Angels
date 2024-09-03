@@ -1088,21 +1088,21 @@ def game():
                     i.state = "chase"
                     combat_text.append([sprites["alert"],[i.pos[0],i.pos[1]], 200])
             elif (i.state == "chase"):
-                if (i.pos[0] > player_x and not i.hitbox.colliderect(wall_r_rect)):
+                if (i.pos[0] > player_x+randint(-50,50) and not i.hitbox.colliderect(wall_r_rect)):
                     i.pos[0] -= i.speed
                     i.direction = 0
                     enemy_moved_x = True
-                if (i.pos[0] < player_x and not i.hitbox.colliderect(wall_l_rect)):
+                if (i.pos[0] < player_x+randint(-50,50) and not i.hitbox.colliderect(wall_l_rect)):
                     i.pos[0] += i.speed
                     i.direction = 2
                     enemy_moved_x = True
-                if (i.pos[1] > player_y and not i.hitbox.colliderect(wall_n_rect)):
+                if (i.pos[1] > player_y+randint(-50,50) and not i.hitbox.colliderect(wall_n_rect)):
                     if (enemy_moved_x):
                         i.pos[1] -= i.speed/2
                     else:
                         i.pos[1] -= i.speed
                     i.direction = 1
-                if (i.pos[1] < player_x and not i.hitbox.colliderect(wall_s_rect)):
+                if (i.pos[1] < player_x+randint(-50,50) and not i.hitbox.colliderect(wall_s_rect)):
                     if (enemy_moved_x):
                         i.pos[1] += i.speed/2
                     else:
@@ -1112,21 +1112,21 @@ def game():
                 i.runaway -= clock.get_time()
                 if (i.runaway <= 0):
                     i.state = "chase"
-                if (i.pos[0] < player_x and not i.hitbox.colliderect(wall_r_rect)):
+                if (i.pos[0] < player_x+randint(-50,50) and not i.hitbox.colliderect(wall_r_rect)):
                     i.pos[0] -= i.speed
                     i.direction = 0
                     enemy_moved_x = True
-                if (i.pos[0] > player_x and not i.hitbox.colliderect(wall_l_rect)):
+                if (i.pos[0] > player_x+randint(-50,50) and not i.hitbox.colliderect(wall_l_rect)):
                     i.pos[0] += i.speed
                     i.direction = 2
                     enemy_moved_x = True
-                if (i.pos[1] < player_y and not i.hitbox.colliderect(wall_n_rect)):
+                if (i.pos[1] < player_y+randint(-50,50) and not i.hitbox.colliderect(wall_n_rect)):
                     if (enemy_moved_x):
                         i.pos[1] -= i.speed/2
                     else:
                         i.pos[1] -= i.speed
                     i.direction = 1
-                if (i.pos[1] > player_x and not i.hitbox.colliderect(wall_s_rect)):
+                if (i.pos[1] > player_x+randint(-50,50) and not i.hitbox.colliderect(wall_s_rect)):
                     if (enemy_moved_x):
                         i.pos[1] += i.speed/2
                     else:
