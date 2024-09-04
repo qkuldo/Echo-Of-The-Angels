@@ -91,7 +91,8 @@ sprites = {
                           "right":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_swordswing.png"), (20,30)), 270).convert_alpha(),
                          },
            "deathattack slice":(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),90).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),180).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),90).convert_alpha()),
-           "loading":pygame.transform.scale(pygame.image.load("assets/hud/loading.png"), (50,50)).convert_alpha()
+           "loading":pygame.transform.scale(pygame.image.load("assets/hud/loading.png"), (50,50)).convert_alpha(),
+           "hud dmg":pygame.transform.scale(pygame.image.load("assets/hud/hud_dmg.png"), (600, 90)).convert_alpha()
           }
 sprites["player left"].set_colorkey((255,255,255))
 sprites["player right"].set_colorkey((255,255,255))
@@ -845,6 +846,7 @@ def game():
         if (keys[pygame.K_s]):
             current_notification = notification_font.render("Game saved!",True, (127,98,98))
             notification_rect = current_notification.get_rect(midtop=(200, 450))
+            save({"pos":{"x":player_x, "y":player_y}, "room":current_room, "stats":player_stats, "respawn timer":respawn_timer})
         if (keys[pygame.K_ESCAPE]):
             while_break = pause({"pos":{"x":player_x, "y":player_y}, "room":current_room, "stats":player_stats, "respawn timer":respawn_timer})
         if (resting and time_till_wakeup <= 0):
@@ -1422,8 +1424,13 @@ def game():
                 i.draw(screen)
                 if (i.lifetime <= 0):
                     animations.remove(i)
-        dropshadow(sprites["hud bg"],(0,0),80,5)
-        screen.blit(sprites["hud bg"], (0, 0))
+        if (screenshake_duration > 0):
+            screenshake()
+            dropshadow(sprites["hud dmg"],(0,0),80,5)
+            screen.blit(sprites["hud dmg"], (0,0))
+        else:
+            dropshadow(sprites["hud bg"],(0,0),80,5)
+            screen.blit(sprites["hud bg"], (0, 0))
         dropshadow(sprites["coin icon"],(30,30),80,5)
         screen.blit(sprites["coin icon"], (30, 30))
         dropshadow(sprites["key icon"],(400,30),80,5)
@@ -1437,8 +1444,6 @@ def game():
         pygame.draw.rect(screen, (219, 182,182), border_rect)
         pygame.draw.rect(screen, (142, 98, 98), hp_rect)
         pygame.draw.rect(screen, (255,98,98), lost_hp_rect)
-        if (screenshake_duration > 0):
-            screenshake()
         if (pygame.mouse.get_focused()):
              screen.blit(sprites["cursor"], cursor_rect)
         if (WIN.get_width() != pyautogui.size()[0]):
