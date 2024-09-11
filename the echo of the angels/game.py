@@ -284,15 +284,15 @@ def title():
             clock.tick(60)
 #--------------------
 def checkfor_collision_dir(wall, player_x, player_y):
-    #udlr
+    #dulr
     dirlist = [False,False,False,False]
     if (player_x >= wall.pos[0]):
         dirlist[2] = True
-    if (player_y <= wall.pos[1]):
+    elif (player_y <= wall.pos[1]):
         dirlist[0] = True
     if (player_x <= wall.pos[0]):
         dirlist[3] = True
-    if (player_y >= wall.pos[1]):
+    elif (player_y >= wall.pos[1]):
         dirlist[1] = True
     return dirlist
 #--------------------
@@ -531,6 +531,8 @@ def game():
     death_delay = False
     current_deathattack_target = -1
     lost_hp = 0
+    player_dx = 0
+    player_dy = 0
     while True:
         coin_surf = hud_font.render("x"+str(player_stats["gold"]), True, (255,255,255))
         key_surf = hud_font.render("x"+str(player_stats["keys"]), True, (255,255,255))
@@ -553,73 +555,73 @@ def game():
             if (296 >= dash_duration > 222):
                 player_blitscreen = main_dir
                 if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
-                    player_x -= player_stats["speed"]
+                    player_dx -= player_stats["speed"]
                     updated_x = True
                 if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
-                    player_x += player_stats["speed"]
+                    player_dx += player_stats["speed"]
                     updated_x = True
                 if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
-                    player_y -= player_stats["speed"]
+                    player_dy -= player_stats["speed"]
                     updated_y = True
                 if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
-                    player_y += player_stats["speed"]
+                    player_dy += player_stats["speed"]
                     updated_y = True
             if (222 >= dash_duration > 148):
                 if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
-                    player_x -= player_stats["speed"]*2
+                    player_dx -= player_stats["speed"]*2
                     player_blitscreen = pygame.transform.scale(main_dir,(70,25))
                     updated_x = True
                 if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
-                    player_x += player_stats["speed"]*2
+                    player_dx += player_stats["speed"]*2
                     updated_x = True
                     player_blitscreen = pygame.transform.scale(main_dir,(70,25))
                 if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
                     player_blitscreen = pygame.transform.scale(main_dir,(25,70))
-                    player_y -= player_stats["speed"]*2
+                    player_dy -= player_stats["speed"]*2
                     updated_y = True
                 if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
                     player_blitscreen = pygame.transform.scale(main_dir,(25,70))
-                    player_y += player_stats["speed"]*2
+                    player_dy += player_stats["speed"]*2
                     updated_y = True
             if (148 >= dash_duration > 111):
                 if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
-                    player_x -= player_stats["speed"]*2.5
+                    player_dx -= player_stats["speed"]*2.5
                     updated_x = True
                 if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
-                    player_x += player_stats["speed"]*2.5
+                    player_dx += player_stats["speed"]*2.5
                     updated_x = True
                 if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
-                    player_y -= player_stats["speed"]*2.5
+                    player_dy -= player_stats["speed"]*2.5
                     updated_y = True
                 if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
-                    player_y += player_stats["speed"]*2.5
+                    player_dy += player_stats["speed"]*2.5
                     updated_y = True
             if (111 >= dash_duration > 74):
                 if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
-                    player_x -= player_stats["speed"]*2
+                    player_dx -= player_stats["speed"]*2
                     updated_x = True
                 if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
-                    player_x += player_stats["speed"]*2
+                    player_dx += player_stats["speed"]*2
                     updated_x = True
                 if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
-                    player_y -= player_stats["speed"]*2
+                    player_dy -= player_stats["speed"]*2
                     updated_y = True
                 if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
-                    player_y += player_stats["speed"]*2
+                    player_dy += player_stats["speed"]*2
                     updated_y = True
             else:
                 player_blitscreen = main_dir
                 if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
-                    player_x -= player_stats["speed"]
+                    player_dx -= player_stats["speed"]
                     updated_x = True
                 if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
-                    player_x += player_stats["speed"]
+                    player_dx += player_stats["speed"]
                     updated_x = True
                 if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
-                    player_y -= player_stats["speed"]
+                    player_dy -= player_stats["speed"]
                     updated_y = True
                 if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
-                    player_y += player_stats["speed"]
+                    player_dy += player_stats["speed"]
                     updated_y = True
             player_blitscreen.set_colorkey((255,255,255))
         if (invincibility_frames > 0):
@@ -642,14 +644,14 @@ def game():
             elif (event.type == player_gothit):
                 knockback = choice([-30,30])
                 if (knockback == -30 and not wall_r_rect.colliderect(player_hitbox)):
-                    player_x -= knockback
+                    player_dx -= knockback
                 if (knockback == 30 and not wall_l_rect.colliderect(player_hitbox)):
-                    player_x += knockback
+                    player_dx += knockback
                 knockback = choice([-30,30])
                 if (knockback == -30 and not wall_n_rect.colliderect(player_hitbox)):
-                    player_y -= knockback
+                    player_dy -= knockback
                 if (knockback == 30 and not wall_s_rect.colliderect(player_hitbox)):
-                    player_y += knockback
+                    player_dy += knockback
                 
                 current_notification = notification_font.render("You were hit!", True, (127, 98, 98))
                 notification_rect = current_notification.get_rect(midtop=(200, 450))
@@ -682,7 +684,7 @@ def game():
             
             if ((keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and dash):
                 screenshake_duration = 200
-                player_y -= player_stats["speed"]*2
+                player_dy -= player_stats["speed"]*2
                 dash = False
                 invincibility_frames = 20
                 dash_duration = 370
@@ -693,7 +695,7 @@ def game():
                     dash_particle.particlelist[-1].velocity_y = 2
                     dash_particle.particlelist[-1].velocity_x = 0
             else:
-                player_y -= player_stats["speed"]
+                player_dy -= player_stats["speed"]
             main_dir = sprites["player up"]
             if (randint(1,3) == 2):
                  footsteps.spawn_particle()
@@ -703,7 +705,7 @@ def game():
             
             if ((keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and dash):
                 screenshake_duration = 200
-                player_y += player_stats["speed"]*2
+                player_dy += player_stats["speed"]*2
                 dash = False
                 invincibility_frames = 20
                 dash_duration = 370
@@ -714,7 +716,7 @@ def game():
                     dash_particle.particlelist[-1].velocity_y = -2
                     dash_particle.particlelist[-1].velocity_x = 0
             else:
-                player_y += player_stats["speed"]
+                player_dy += player_stats["speed"]
             main_dir = sprites["player down"]
             if (randint(1,3) == 2):
                  footsteps.spawn_particle()
@@ -724,7 +726,7 @@ def game():
             
             if ((keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and dash):
                 screenshake_duration = 200
-                player_x += player_stats["speed"]*2
+                player_dx += player_stats["speed"]*2
                 dash = not dash
                 invincibility_frames = 20
                 dash_duration = 370
@@ -736,9 +738,9 @@ def game():
                     dash_particle.particlelist[-1].velocity_y = 0
             else:
                 if (updated_y):
-                    player_x += player_stats["speed"]/2
+                    player_dx += player_stats["speed"]/2
                 else:
-                    player_x += player_stats["speed"]
+                    player_dx += player_stats["speed"]
             main_dir = sprites["player right"]
             if (randint(1,3) == 2):
                  footsteps.spawn_particle()
@@ -747,7 +749,7 @@ def game():
             updated_x = True
             
             if ((keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and dash):
-                player_x -= player_stats["speed"]*2
+                player_dx -= player_stats["speed"]*2
                 dash = not dash
                 invincibility_frames = 100
                 screenshake_duration = 200
@@ -760,9 +762,9 @@ def game():
                     dash_particle.particlelist[-1].velocity_y = 0
             else:
                 if (updated_y):
-                    player_x -= player_stats["speed"]/2
+                    player_dx -= player_stats["speed"]/2
                 else:
-                    player_x -= player_stats["speed"]
+                    player_dx -= player_stats["speed"]
             main_dir = sprites["player left"]
             if (randint(1,3) == 2):
                  footsteps.spawn_particle()
@@ -915,6 +917,67 @@ def game():
             plant.move(clock)
             dropshadow(plant.texture,plant.pos,80,5)
             plant.draw(screen)
+        for i in wall_list:
+            dropshadow(i.texture,i.pos,80,5)
+            screen.blit(i.texture, i.pos)
+            if (i.hitbox.colliderect(player_hitbox)):
+                 direction_of_collide = checkfor_collision_dir(i, player_x, player_y)
+                 if (direction_of_collide[0] and updated_y):
+                    player_dy *= -1
+                 else:
+                    player_dy *= -1
+                 if (direction_of_collide[2] and updated_x):
+                    player_dx *= -1
+                 else:
+                    player_dx *= 1
+            for j in enemies:
+                #uldr
+                if (i.hitbox.colliderect(j.hitbox)):
+                 direction_of_collide = checkfor_collision_dir(i, j.pos[0], j.pos[1])
+                 if (direction_of_collide[1] and j.direction == 0):
+                    j.pos[1] += 5
+                 if (direction_of_collide[0] and j.direction == 2):
+                    j.pos[1] -= 5
+                 if (direction_of_collide[2] and j.direction == 1):
+                    j.pos[0] += 5
+                 if (direction_of_collide[3] and j.direction == 3):
+                    j.pos[0] -= 5
+        for i in pot_list:
+            dropshadow(i.texture,i.pos,80,5)
+            screen.blit(i.texture, i.pos)
+            if (i.hitbox.colliderect(player_hitbox)):
+                 direction_of_collide = checkfor_collision_dir(i, player_x, player_y)
+                 if ((direction_of_collide[0] or direction_of_collide[1]) and updated_y):
+                    player_dy = 0
+                 if ((direction_of_collide[2] or direction_of_collide[3]) and updated_x):
+                    player_dx = 0
+            for j in enemies:
+                if (i.hitbox.colliderect(j.hitbox)):
+                 direction_of_collide = checkfor_collision_dir(i, j.pos[0], j.pos[1])
+                 if (direction_of_collide[1] and j.direction == 0):
+                    j.pos[1] += 5
+                 if (direction_of_collide[0] and j.direction == 2):
+                    j.pos[1] -= 5
+                 if (direction_of_collide[2] and j.direction == 1):
+                    j.pos[0] += 5
+                 if (direction_of_collide[3] and j.direction == 3):
+                    j.pos[0] -= 5
+            if (sword_pause and i.hitbox.colliderect(sword_rect)):
+                screenshake_duration = 200
+                animations.append(classes.animation_effect.Effect((sprites["enemy death"][1], sprites["enemy death"][2], sprites["enemy death"][3]), 500, (i.pos[0], i.pos[1])))
+                sound_effects["defeat enemy"].play()
+                drop = choice(i.drops)
+                if (drop != None and drop[0] == "coins"):
+                    player_stats["gold"] += drop[1]
+                    combat_text.append([combat_text_font.render(f"+{drop[1]} coins", True, (255, 196, 98)),[i.pos[0],i.pos[1]], 500])
+                for j in range(player_stats["attack"]):
+                    damage_particle.pos = [player_hitbox.center[0]+randint(-20,20), player_hitbox.center[1]+randint(-20,20)]
+                    damage_particle.spawn_particle()
+                    damage_particle.particlelist[-1].velocity_x += choice([-1,1])
+                    damage_particle.particlelist[-1].velocity_y += choice([-1,1])
+                pot_list.remove(i)
+        player_x += player_dx
+        player_y += player_dy
         if (not in_door):
             dropshadow(player_blitscreen,(player_x,player_y),80,5)
             screen.blit(player_blitscreen, (player_x,player_y))
@@ -1303,69 +1366,6 @@ def game():
                       screen.blit(pygame.transform.rotate(sprites["barricaded door"], 90), (i[0]-30, i[1]))
                 else:    
                       screen.blit(sprites["barricaded door"], i)
-        for i in wall_list:
-            dropshadow(i.texture,i.pos,80,5)
-            screen.blit(i.texture, i.pos)
-            if (i.hitbox.colliderect(player_hitbox)):
-                 direction_of_collide = checkfor_collision_dir(i, player_x, player_y)
-                 if (direction_of_collide[1] and updated_y):
-                    player_y += 5 
-                 if (direction_of_collide[0] and updated_y):
-                    player_y -= 5
-                 if (direction_of_collide[2] and updated_x):
-                    player_x += 5
-                 if (direction_of_collide[3] and updated_x):
-                    player_x -= 5
-            for j in enemies:
-                #uldr
-                if (i.hitbox.colliderect(j.hitbox)):
-                 direction_of_collide = checkfor_collision_dir(i, j.pos[0], j.pos[1])
-                 if (direction_of_collide[1] and j.direction == 0):
-                    j.pos[1] += 5
-                 if (direction_of_collide[0] and j.direction == 2):
-                    j.pos[1] -= 5
-                 if (direction_of_collide[2] and j.direction == 1):
-                    j.pos[0] += 5
-                 if (direction_of_collide[3] and j.direction == 3):
-                    j.pos[0] -= 5
-        for i in pot_list:
-            dropshadow(i.texture,i.pos,80,5)
-            screen.blit(i.texture, i.pos)
-            if (i.hitbox.colliderect(player_hitbox)):
-                 direction_of_collide = checkfor_collision_dir(i, player_x, player_y)
-                 if (direction_of_collide[1] and updated_y):
-                    player_y += 5
-                 if (direction_of_collide[0] and updated_y):
-                    player_y -= 5
-                 if (direction_of_collide[2] and updated_x):
-                    player_x += 5
-                 if (direction_of_collide[3] and updated_x):
-                    player_x -= 5
-            for j in enemies:
-                if (i.hitbox.colliderect(j.hitbox)):
-                 direction_of_collide = checkfor_collision_dir(i, j.pos[0], j.pos[1])
-                 if (direction_of_collide[1] and j.direction == 0):
-                    j.pos[1] += 5
-                 if (direction_of_collide[0] and j.direction == 2):
-                    j.pos[1] -= 5
-                 if (direction_of_collide[2] and j.direction == 1):
-                    j.pos[0] += 5
-                 if (direction_of_collide[3] and j.direction == 3):
-                    j.pos[0] -= 5
-            if (sword_pause and i.hitbox.colliderect(sword_rect)):
-                screenshake_duration = 200
-                animations.append(classes.animation_effect.Effect((sprites["enemy death"][1], sprites["enemy death"][2], sprites["enemy death"][3]), 500, (i.pos[0], i.pos[1])))
-                sound_effects["defeat enemy"].play()
-                drop = choice(i.drops)
-                if (drop != None and drop[0] == "coins"):
-                    player_stats["gold"] += drop[1]
-                    combat_text.append([combat_text_font.render(f"+{drop[1]} coins", True, (255, 196, 98)),[i.pos[0],i.pos[1]], 500])
-                for j in range(player_stats["attack"]):
-                    damage_particle.pos = [player_hitbox.center[0]+randint(-20,20), player_hitbox.center[1]+randint(-20,20)]
-                    damage_particle.spawn_particle()
-                    damage_particle.particlelist[-1].velocity_x += choice([-1,1])
-                    damage_particle.particlelist[-1].velocity_y += choice([-1,1])
-                pot_list.remove(i)
         if (player_stats["hp"] <= 0):
             pygame.event.post(pygame.event.Event(player_death))
         if (invincibility_frames > 0):
@@ -1468,6 +1468,8 @@ def game():
         moved = False
         updated_x = False
         updated_y = False
+        player_dx = 0
+        player_dy = 0
 #--------------------
 def fade():
     current_screen = screen.copy()
