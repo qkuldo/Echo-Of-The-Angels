@@ -533,6 +533,7 @@ def game():
     lost_hp = 0
     player_dx = 0
     player_dy = 0
+    pressed_space = False
     while True:
         coin_surf = hud_font.render("x"+str(player_stats["gold"]), True, (255,255,255))
         key_surf = hud_font.render("x"+str(player_stats["keys"]), True, (255,255,255))
@@ -917,6 +918,192 @@ def game():
             plant.move(clock)
             dropshadow(plant.texture,plant.pos,80,5)
             plant.draw(screen)
+        for i in enemies:
+            enemy_moved_x = False
+            i.hitbox = i.texture.get_rect(x=i.pos[0], y=i.pos[1])
+            if (i.cooldown > 0):
+                i.cooldown -= clock.get_time()
+            if (i.inv_frames > 0):
+                i.inv_frames -= 1
+                if (i.ID == [0,1]):
+                    i.texture = sprites["invincible slime"]
+                elif (i.ID == [0,2]):
+                    i.texture = sprites["invincible corrupted golem"]
+                i.texture = pygame.transform.rotate(i.texture, randint(-5, 5))
+                i.texture.set_colorkey((255,255,255))
+            else:
+                i.update(clock)
+            if (i.ID == [0,2]):
+                i.state = "chase"
+            dropshadow(i.texture,i.pos,80,5)
+            i.draw(screen)
+            coord_list = [player_x, player_y]
+            i.old_pos = copy.deepcopy(i.pos)
+            if (i.state == "patrol" and i.direction == 2):
+                i.pos[1] += i.speed
+                if (i.pos[1] >= 360):
+                  i.direction = 0
+                if (i.line_of_sight.colliderect(player_hitbox)):
+                    i.state = "chase"
+                    combat_text.append([sprites["alert"],[i.pos[0],i.pos[1]], 200])
+            elif (i.state == "patrol" and i.direction == 0):
+                i.pos[1] -= i.speed
+                if (i.pos[1] <= 210):
+                  i.direction = 2
+                if (i.line_of_sight.colliderect(player_hitbox)):
+                    i.state = "chase"
+                    combat_text.append([sprites["alert"],[i.pos[0],i.pos[1]], 200])
+            elif (i.state == "chase"):
+                follow_offset = 0
+                if (not player_x - i.pos[0] > 50 and player_x - i.pos[0] > 50):
+                    follow_offset = randint(-50,50)
+                if (i.pos[0] > player_x+follow_offset and not i.hitbox.colliderect(wall_r_rect)):
+                    i.pos[0] -= i.speed
+                    i.direction = 0
+                    enemy_moved_x = True
+                if (i.pos[0] < player_x+follow_offset and not i.hitbox.colliderect(wall_l_rect)):
+                    i.pos[0] += i.speed
+                    i.direction = 2
+                    enemy_moved_x = True
+                if (i.pos[1] > player_y+follow_offset and not i.hitbox.colliderect(wall_n_rect)):
+                    if (enemy_moved_x):
+                        i.pos[1] -= i.speed/2
+                    else:
+                        i.pos[1] -= i.speed
+                    i.direction = 1
+                if (i.pos[1] < player_x+follow_offset and not i.hitbox.colliderect(wall_s_rect)):
+                    if (enemy_moved_x):
+                        i.pos[1] += i.speed/2
+                    else:
+                        i.pos[1] += i.speed
+                    i.direction = 3
+            elif (i.state == "runaway"):
+                i.runaway -= clock.get_time()
+                if (i.runaway <= 0):
+                    i.state = "chase"
+                if (i.pos[0] < player_x+randint(-50,50) and not i.hitbox.colliderect(wall_r_rect)):
+                    i.pos[0] -= i.speed
+                    i.direction = 0
+                    enemy_moved_x = True
+                if (i.pos[0] > player_x+randint(-50,50) and not i.hitbox.colliderect(wall_l_rect)):
+                    i.pos[0] += i.speed
+                    i.direction = 2
+                    enemy_moved_x = True
+                if (i.pos[1] < player_y+randint(-50,50) and not i.hitbox.colliderect(wall_n_rect)):
+                    if (enemy_moved_x):
+                        i.pos[1] -= i.speed/2
+                    else:
+                        i.pos[1] -= i.speed
+                    i.direction = 1
+                if (i.pos[1] > player_x+randint(-50,50) and not i.hitbox.colliderect(wall_s_rect)):
+                    if (enemy_moved_x):
+                        i.pos[1] += i.speed/2
+                    else:
+                        i.pos[1] += i.speed
+                    i.direction = 3
+            if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,2]  and i.line_of_sight.colliderect(player_hitbox) and not i.inv_frames > 0):
+                i.cooldown = 700
+                enemy_attack = True
+                enemy_projectiles.append(classes.enemy.Projectile(sprites["stomp"], 0, 0, i.dmg, 100, [i.hitbox.bottomleft[0], i.hitbox.bottomleft[1]-30]))
+            if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,1] and not i.inv_frames > 0):
+                i.cooldown = 700
+                enemy_attack = True
+                #uldr
+                if (i.direction == 0):
+                    enemy_projectiles.append(classes.enemy.Projectile(sprites["slimeball"], 0, -5, i.dmg, 5000, [i.pos[0], i.pos[1]]))
+                elif (i.direction == 1):
+                    enemy_projectiles.append(classes.enemy.Projectile(sprites["slimeball"], -5, 0, i.dmg, 5000, [i.pos[0], i.pos[1]]))
+                elif (i.direction == 2):
+                    enemy_projectiles.append(classes.enemy.Projectile(sprites["slimeball"], 0, 5, i.dmg, 5000, [i.pos[0], i.pos[1]]))
+                elif (i.direction == 3):
+                    enemy_projectiles.append(classes.enemy.Projectile(sprites["slimeball"], 5, 0, i.dmg, 5000, [i.pos[0], i.pos[1]]))
+            if (sword_pause):
+                if (i.hitbox.colliderect(sword_rect) and i.inv_frames <= 0):
+                    i.runaway = 900
+                    if (shift_attack):
+                        screenshake_duration = 400
+                    if (shift_attack):
+                        screenshake_duration = 200
+                    i.state = "runaway"
+                    if (randint(0, 10) == 10 and not shift_attack and not collided):
+                        damage = (player_stats["attack"]*2) + randint(0,2) 
+                        i.hp -= damage
+                        combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 215, 98)),[i.pos[0],i.pos[1]], 500])
+                    elif (not shift_attack and not collided):
+                        damage = player_stats["attack"] + randint(0,2)
+                        i.hp -= damage
+                        combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 15, 98)),[i.pos[0],i.pos[1]], 500])
+                    if (randint(0, 5) == 5 and shift_attack and collided and enemies.index(i) == current_deathattack_target):
+                        damage = ((player_stats["attack"]*2) + randint(0,2))*5 
+                        i.hp -= damage
+                        combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 215, 98)),[i.pos[0],i.pos[1]], 500])
+                    elif (shift_attack and collided and enemies.index(i) == current_deathattack_target):
+                        damage = (player_stats["attack"] + randint(0,2))*5
+                        i.hp -= damage
+                        combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 15, 98)),[i.pos[0],i.pos[1]], 500])  
+                    i.inv_frames = 15
+                    current_notification = notification_font.render("You damaged an enemy",True, (127,98,98))
+                    notification_rect = current_notification.get_rect(midtop=(200, 450))
+                    if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not i.hitbox.colliderect(wall_r_rect)):
+                        i.pos[0] -= 45
+                        i.direction = 0
+                        if (shift_attack and enemies.index(i) == current_deathattack_target):
+                            animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][0],),500,(i.pos[0],i.pos[1]-10)))
+                    if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not i.hitbox.colliderect(wall_l_rect)):
+                        i.pos[0] += 45
+                        i.direction = 2
+                        if (shift_attack and enemies.index(i) == current_deathattack_target):
+                            animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][2],),500,(i.pos[0],i.pos[1]+10)))
+                    if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not i.hitbox.colliderect(wall_n_rect)):
+                        i.pos[1] -= 45
+                        i.direction = 1
+                        if (shift_attack and enemies.index(i) == current_deathattack_target):
+                            animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][3],),500,(i.pos[0]-10,i.pos[1])))
+                    if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not i.hitbox.colliderect(wall_s_rect)):
+                        i.pos[1] += 45
+                        i.direction = 3
+                        if (shift_attack and enemies.index(i) == current_deathattack_target):
+                            animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][1],),500,(i.pos[0]+10,i.pos[1])))
+                    if (shift_attack != True or not enemies.index(i) == current_deathattack_target):
+                        for j in range(damage):
+                            damage_particle.pos = [i.hitbox.center[0]+randint(-20,20), i.hitbox.center[1]+randint(-20,20)]
+                            damage_particle.spawn_particle()
+                            damage_particle.particlelist[-1].velocity_x += choice([-1,1])
+                            damage_particle.particlelist[-1].velocity_y += choice([-1,1])
+                    else:
+                        for j in range(damage):
+                            deathattack_particle.pos = [i.hitbox.center[0]+randint(-20,20), i.hitbox.center[1]+randint(-20,20)]
+                            deathattack_particle.spawn_particle()
+                            deathattack_particle.particlelist[-1].velocity_x += choice([-1,1])
+                            deathattack_particle.particlelist[-1].velocity_y += choice([-1,1])
+                    sound_effects["hurt"].play()
+                    if (i.hp <= 0):
+                        death_delay = True
+                        combat_text.pop()
+                        sound_effects["defeat enemy"].play()
+                        if (not shift_attack):
+                            player_stats["gold"] += i.point_drop
+                            combat_text.append([combat_text_font.render(f"+{i.point_drop} coins", True, (255, 196, 98)),[i.pos[0],i.pos[1]], 500])
+                        else:
+                            player_stats["gold"] += i.point_drop + 2
+                            combat_text.append([combat_text_font.render(f"+{i.point_drop+2} coins", True, (255, 196, 98)),[i.pos[0],i.pos[1]], 500])
+                            player_stats["hp"] += 5
+                            combat_text.append([combat_text_font.render("+5 HP", True, (15, 15, 255)),[player_x, player_y], 500])
+                        animations.append(classes.animation_effect.Effect((sprites["enemy death"][1], sprites["enemy death"][2], sprites["enemy death"][3]), 500, (i.pos[0], i.pos[1])))
+                        if (i.key_item == "key"):
+                            if (current_room == "dungeon room 5" and player_stats["key enemies"][0]==True):
+                                combat_text.append([sprites["key icon"],[player_hitbox.topleft[0],player_hitbox.topleft[1]], 1000])
+                                player_stats["keys"] += 1
+                                player_stats["key enemies"][0] = False
+                        animations.append(classes.animation_effect.Effect((sprites[i.corpse],), 2000, (i.pos[0], i.pos[1])))
+                        enemies.remove(i)
+                        current_notification = notification_font.render("You defeated an enemy",True, (127,98,98))
+                        notification_rect = current_notification.get_rect(midtop=(200, 450))
+                    else:
+                        sound_effects["hurt"].play()
+                    if (shift_attack):
+                        shift_attack = False
+                        collided = False
         for i in wall_list:
             dropshadow(i.texture,i.pos,80,5)
             screen.blit(i.texture, i.pos)
@@ -1050,7 +1237,9 @@ def game():
             else:
                 i.texture = pygame.transform.scale(i.texture, (20,20))
         footsteps.setup(screen,clock)
-        if (keys[pygame.K_SPACE] and sword_cooldown >= 470 and player_stats["current weapon"] == "sword" or (sword_pause and not shift_attack)):
+        if (keys[pygame.K_SPACE] and sword_cooldown >= 470 and player_stats["current weapon"] == "sword" and (not pressed_space) or (sword_pause and not shift_attack)):
+            if (not sword_pause):
+                pressed_space = True
             if (not sword_pause):
                 sound_effects["swing sword"][sword_times].play()
                 sword_times += 1
@@ -1091,7 +1280,9 @@ def game():
             screen.blit(sword_dir, sword_coords)
             sword_cooldown = 0
             sword_pause = True
-        if ((keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]) and sword_cooldown >= 470 and player_stats["current weapon"] == "sword" or (sword_pause and shift_attack)):
+        if ((keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]) and sword_cooldown >= 470 and player_stats["current weapon"] == "sword" and (not pressed_space) or (sword_pause and shift_attack)):
+            if (not sword_pause):
+                pressed_space = True
             if ((not shift_attack) and (not sword_pause)):
                 for i in enemies:
                     if (player_hitbox.colliderect(i.hitbox) or i.hitbox.colliderect(player_hitbox)):
@@ -1150,189 +1341,8 @@ def game():
                 sword_dir.set_colorkey((255,255,255))
                 screen.blit(sword_dir, sword_coords)
                 sword_cooldown = 0
-        for i in enemies:
-            enemy_moved_x = False
-            i.hitbox = i.texture.get_rect(x=i.pos[0], y=i.pos[1])
-            if (i.cooldown > 0):
-                i.cooldown -= clock.get_time()
-            if (i.inv_frames > 0):
-                i.inv_frames -= 1
-                if (i.ID == [0,1]):
-                    i.texture = sprites["invincible slime"]
-                elif (i.ID == [0,2]):
-                    i.texture = sprites["invincible corrupted golem"]
-                i.texture = pygame.transform.rotate(i.texture, randint(-5, 5))
-                i.texture.set_colorkey((255,255,255))
-            else:
-                i.update(clock)
-            if (i.ID == [0,2]):
-                i.state = "chase"
-            dropshadow(i.texture,i.pos,80,5)
-            i.draw(screen)
-            coord_list = [player_x, player_y]
-            i.old_pos = copy.deepcopy(i.pos)
-            if (i.state == "patrol" and i.direction == 2):
-                i.pos[1] += i.speed
-                if (i.pos[1] >= 360):
-                  i.direction = 0
-                if (i.line_of_sight.colliderect(player_hitbox)):
-                    i.state = "chase"
-                    combat_text.append([sprites["alert"],[i.pos[0],i.pos[1]], 200])
-            elif (i.state == "patrol" and i.direction == 0):
-                i.pos[1] -= i.speed
-                if (i.pos[1] <= 210):
-                  i.direction = 2
-                if (i.line_of_sight.colliderect(player_hitbox)):
-                    i.state = "chase"
-                    combat_text.append([sprites["alert"],[i.pos[0],i.pos[1]], 200])
-            elif (i.state == "chase"):
-                if (i.pos[0] > player_x+randint(-50,50) and not i.hitbox.colliderect(wall_r_rect)):
-                    i.pos[0] -= i.speed
-                    i.direction = 0
-                    enemy_moved_x = True
-                if (i.pos[0] < player_x+randint(-50,50) and not i.hitbox.colliderect(wall_l_rect)):
-                    i.pos[0] += i.speed
-                    i.direction = 2
-                    enemy_moved_x = True
-                if (i.pos[1] > player_y+randint(-50,50) and not i.hitbox.colliderect(wall_n_rect)):
-                    if (enemy_moved_x):
-                        i.pos[1] -= i.speed/2
-                    else:
-                        i.pos[1] -= i.speed
-                    i.direction = 1
-                if (i.pos[1] < player_x+randint(-50,50) and not i.hitbox.colliderect(wall_s_rect)):
-                    if (enemy_moved_x):
-                        i.pos[1] += i.speed/2
-                    else:
-                        i.pos[1] += i.speed
-                    i.direction = 3
-            elif (i.state == "runaway"):
-                i.runaway -= clock.get_time()
-                if (i.runaway <= 0):
-                    i.state = "chase"
-                if (i.pos[0] < player_x+randint(-50,50) and not i.hitbox.colliderect(wall_r_rect)):
-                    i.pos[0] -= i.speed
-                    i.direction = 0
-                    enemy_moved_x = True
-                if (i.pos[0] > player_x+randint(-50,50) and not i.hitbox.colliderect(wall_l_rect)):
-                    i.pos[0] += i.speed
-                    i.direction = 2
-                    enemy_moved_x = True
-                if (i.pos[1] < player_y+randint(-50,50) and not i.hitbox.colliderect(wall_n_rect)):
-                    if (enemy_moved_x):
-                        i.pos[1] -= i.speed/2
-                    else:
-                        i.pos[1] -= i.speed
-                    i.direction = 1
-                if (i.pos[1] > player_x+randint(-50,50) and not i.hitbox.colliderect(wall_s_rect)):
-                    if (enemy_moved_x):
-                        i.pos[1] += i.speed/2
-                    else:
-                        i.pos[1] += i.speed
-                    i.direction = 3
-            if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,2]  and i.line_of_sight.colliderect(player_hitbox) and not i.inv_frames > 0):
-                i.cooldown = 700
-                enemy_attack = True
-                enemy_projectiles.append(classes.enemy.Projectile(sprites["stomp"], 0, 0, i.dmg, 100, [i.hitbox.bottomleft[0], i.hitbox.bottomleft[1]-30]))
-            if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,1] and not i.inv_frames > 0):
-                i.cooldown = 700
-                enemy_attack = True
-                #uldr
-                if (i.direction == 0):
-                    enemy_projectiles.append(classes.enemy.Projectile(sprites["slimeball"], 0, -5, i.dmg, 5000, [i.pos[0], i.pos[1]]))
-                elif (i.direction == 1):
-                    enemy_projectiles.append(classes.enemy.Projectile(sprites["slimeball"], -5, 0, i.dmg, 5000, [i.pos[0], i.pos[1]]))
-                elif (i.direction == 2):
-                    enemy_projectiles.append(classes.enemy.Projectile(sprites["slimeball"], 0, 5, i.dmg, 5000, [i.pos[0], i.pos[1]]))
-                elif (i.direction == 3):
-                    enemy_projectiles.append(classes.enemy.Projectile(sprites["slimeball"], 5, 0, i.dmg, 5000, [i.pos[0], i.pos[1]]))
-            if (sword_pause):
-                if (i.hitbox.colliderect(sword_rect) and i.inv_frames <= 0):
-                    i.runaway = 900
-                    if (shift_attack):
-                        screenshake_duration = 400
-                    if (shift_attack):
-                        screenshake_duration = 200
-                    i.state = "runaway"
-                    if (randint(0, 10) == 10 and not shift_attack and not collided):
-                        damage = (player_stats["attack"]*2) + randint(0,2) 
-                        i.hp -= damage
-                        combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 215, 98)),[i.pos[0],i.pos[1]], 500])
-                    elif (not shift_attack and not collided):
-                        damage = player_stats["attack"] + randint(0,2)
-                        i.hp -= damage
-                        combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 15, 98)),[i.pos[0],i.pos[1]], 500])
-                    if (randint(0, 5) == 5 and shift_attack and collided and enemies.index(i) == current_deathattack_target):
-                        damage = ((player_stats["attack"]*2) + randint(0,2))*5 
-                        i.hp -= damage
-                        combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 215, 98)),[i.pos[0],i.pos[1]], 500])
-                    elif (shift_attack and collided and enemies.index(i) == current_deathattack_target):
-                        damage = (player_stats["attack"] + randint(0,2))*5
-                        i.hp -= damage
-                        combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 15, 98)),[i.pos[0],i.pos[1]], 500])  
-                    i.inv_frames = 15
-                    current_notification = notification_font.render("You damaged an enemy",True, (127,98,98))
-                    notification_rect = current_notification.get_rect(midtop=(200, 450))
-                    if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not i.hitbox.colliderect(wall_r_rect)):
-                        i.pos[0] -= 45
-                        i.direction = 0
-                        if (shift_attack and enemies.index(i) == current_deathattack_target):
-                            animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][0],),500,(i.pos[0],i.pos[1]-10)))
-                    if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not i.hitbox.colliderect(wall_l_rect)):
-                        i.pos[0] += 45
-                        i.direction = 2
-                        if (shift_attack and enemies.index(i) == current_deathattack_target):
-                            animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][2],),500,(i.pos[0],i.pos[1]+10)))
-                    if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not i.hitbox.colliderect(wall_n_rect)):
-                        i.pos[1] -= 45
-                        i.direction = 1
-                        if (shift_attack and enemies.index(i) == current_deathattack_target):
-                            animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][3],),500,(i.pos[0]-10,i.pos[1])))
-                    if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not i.hitbox.colliderect(wall_s_rect)):
-                        i.pos[1] += 45
-                        i.direction = 3
-                        if (shift_attack and enemies.index(i) == current_deathattack_target):
-                            animations.append(classes.animation_effect.Effect((sprites["deathattack slice"][1],),500,(i.pos[0]+10,i.pos[1])))
-                    if (shift_attack != True or not enemies.index(i) == current_deathattack_target):
-                        for j in range(damage):
-                            damage_particle.pos = [i.hitbox.center[0]+randint(-20,20), i.hitbox.center[1]+randint(-20,20)]
-                            damage_particle.spawn_particle()
-                            damage_particle.particlelist[-1].velocity_x += choice([-1,1])
-                            damage_particle.particlelist[-1].velocity_y += choice([-1,1])
-                    else:
-                        for j in range(damage):
-                            deathattack_particle.pos = [i.hitbox.center[0]+randint(-20,20), i.hitbox.center[1]+randint(-20,20)]
-                            deathattack_particle.spawn_particle()
-                            deathattack_particle.particlelist[-1].velocity_x += choice([-1,1])
-                            deathattack_particle.particlelist[-1].velocity_y += choice([-1,1])
-                    sound_effects["hurt"].play()
-                    if (i.hp <= 0):
-                        death_delay = True
-                        combat_text.pop()
-                        sound_effects["defeat enemy"].play()
-                        if (not shift_attack):
-                            player_stats["gold"] += i.point_drop
-                            combat_text.append([combat_text_font.render(f"+{i.point_drop} coins", True, (255, 196, 98)),[i.pos[0],i.pos[1]], 500])
-                        else:
-                            player_stats["gold"] += i.point_drop + 2
-                            combat_text.append([combat_text_font.render(f"+{i.point_drop+2} coins", True, (255, 196, 98)),[i.pos[0],i.pos[1]], 500])
-                            player_stats["hp"] += 5
-                            combat_text.append([combat_text_font.render("+5 HP", True, (15, 15, 255)),[player_x, player_y], 500])
-                        animations.append(classes.animation_effect.Effect((sprites["enemy death"][1], sprites["enemy death"][2], sprites["enemy death"][3]), 500, (i.pos[0], i.pos[1])))
-                        if (i.key_item == "key"):
-                            if (current_room == "dungeon room 5" and player_stats["key enemies"][0]==True):
-                                combat_text.append([sprites["key icon"],[player_hitbox.topleft[0],player_hitbox.topleft[1]], 1000])
-                                player_stats["keys"] += 1
-                                player_stats["key enemies"][0] = False
-                        animations.append(classes.animation_effect.Effect((sprites[i.corpse],), 2000, (i.pos[0], i.pos[1])))
-                        enemies.remove(i)
-                        current_notification = notification_font.render("You defeated an enemy",True, (127,98,98))
-                        notification_rect = current_notification.get_rect(midtop=(200, 450))
-                    else:
-                        sound_effects["hurt"].play()
-                    if (shift_attack):
-                        shift_attack = False
-                        collided = False
+        if (pressed_space and not keys[pygame.K_SPACE]):
+            pressed_space = False
         for i in enemy_projectiles:
             i.draw(screen)
             i.lifetime -= clock.get_time()
