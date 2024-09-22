@@ -283,17 +283,17 @@ def title():
                 transition = False
             clock.tick(60)
 #--------------------
-def checkfor_collision_dir(wall, player_x, player_y):
+def checkfor_collision_dir(wall, hitbox):
     #dulr
     dirlist = [False,False,False,False]
-    if (player_x >= wall.pos[0]):
-        dirlist[2] = True
-    elif (player_y <= wall.pos[1]):
-        dirlist[0] = True
-    if (player_x <= wall.pos[0]):
-        dirlist[3] = True
-    elif (player_y >= wall.pos[1]):
+    if (wall.edges["up"].colliderect(hitbox)):
         dirlist[1] = True
+    if (wall.edges["down"].colliderect(hitbox)):
+        dirlist[0] = True
+    if (wall.edges["left"].colliderect(hitbox)):
+        dirlist[2] = True
+    if (wall.edges["right"].colliderect(hitbox)):
+        dirlist[3] = True
     return dirlist
 #--------------------
 def gameover(coins, died_msg):
@@ -921,47 +921,80 @@ def game():
             dropshadow(i.texture,i.pos,80,5)
             screen.blit(i.texture, i.pos)
             if (i.hitbox.colliderect(player_hitbox)):
-                 direction_of_collide = checkfor_collision_dir(i, player_x, player_y)
-                 if (direction_of_collide[0] and updated_y):
-                    player_dy *= -1
-                 else:
-                    player_dy *= -1
-                 if (direction_of_collide[2] and updated_x):
-                    player_dx *= -1
-                 else:
-                    player_dx *= 1
+                direction_of_collide = checkfor_collision_dir(i,player_hitbox)
+                if (direction_of_collide[1]):
+                    player_dy -= 5
+                else:
+                    pass
+                    #pygame.draw.rect(screen,(255,95,95),i.edges["up"])
+                if (direction_of_collide[0]):
+                    player_dy += 5
+                else:
+                    pass
+                    #pygame.draw.rect(screen,(95,255,95),i.edges["down"])
+                if (direction_of_collide[2]):
+                    player_dx -= 5
+                else:
+                    pass
+                    #pygame.draw.rect(screen,(95,95,255),i.edges["left"])
+                if (direction_of_collide[3]):
+                    player_dx += 5
+                else:
+                    pass
+                    #pygame.draw.rect(screen,(95,95,95),i.edges["right"])
+            else:
+                pass
+                #pygame.draw.rect(screen,(255,95,95),i.edges["up"])
+                #pygame.draw.rect(screen,(95,255,95),i.edges["down"])
+                #pygame.draw.rect(screen,(95,95,255),i.edges["left"])
+                #pygame.draw.rect(screen,(95,95,95),i.edges["right"])
             for j in enemies:
-                #uldr
                 if (i.hitbox.colliderect(j.hitbox)):
-                 direction_of_collide = checkfor_collision_dir(i, j.pos[0], j.pos[1])
-                 if (direction_of_collide[1] and j.direction == 0):
-                    j.pos[1] += 5
-                 if (direction_of_collide[0] and j.direction == 2):
-                    j.pos[1] -= 5
-                 if (direction_of_collide[2] and j.direction == 1):
-                    j.pos[0] += 5
-                 if (direction_of_collide[3] and j.direction == 3):
-                    j.pos[0] -= 5
+                    direction_of_collide = checkfor_collision_dir(i,player_hitbox)
+                    if (direction_of_collide[1]):
+                        j.pos[1] -= 5
+                    if (direction_of_collide[0]):
+                        j.pos[1] += 5
+                    if (direction_of_collide[2]):
+                        j.pos[0] -= 5
+                    if (direction_of_collide[3]):
+                        j.pos[0] += 5
         for i in pot_list:
             dropshadow(i.texture,i.pos,80,5)
             screen.blit(i.texture, i.pos)
             if (i.hitbox.colliderect(player_hitbox)):
-                 direction_of_collide = checkfor_collision_dir(i, player_x, player_y)
-                 if ((direction_of_collide[0] or direction_of_collide[1]) and updated_y):
-                    player_dy = 0
-                 if ((direction_of_collide[2] or direction_of_collide[3]) and updated_x):
-                    player_dx = 0
+                direction_of_collide = checkfor_collision_dir(i,player_hitbox)
+                if (direction_of_collide[1]):
+                    player_dy -= 5
+                else:
+                    pass
+                    #pygame.draw.rect(screen,(255,95,95),i.edges["up"])
+                if (direction_of_collide[0]):
+                    player_dy += 5
+                else:
+                    pass
+                    #pygame.draw.rect(screen,(95,255,95),i.edges["down"])
+                if (direction_of_collide[2]):
+                    player_dx -= 5
+                else:
+                    pass
+                    #pygame.draw.rect(screen,(95,95,255),i.edges["left"])
+                if (direction_of_collide[3]):
+                    player_dx += 5
+                else:
+                    pass
+                    #pygame.draw.rect(screen,(95,95,95),i.edges["right"])
             for j in enemies:
                 if (i.hitbox.colliderect(j.hitbox)):
                  direction_of_collide = checkfor_collision_dir(i, j.pos[0], j.pos[1])
                  if (direction_of_collide[1] and j.direction == 0):
-                    j.pos[1] += 5
-                 if (direction_of_collide[0] and j.direction == 2):
                     j.pos[1] -= 5
+                 if (direction_of_collide[0] and j.direction == 2):
+                    j.pos[1] += 5
                  if (direction_of_collide[2] and j.direction == 1):
-                    j.pos[0] += 5
-                 if (direction_of_collide[3] and j.direction == 3):
                     j.pos[0] -= 5
+                 if (direction_of_collide[3] and j.direction == 3):
+                    j.pos[0] += 5
             if (sword_pause and i.hitbox.colliderect(sword_rect)):
                 screenshake_duration = 200
                 animations.append(classes.animation_effect.Effect((sprites["enemy death"][1], sprites["enemy death"][2], sprites["enemy death"][3]), 500, (i.pos[0], i.pos[1])))
@@ -1283,6 +1316,8 @@ def game():
                         else:
                             player_stats["gold"] += i.point_drop + 2
                             combat_text.append([combat_text_font.render(f"+{i.point_drop+2} coins", True, (255, 196, 98)),[i.pos[0],i.pos[1]], 500])
+                            player_stats["hp"] += 5
+                            combat_text.append([combat_text_font.render("+5 HP", True, (15, 15, 255)),[player_x, player_y], 500])
                         animations.append(classes.animation_effect.Effect((sprites["enemy death"][1], sprites["enemy death"][2], sprites["enemy death"][3]), 500, (i.pos[0], i.pos[1])))
                         if (i.key_item == "key"):
                             if (current_room == "dungeon room 5" and player_stats["key enemies"][0]==True):
