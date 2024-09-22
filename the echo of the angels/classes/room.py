@@ -31,6 +31,12 @@ class Wall:
         self.pos = pos
         self.texture = texture
         self.hitbox = self.texture.get_rect(x=pos[0], y=pos[1])
+        self.edges = {
+         "up":pygame.Rect(self.hitbox.x,self.hitbox.y,self.hitbox.width,self.hitbox.height/5),
+         "down":pygame.Rect(self.hitbox.bottomleft[0],self.hitbox.bottomleft[1]-self.hitbox.height/5,self.hitbox.width,self.hitbox.height/5),
+         "left":pygame.Rect(self.hitbox.topleft[0],self.hitbox.topleft[1],self.hitbox.width/5,self.hitbox.height),
+         "right":pygame.Rect(self.hitbox.topright[0]-self.hitbox.width/5,self.hitbox.topright[1],self.hitbox.width/5,self.hitbox.height)
+        }
 class Lock:
     """A class to define locks"""
     def __init__(self, locked_room, key_item="key"):
@@ -43,6 +49,12 @@ class Pot:
         self.drops = drops
         self.texture = texture
         self.hitbox = self.texture.get_rect(x=self.pos[0],y=self.pos[1])
+        self.edges = {
+         "up":pygame.Rect(self.hitbox.x,self.hitbox.y,self.hitbox.width,self.hitbox.height/5),
+         "down":pygame.Rect(self.hitbox.bottomleft[0],self.hitbox.bottomleft[1]-self.hitbox.height/5,self.hitbox.width,self.hitbox.height/5),
+         "left":pygame.Rect(self.hitbox.topleft[0],self.hitbox.topleft[1],self.hitbox.width/5,self.hitbox.height),
+         "right":pygame.Rect(self.hitbox.topright[0]-self.hitbox.width/5,self.hitbox.topright[1],self.hitbox.width/5,self.hitbox.height)
+        }
 class Foliage:
     """A class to define foliage that appears randomly."""
     def __init__(self, texture,pos=[0,0]):
