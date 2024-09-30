@@ -955,7 +955,7 @@ def game():
                     combat_text.append([sprites["alert"],[i.pos[0],i.pos[1]], 200])
             elif (i.state == "chase"):
                 follow_offset = 0
-                if (not player_x - i.pos[0] > 50 and player_x - i.pos[0] > 50):
+                if (player_x - i.pos[0] > 50 and player_y - i.pos[1] > 50):
                     follow_offset = randint(-50,50)
                 if (i.pos[0] > player_x+follow_offset and not i.hitbox.colliderect(wall_r_rect)):
                     i.pos[0] -= i.speed
@@ -1005,18 +1005,40 @@ def game():
                 i.cooldown = 700
                 enemy_attack = True
                 enemy_projectiles.append(classes.enemy.Projectile(sprites["stomp"], 0, 0, i.dmg, 100, [i.hitbox.bottomleft[0], i.hitbox.bottomleft[1]-30]))
-            if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,1] and not i.inv_frames > 0):
-                i.cooldown = 700
-                enemy_attack = True
+            if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,1] and player_x - i.pos[0] < 50 and player_y - i.pos[1] < 50 and not i.inv_frames > 0):
+                if (randint(1,5)==5):
+                    enemy_attack = True
+                    i.attack_hitbox_spawned = 100
+                    i.cooldown = 700
+                else:
+                    i.cooldown = 500
                 #uldr
-                if (i.direction == 0):
-                    enemy_projectiles.append(classes.enemy.Projectile(sprites["slimeball"], 0, -5, i.dmg, 5000, [i.pos[0], i.pos[1]]))
-                elif (i.direction == 1):
-                    enemy_projectiles.append(classes.enemy.Projectile(sprites["slimeball"], -5, 0, i.dmg, 5000, [i.pos[0], i.pos[1]]))
-                elif (i.direction == 2):
-                    enemy_projectiles.append(classes.enemy.Projectile(sprites["slimeball"], 0, 5, i.dmg, 5000, [i.pos[0], i.pos[1]]))
-                elif (i.direction == 3):
-                    enemy_projectiles.append(classes.enemy.Projectile(sprites["slimeball"], 5, 0, i.dmg, 5000, [i.pos[0], i.pos[1]]))
+            if (i.attack_hitbox_spawned > 0 and i.ID == [0,1]):
+                follow_offset = 0
+                if (player_x - i.pos[0] > 10 and player_y - i.pos[1] > 10):
+                    follow_offset = randint(-50,50)
+                if (i.pos[0] > player_x+follow_offset and not i.hitbox.colliderect(wall_r_rect)):
+                    i.pos[0] -= i.speed + 5
+                    i.direction = 0
+                    enemy_moved_x = True
+                if (i.pos[0] < player_x+follow_offset and not i.hitbox.colliderect(wall_l_rect)):
+                    i.pos[0] += i.speed + 5
+                    i.direction = 2
+                    enemy_moved_x = True
+                if (i.pos[1] > player_y+follow_offset and not i.hitbox.colliderect(wall_n_rect)):
+                    if (enemy_moved_x):
+                        i.pos[1] -= i.speed + 5/2
+                    else:
+                        i.pos[1] -= i.speed + 5
+                    i.direction = 1
+                if (i.pos[1] < player_x+follow_offset and not i.hitbox.colliderect(wall_s_rect)):
+                    if (enemy_moved_x):
+                        i.pos[1] += i.speed + 5/2
+                    else:
+                        i.pos[1] += i.speed + 5
+                    i.direction = 3
+                enemy_projectiles.append(classes.enemy.Projectile(sprites["slimeball"], 0, 0, i.dmg, 40, i.pos))
+                i.attack_hitbox_spawned -= clock.get_time()
             if (sword_pause):
                 if (i.hitbox.colliderect(sword_rect) and i.inv_frames <= 0):
                     i.runaway = 900
