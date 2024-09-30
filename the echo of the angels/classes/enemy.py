@@ -31,6 +31,7 @@ class Enemy:
 		self.key_item = key_item
 		self.runaway = 0
 		self.death_attack_hp = copy.deepcopy(self.hp) // 2
+		self.attack_hitbox_spawned = 0
 	def draw(self, screen):
 		screen.blit(self.texture, self.pos)
 	def update(self, clock):
