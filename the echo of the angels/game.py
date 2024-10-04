@@ -860,8 +860,8 @@ def game():
             lost_hp = 0
         if (resting and not time_till_wakeup <= 0):
             if (player_stats["hp"] < 100):
-                player_stats["hp"] += lost_hp/180
-                lost_hp -= lost_hp/180
+                player_stats["hp"] += lost_hp/50
+                lost_hp -= lost_hp/50
         if (invincibility_frames > 0):
             if (main_dir == sprites["player up"]):
                 main_dir = sprites["player up invincible"]
@@ -1005,33 +1005,26 @@ def game():
                 i.cooldown = 700
                 enemy_attack = True
                 enemy_projectiles.append(classes.enemy.Projectile(sprites["stomp"], 0, 0, i.dmg, 100, [i.hitbox.bottomleft[0], i.hitbox.bottomleft[1]-30]))
-            if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,1] and player_x - i.pos[0] < 50 and player_y - i.pos[1] < 50 and not i.inv_frames > 0):
-                if (randint(1,5)==5):
-                    enemy_attack = True
-                    i.attack_hitbox_spawned = 100
-                    i.cooldown = 700
-                else:
-                    i.cooldown = 500
-                #uldr
+            if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,1] and player_x - i.pos[0] < 100 and player_y - i.pos[1] < 100):
+                enemy_attack = True
+                i.attack_hitbox_spawned = 100
+                i.cooldown = 700
             if (i.attack_hitbox_spawned > 0 and i.ID == [0,1]):
-                follow_offset = 0
-                if (player_x - i.pos[0] > 10 and player_y - i.pos[1] > 10):
-                    follow_offset = randint(-50,50)
-                if (i.pos[0] > player_x+follow_offset and not i.hitbox.colliderect(wall_r_rect)):
+                if (i.pos[0] > player_x and not i.hitbox.colliderect(wall_r_rect)):
                     i.pos[0] -= i.speed + 5
                     i.direction = 0
                     enemy_moved_x = True
-                if (i.pos[0] < player_x+follow_offset and not i.hitbox.colliderect(wall_l_rect)):
+                if (i.pos[0] < player_x and not i.hitbox.colliderect(wall_l_rect)):
                     i.pos[0] += i.speed + 5
                     i.direction = 2
                     enemy_moved_x = True
-                if (i.pos[1] > player_y+follow_offset and not i.hitbox.colliderect(wall_n_rect)):
+                if (i.pos[1] > player_y and not i.hitbox.colliderect(wall_n_rect)):
                     if (enemy_moved_x):
                         i.pos[1] -= i.speed + 5/2
                     else:
                         i.pos[1] -= i.speed + 5
                     i.direction = 1
-                if (i.pos[1] < player_x+follow_offset and not i.hitbox.colliderect(wall_s_rect)):
+                if (i.pos[1] < player_y and not i.hitbox.colliderect(wall_s_rect)):
                     if (enemy_moved_x):
                         i.pos[1] += i.speed + 5/2
                     else:
@@ -1048,7 +1041,7 @@ def game():
                         screenshake_duration = 200
                     i.state = "runaway"
                     if (randint(0, 10) == 10 and not shift_attack and not collided):
-                        damage = (player_stats["attack"]*2) + randint(0,2) 
+                        damage = player_stats["attack"] + randint(2,4) 
                         i.hp -= damage
                         combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 215, 98)),[i.pos[0],i.pos[1]], 500])
                     elif (not shift_attack and not collided):
@@ -1056,7 +1049,7 @@ def game():
                         i.hp -= damage
                         combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 15, 98)),[i.pos[0],i.pos[1]], 500])
                     if (randint(0, 5) == 5 and shift_attack and collided and enemies.index(i) == current_deathattack_target):
-                        damage = ((player_stats["attack"]*2) + randint(0,2))*5 
+                        damage = (player_stats["attack"] + randint(2,4))*5 
                         i.hp -= damage
                         combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 215, 98)),[i.pos[0],i.pos[1]], 500])
                     elif (shift_attack and collided and enemies.index(i) == current_deathattack_target):
@@ -1259,7 +1252,7 @@ def game():
             else:
                 i.texture = pygame.transform.scale(i.texture, (20,20))
         footsteps.setup(screen,clock)
-        if (keys[pygame.K_SPACE] and sword_cooldown >= 470 and player_stats["current weapon"] == "sword" and (not pressed_space) or (sword_pause and not shift_attack)):
+        if (keys[pygame.K_SPACE] and sword_cooldown >= 470 and player_stats["current weapon"] == "sword" and invincibility_frames <= 0 and (not pressed_space) or (sword_pause and not shift_attack)):
             if (not sword_pause):
                 pressed_space = True
             if (not sword_pause):
@@ -1302,7 +1295,7 @@ def game():
             screen.blit(sword_dir, sword_coords)
             sword_cooldown = 0
             sword_pause = True
-        if ((keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]) and sword_cooldown >= 470 and player_stats["current weapon"] == "sword" and (not pressed_space) or (sword_pause and shift_attack)):
+        if ((keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]) and sword_cooldown >= 470 and player_stats["current weapon"] == "sword" and invincibility_frames <= 0 and (not pressed_space) or (sword_pause and shift_attack)):
             if (not sword_pause):
                 pressed_space = True
             if ((not shift_attack) and (not sword_pause)):
@@ -1328,7 +1321,7 @@ def game():
                     shift_attack = True
                     if (sword_times > 2):
                         sword_times = 0
-            if (collided and main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]):
+            if (collided and main_dir == sprites["player up"]):
                 sword_dir = sprites["sword swing3"]["up"]
                 if (sword_pause_timer >= 80):
                     sword_dir = sprites["sword swing2"]
@@ -1336,14 +1329,14 @@ def game():
                 if (not sword_pause):
                     sword_coords = (player_hitbox.topleft[0]+10, player_hitbox.midtop[1]-10)
                 sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
-            elif (collided and main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]):
+            elif (collided and main_dir == sprites["player down"]):
                 sword_dir = sprites["sword swing3"]["down"]
                 if (sword_pause_timer >= 80):
                     sword_dir = sprites["sword swing2"]
                 if (not sword_pause):
                     sword_coords = (player_hitbox.bottomleft[0]+10, player_hitbox.midbottom[1]-10)
                 sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
-            elif (collided and main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]):
+            elif (collided and main_dir == sprites["player left"]):
                 sword_dir = sprites["sword swing3"]["left"]
                 if (sword_pause_timer >= 80):
                     sword_dir = sprites["sword swing2"]
@@ -1351,7 +1344,7 @@ def game():
                 if (not sword_pause):
                     sword_coords = (player_hitbox.midleft[0]-10, player_hitbox.midleft[1]-5)
                 sword_rect = sword_dir.get_rect(x=sword_coords[0], y=sword_coords[1])
-            elif (collided and main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]):
+            elif (collided and main_dir == sprites["player right"]):
                 sword_dir = sprites["sword swing3"]["right"]
                 if (sword_pause_timer >= 80):
                     sword_dir = sprites["sword swing2"]
@@ -1376,7 +1369,7 @@ def game():
                 sound_effects["hurt"].play()
                 screenshake_duration = 200
                 if (randint(0,10) == 10):
-                    enemy_damage = (i.dmg*2) + randint(0,2)
+                    enemy_damage = i.dmg + randint(2,4)
                     player_stats["hp"] -= enemy_damage
                     combat_text.append([combat_text_font.render(f"-{enemy_damage} HP", True, (15, 215, 255)),[i.pos[0],i.pos[1]], 500])
                     screenshake_duration = 400
@@ -1391,12 +1384,14 @@ def game():
                     damage_particle.particlelist[-1].velocity_x += choice([-1,1])
                     damage_particle.particlelist[-1].velocity_y += choice([-1,1])
                 lost_hp += enemy_damage // 2
+                if (lost_hp > 30):
+                    lost_hp = 30
                 pygame.event.post(pygame.event.Event(player_gothit))
                 enemy_projectiles.remove(i)
                 invincibility_frames = 20
                 animations.append(classes.animation_effect.Effect((sprites["enemy death"][1], sprites["enemy death"][2], sprites["enemy death"][3]), 500, (i.pos[0], i.pos[1])))
                 if (player_stats["hp"] <= 0 and i.texture == sprites["slimeball"]):
-                     died_to = "Player was shot by a projectile"
+                     died_to = "Player was rammed by a Slime"
                 elif (player_stats["hp"] <= 0 and i.texture == sprites["stomp"]):
                      died_to = "Player was stomped to death" 
         for i in exits:
