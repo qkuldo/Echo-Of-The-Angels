@@ -3,12 +3,13 @@ import classes.enemy
 import random
 class Room:
     """A class to define rooms"""
-    def __init__(self, spawners, exits=None, walls = [],pots=[]):
+    def __init__(self, spawners, exits=None, walls = [],pots=[], toxic_pools = []):
         self.spawners = spawners
         self.exits = exits
         self.walls = walls
         self.pots =pots
-    def load_room(self, enemy_list, sprite_dict, wall_list, pot_list, spawn_enemy=True, spawn_pot = True):
+        self.toxic_pools = toxic_pools
+    def load_room(self, enemy_list, sprite_dict, wall_list, pot_list, toxic_pool_list, spawn_enemy=True, spawn_pot = True):
         for i in self.spawners:
             if (i.enemy_id == [0,1] and spawn_enemy):
                  enemy_list.append(classes.enemy.Enemy(sprite_dict["slime"], i.pos, ID = classes.enemy.enemy_ids["slime"], knockback = 25, hp = 15, anim_frames=(sprite_dict["slime"], sprite_dict["slime 2"],),key_item=i.key_item,dmg=5))
@@ -19,6 +20,9 @@ class Room:
         if (spawn_pot == True):
             for i in self.pots:
                 pot_list.append(i)
+        for i in self.toxic_pools:
+            toxic_pool_list.append(i)
+
 class Spawner:
     """A class to define spawners"""
     def __init__(self, enemy_id, pos, key_item=None):
@@ -70,6 +74,12 @@ class Foliage:
             self.spin = 0
     def draw(self,screen):
         screen.blit(self.blit_texture,self.pos)
+class Toxic_Pool:
+    def __init__(self,texture,pos=[0,0],dmg=1):
+        self.pos = pos
+        self.texture = texture
+        self.dmg = 1
+        self.hitbox = self.texture.get_rect(x=self.pos[0],y=self.pos[1])
         
         
         
