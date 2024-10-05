@@ -93,7 +93,7 @@ sprites = {
            "deathattack slice":(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),90).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),180).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),90).convert_alpha()),
            "loading":pygame.transform.scale(pygame.image.load("assets/hud/loading.png"), (50,50)).convert_alpha(),
            "hud dmg":pygame.transform.scale(pygame.image.load("assets/hud/hud_dmg.png"), (600, 90)).convert_alpha(),
-           "toxic pool":pygame.transform.scale(pygame.image.load("assets/toxic_pool.png"),(50,50)).convert_alpha()
+           "toxic pool":pygame.transform.scale(pygame.image.load("assets/toxic_pool.png"),(25,25)).convert_alpha()
           }
 sprites["player left"].set_colorkey((255,255,255))
 sprites["player right"].set_colorkey((255,255,255))
