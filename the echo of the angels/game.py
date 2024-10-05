@@ -93,7 +93,7 @@ sprites = {
            "deathattack slice":(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),90).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),180).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),90).convert_alpha()),
            "loading":pygame.transform.scale(pygame.image.load("assets/hud/loading.png"), (50,50)).convert_alpha(),
            "hud dmg":pygame.transform.scale(pygame.image.load("assets/hud/hud_dmg.png"), (600, 90)).convert_alpha(),
-           "toxic pool":pygame.transform.scale(pygame.image.load("assets/toxic_pool.png"),(25,25)).convert_alpha()
+           "toxic pool":pygame.transform.scale(pygame.image.load("assets/toxic_pool.png"),(30,30)).convert_alpha()
           }
 sprites["player left"].set_colorkey((255,255,255))
 sprites["player right"].set_colorkey((255,255,255))
@@ -268,6 +268,14 @@ def title():
             screen.blit(title_surf, title_rect)
             screen.blit(start_surf, start_rect)
             screen.blit(new_surf, new_rect)
+            if (pygame.mouse.get_pos()[0] > 600):
+                pygame.mouse.set_pos([600,pygame.mouse.get_pos()[1]])
+            if (pygame.mouse.get_pos()[0] < 0):
+                pygame.mouse.set_pos([0,pygame.mouse.get_pos()[1]])
+            if (pygame.mouse.get_pos()[1] > 600):
+                pygame.mouse.set_pos([pygame.mouse.get_pos()[0],600])
+            if (pygame.mouse.get_pos()[1] < 0):
+                pygame.mouse.set_pos([pygame.mouse.get_pos()[0],0])
             if (pygame.mouse.get_focused()):
                 screen.blit(sprites["cursor"], cursor_rect)
             if (WIN.get_width() != pyautogui.size()[0]):
@@ -353,6 +361,14 @@ def gameover(coins, died_msg):
         screen.blit(death_msg, death_rect)
         screen.blit(back_to_title_surf, back_to_title_rect)
         screen.blit(back_to_game_surf, back_to_game_rect)
+        if (pygame.mouse.get_pos()[0] > 600):
+                pygame.mouse.set_pos([600,pygame.mouse.get_pos()[1]])
+        if (pygame.mouse.get_pos()[0] < 0):
+                pygame.mouse.set_pos([0,pygame.mouse.get_pos()[1]])
+        if (pygame.mouse.get_pos()[1] > 600):
+                pygame.mouse.set_pos([pygame.mouse.get_pos()[0],600])
+        if (pygame.mouse.get_pos()[1] < 0):
+                pygame.mouse.set_pos([pygame.mouse.get_pos()[0],0])
         if (pygame.mouse.get_focused()):
             screen.blit(sprites["cursor"], cursor_rect)
         if (WIN.get_width() != pyautogui.size()[0]):
@@ -409,7 +425,16 @@ def pause(save_options):
         screen.blit(pause_txt, pause_rect)
         screen.blit(resume_txt, resume_rect)
         screen.blit(save_txt, save_rect)
-        screen.blit(sprites["cursor"], cursor_rect)
+        if (pygame.mouse.get_pos()[0] > 600):
+                pygame.mouse.set_pos([600,pygame.mouse.get_pos()[1]])
+        if (pygame.mouse.get_pos()[0] < 0):
+                pygame.mouse.set_pos([0,pygame.mouse.get_pos()[1]])
+        if (pygame.mouse.get_pos()[1] > 600):
+                pygame.mouse.set_pos([pygame.mouse.get_pos()[0],600])
+        if (pygame.mouse.get_pos()[1] < 0):
+                pygame.mouse.set_pos([pygame.mouse.get_pos()[0],0])
+        if (pygame.mouse.get_focused()):
+            screen.blit(sprites["cursor"], cursor_rect)
         if (WIN.get_width() != pyautogui.size()[0]):
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
             temprect = temp.get_rect(x=0,y=0)
@@ -438,7 +463,7 @@ def game():
     sword_cooldown = 470
     sword_pause = False
     sword_pause_timer = 0
-    hud_font = pygame.font.Font("fonts/Pixeltype.ttf", 40)
+    hud_font = pygame.font.Font("fonts/Pixeltype.ttf", 35)
     tut_font = pygame.font.Font("fonts/Pixeltype.ttf", 30)
     coin_surf = hud_font.render("x"+str(player_stats["gold"]), True, (255,255,255))
     hp_surf = hud_font.render("HP:", True, (255,255,255))
@@ -666,9 +691,9 @@ def game():
             del event
         if (while_break):
             break
-        hp_rect = pygame.Rect(150, 30, player_stats["hp"]*2, 30)
-        max_hp_rect = pygame.Rect(150, 30, player_stats["max hp"]*2, 30)
-        lost_hp_rect = pygame.Rect(hp_rect.midright[0], 30, lost_hp*2, 30)
+        hp_rect = pygame.Rect(150, 30, player_stats["hp"]*2, 20)
+        max_hp_rect = pygame.Rect(150, 30, player_stats["max hp"]*2, 20)
+        lost_hp_rect = pygame.Rect(hp_rect.midright[0], 30, lost_hp*2, 20)
         player_hitbox = player_blitscreen.get_rect(x=player_x,y=player_y)
         keys = pygame.key.get_pressed()
         wall_n_rect = sprites["wall"][1].get_rect(x=50,y=200)
@@ -786,12 +811,13 @@ def game():
                     if (room_dict[current_room].exits[direction] != None and type(room_dict[current_room].exits[direction]) != classes.room.Lock):
                         lost_hp = 0
                         current_room = room_dict[current_room].exits[direction]
-                        enemies = []
-                        enemy_projectiles = []
-                        wall_list = []
-                        pot_list = []
-                        roomwall_rects = []
-                        animations = []
+                        enemies.clear()
+                        enemy_projectiles.clear()
+                        wall_list.clear()
+                        pot_list.clear()
+                        roomwall_rects.clear()
+                        animations.clear()
+                        toxic_pool_list.clear()
                         if ((not current_room in respawn_timer) or (respawn_timer[current_room] == 0) or (current_room == "dungeon room 5" and player_stats["key enemies"][0] == True)):
                             room_dict[current_room].load_room(enemies, sprites, wall_list, pot_list,toxic_pool_list)
                             if (current_room in respawn_timer and respawn_timer[current_room] == 0):
@@ -1521,19 +1547,25 @@ def game():
         else:
             dropshadow(sprites["hud bg"],(0,0),80,5)
             screen.blit(sprites["hud bg"], (0, 0))
-        dropshadow(sprites["coin icon"],(30,30),80,5)
-        screen.blit(sprites["coin icon"], (30, 30))
-        dropshadow(sprites["key icon"],(400,30),80,5)
-        screen.blit(sprites["key icon"], (400, 30))
-        screen.blit(coin_surf, (56, 35))
-        screen.blit(hp_surf, (115, 35))
-        screen.blit(key_surf, (420,35))
+        screen.blit(sprites["coin icon"], (30, 25))
+        screen.blit(sprites["key icon"], (400, 25))
+        screen.blit(coin_surf, (56, 30))
+        screen.blit(hp_surf, (105, 30))
+        screen.blit(key_surf, (420,30))
         border_rect = hp_rect.inflate(10,10)
         max_hp_rect = max_hp_rect.inflate(10,10) 
         pygame.draw.rect(screen, (219, 182,182), max_hp_rect)
         pygame.draw.rect(screen, (219, 182,182), border_rect)
         pygame.draw.rect(screen, (142, 98, 98), hp_rect)
         pygame.draw.rect(screen, (255,98,98), lost_hp_rect)
+        if (pygame.mouse.get_pos()[0] > 600):
+                pygame.mouse.set_pos([600,pygame.mouse.get_pos()[1]])
+        if (pygame.mouse.get_pos()[0] < 0):
+                pygame.mouse.set_pos([0,pygame.mouse.get_pos()[1]])
+        if (pygame.mouse.get_pos()[1] > 600):
+                pygame.mouse.set_pos([pygame.mouse.get_pos()[0],600])
+        if (pygame.mouse.get_pos()[1] < 0):
+                pygame.mouse.set_pos([pygame.mouse.get_pos()[0],0])
         if (pygame.mouse.get_focused()):
              screen.blit(sprites["cursor"], cursor_rect)
         if (WIN.get_width() != pyautogui.size()[0]):
@@ -1578,6 +1610,14 @@ def fade():
         surf.set_alpha(alpha)
         screen.blit(current_screen, (0,0))
         screen.blit(surf,(0,0))
+        if (pygame.mouse.get_pos()[0] > 600):
+                pygame.mouse.set_pos([600,pygame.mouse.get_pos()[1]])
+        if (pygame.mouse.get_pos()[0] < 0):
+                pygame.mouse.set_pos([0,pygame.mouse.get_pos()[1]])
+        if (pygame.mouse.get_pos()[1] > 600):
+                pygame.mouse.set_pos([pygame.mouse.get_pos()[0],600])
+        if (pygame.mouse.get_pos()[1] < 0):
+                pygame.mouse.set_pos([pygame.mouse.get_pos()[0],0])
         if (pygame.mouse.get_focused()):
             screen.blit(sprites["cursor"], cursor_rect)
         if (WIN.get_width() != pyautogui.size()[0]):
@@ -1609,6 +1649,14 @@ def loadscreen():
         else:
             nload = sprites["loading"]
         screen.blit(nload,(530,500))
+        if (pygame.mouse.get_pos()[0] > 600):
+                pygame.mouse.set_pos([600,pygame.mouse.get_pos()[1]])
+        if (pygame.mouse.get_pos()[0] < 0):
+                pygame.mouse.set_pos([0,pygame.mouse.get_pos()[1]])
+        if (pygame.mouse.get_pos()[1] > 600):
+                pygame.mouse.set_pos([pygame.mouse.get_pos()[0],600])
+        if (pygame.mouse.get_pos()[1] < 0):
+                pygame.mouse.set_pos([pygame.mouse.get_pos()[0],0])
         if (pygame.mouse.get_focused()):
             screen.blit(sprites["cursor"], cursor_rect)
         if (WIN.get_width() != pyautogui.size()[0]):
@@ -1639,6 +1687,14 @@ def fade2():
         surf.set_alpha(alpha)
         screen.blit(current_screen, (0,0))
         screen.blit(surf,(0,0))
+        if (pygame.mouse.get_pos()[0] > 600):
+                pygame.mouse.set_pos([600,pygame.mouse.get_pos()[1]])
+        if (pygame.mouse.get_pos()[0] < 0):
+                pygame.mouse.set_pos([0,pygame.mouse.get_pos()[1]])
+        if (pygame.mouse.get_pos()[1] > 600):
+                pygame.mouse.set_pos([pygame.mouse.get_pos()[0],600])
+        if (pygame.mouse.get_pos()[1] < 0):
+                pygame.mouse.set_pos([pygame.mouse.get_pos()[0],0])
         if (pygame.mouse.get_focused()):
             screen.blit(sprites["cursor"], cursor_rect)
         if (WIN.get_width() != pyautogui.size()[0]):
