@@ -92,7 +92,8 @@ sprites = {
                          },
            "deathattack slice":(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),90).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),180).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),90).convert_alpha()),
            "loading":pygame.transform.scale(pygame.image.load("assets/hud/loading.png"), (50,50)).convert_alpha(),
-           "hud dmg":pygame.transform.scale(pygame.image.load("assets/hud/hud_dmg.png"), (600, 90)).convert_alpha()
+           "hud dmg":pygame.transform.scale(pygame.image.load("assets/hud/hud_dmg.png"), (600, 90)).convert_alpha(),
+           "toxic pool":pygame.transform.scale(pygame.image.load("assets/toxic_pool.png"),(50,50)).convert_alpha()
           }
 sprites["player left"].set_colorkey((255,255,255))
 sprites["player right"].set_colorkey((255,255,255))
@@ -462,7 +463,7 @@ def game():
                  "dungeon room 3":classes.room.Room([], ["dungeon room 4", None, "spawn room", None], [classes.room.Wall([290, 290], sprites["small wall"]), classes.room.Wall([350, 300], sprites["small wall"])]),
                  "dungeon room 5":classes.room.Room([classes.room.Spawner(classes.enemy.enemy_ids["slime"], [300, 350], key_item="key"),classes.room.Spawner(classes.enemy.enemy_ids["slime"], [200, 350])], [None, None, "dungeon room 4", None], [classes.room.Wall([340, 230], sprites["small wall2"]), classes.room.Wall([240, 300], sprites["small wall"])]),
                  "dungeon room 6":classes.room.Room([], ["dungeon room 7", "dungeon room 4", None, None], [classes.room.Wall([300,300],sprites["small wall"])],pots=[classes.room.Pot([100, 350],texture=sprites["pot"]),classes.room.Pot([240,300],texture=sprites["pot"])]),
-                 "dungeon room 7":classes.room.Room([],[None,"dungeon room 6", "dungeon room 8", None],[classes.room.Wall([300,300],sprites["small wall"])], pots=[classes.room.Pot([200, 355],texture=sprites["pot"]),classes.room.Pot([260,350],texture=sprites["pot"])]),
+                 "dungeon room 7":classes.room.Room([],[None,"dungeon room 6", "dungeon room 8", None],[classes.room.Wall([300,300],sprites["small wall"])], pots=[classes.room.Pot([200, 355],texture=sprites["pot"]),classes.room.Pot([260,350],texture=sprites["pot"])],toxic_pools=[classes.room.Toxic_Pool(sprites["toxic pool"],[370,370])]),
                  "dungeon room 8":classes.room.Room([classes.room.Spawner(classes.enemy.enemy_ids["slime"], [250, 300])], [None,None,"dungeon room 9","dungeon room 7"], []),
                  "dungeon room 9":classes.room.Room([classes.room.Spawner(classes.enemy.enemy_ids["slime"], [290, 350]),classes.room.Spawner(classes.enemy.enemy_ids["corrupted golem"], [290, 320])], [None,None,"dungeon room 10","dungeon room 8"], []),
                  "dungeon room 10":classes.room.Room([], [None,None,None,"dungeon room 9"], [])
@@ -473,10 +474,11 @@ def game():
     pot_list = []
     current_room = data["room"]
     respawn_timer = data["respawn timer"]
+    toxic_pool_list = []
     if (current_room in respawn_timer):
-        room_dict[current_room].load_room(enemies, sprites, wall_list, pot_list, False, False)
+        room_dict[current_room].load_room(enemies, sprites, wall_list, pot_list, toxic_pool_list, False, False)
     else:
-        room_dict[current_room].load_room(enemies, sprites, wall_list, pot_list)
+        room_dict[current_room].load_room(enemies, sprites, wall_list, pot_list, toxic_pool_list)
     room_cooldown = 0
     resting = False
     player_gothit = pygame.USEREVENT + 1
@@ -534,6 +536,7 @@ def game():
     player_dx = 0
     player_dy = 0
     pressed_space = False
+    knockback_player = True
     while True:
         coin_surf = hud_font.render("x"+str(player_stats["gold"]), True, (255,255,255))
         key_surf = hud_font.render("x"+str(player_stats["keys"]), True, (255,255,255))
@@ -644,14 +647,14 @@ def game():
                 sys.exit()
             elif (event.type == player_gothit):
                 knockback = choice([-30,30])
-                if (knockback == -30 and not wall_r_rect.colliderect(player_hitbox)):
+                if (knockback_player and knockback == -30 and not wall_r_rect.colliderect(player_hitbox)):
                     player_dx -= knockback
-                if (knockback == 30 and not wall_l_rect.colliderect(player_hitbox)):
+                if (knockback_player and knockback == 30 and not wall_l_rect.colliderect(player_hitbox)):
                     player_dx += knockback
                 knockback = choice([-30,30])
-                if (knockback == -30 and not wall_n_rect.colliderect(player_hitbox)):
+                if (knockback_player and knockback == -30 and not wall_n_rect.colliderect(player_hitbox)):
                     player_dy -= knockback
-                if (knockback == 30 and not wall_s_rect.colliderect(player_hitbox)):
+                if (knockback_player and knockback == 30 and not wall_s_rect.colliderect(player_hitbox)):
                     player_dy += knockback
                 
                 current_notification = notification_font.render("You were hit!", True, (127, 98, 98))
@@ -790,11 +793,11 @@ def game():
                         roomwall_rects = []
                         animations = []
                         if ((not current_room in respawn_timer) or (respawn_timer[current_room] == 0) or (current_room == "dungeon room 5" and player_stats["key enemies"][0] == True)):
-                            room_dict[current_room].load_room(enemies, sprites, wall_list, pot_list)
+                            room_dict[current_room].load_room(enemies, sprites, wall_list, pot_list,toxic_pool_list)
                             if (current_room in respawn_timer and respawn_timer[current_room] == 0):
                                 respawn_timer.pop(current_room)
                         else:
-                            room_dict[current_room].load_room(enemies, sprites, wall_list, pot_list, False, False)
+                            room_dict[current_room].load_room(enemies, sprites, wall_list, pot_list, toxic_pool_list, False, False)
                             respawn_timer[current_room] -= 1
                         if (direction == 0):
                             player_x = wall_s_rect.midtop[0]-5
@@ -1211,6 +1214,30 @@ def game():
                     damage_particle.particlelist[-1].velocity_x += choice([-1,1])
                     damage_particle.particlelist[-1].velocity_y += choice([-1,1])
                 pot_list.remove(i)
+        for pool in toxic_pool_list:
+            screen.blit(pool.texture,pool.pos)
+            if ((invincibility_frames <= 0) and player_hitbox.colliderect(pool.hitbox) or pool.hitbox.colliderect(player_hitbox) or pool.hitbox.contains(player_hitbox)):
+                sound_effects["hurt"].play()
+                screenshake_duration = 200
+                pool_dmg = pool.dmg + randint(0,2)
+                player_stats["hp"] -= pool_dmg
+                combat_text.append([combat_text_font.render(f"-{pool_dmg} HP", True, (15, 15, 255)),[player_x, player_y], 500])
+                for j in range(pool_dmg):
+                    damage_particle.pos = [player_hitbox.center[0]+randint(-20,20), player_hitbox.center[1]+randint(-20,20)]
+                    damage_particle.spawn_particle()
+                    damage_particle.particlelist[-1].velocity_x += choice([-1,1])
+                    damage_particle.particlelist[-1].velocity_y += choice([-1,1])
+                lost_hp += pool_dmg//2
+                if (lost_hp > 30):
+                    lost_hp = 30
+                pygame.event.post(pygame.event.Event(player_gothit))
+                knockback_player = False
+                invincibility_frames = 20
+                transition = True
+                player_x = data["pos"]["x"]
+                player_y = data["pos"]["y"]
+                if (player_stats["hp"] <= 0):
+                    died_to = "You were burnt in acid"
         player_x += player_dx
         player_y += player_dy
         if (not in_door):
@@ -1384,6 +1411,7 @@ def game():
                     damage_particle.particlelist[-1].velocity_x += choice([-1,1])
                     damage_particle.particlelist[-1].velocity_y += choice([-1,1])
                 lost_hp += enemy_damage // 2
+                knockback_player = True
                 if (lost_hp > 30):
                     lost_hp = 30
                 pygame.event.post(pygame.event.Event(player_gothit))
@@ -1391,9 +1419,9 @@ def game():
                 invincibility_frames = 20
                 animations.append(classes.animation_effect.Effect((sprites["enemy death"][1], sprites["enemy death"][2], sprites["enemy death"][3]), 500, (i.pos[0], i.pos[1])))
                 if (player_stats["hp"] <= 0 and i.texture == sprites["slimeball"]):
-                     died_to = "Player was rammed by a Slime"
+                     died_to = "You were rammed by a Slime"
                 elif (player_stats["hp"] <= 0 and i.texture == sprites["stomp"]):
-                     died_to = "Player was stomped to death" 
+                     died_to = "You were stomped to death" 
         for i in exits:
             if (room_dict[current_room].exits[exits.index(i)] != None and type(room_dict[current_room].exits[exits.index(i)]) != classes.room.Lock and len(enemies) == 0):
                  if (exits.index(i) == 0):
