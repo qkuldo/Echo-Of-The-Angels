@@ -21,7 +21,7 @@ sprites = {
            "player down":pygame.transform.scale(pygame.image.load("assets/player/player_down.png"), (50,50)).convert_alpha(),
            "player up":pygame.transform.scale(pygame.image.load("assets/player/player_up.png"), (50,50)).convert_alpha(),
            "wall":(pygame.transform.scale(pygame.image.load("assets/wall.png"), (30, 230)).convert_alpha(), pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/wall.png"), (30, 500)), 90).convert_alpha()),
-           "cursor":pygame.transform.scale(pygame.image.load("assets/cursor.png"), (20,20)).convert_alpha(),
+           "cursor":pygame.transform.scale(pygame.image.load("assets/cursor.png"), (50,50)).convert_alpha(),
            "sword swing":{
                           "up":pygame.transform.scale(pygame.image.load("assets/sword_swing.png"), (20,30)).convert_alpha(),
                           "down":pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/sword_swing.png"), (20,30)), 180).convert_alpha(),
