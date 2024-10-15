@@ -671,15 +671,15 @@ def game():
                 pygame.quit()
                 sys.exit()
             elif (event.type == player_gothit):
-                knockback = choice([-30,30])
-                if (knockback_player and knockback == -30 and not wall_r_rect.colliderect(player_hitbox)):
+                knockback = choice([-40,40])
+                if (knockback_player and knockback == -40 and not wall_r_rect.colliderect(player_hitbox)):
                     player_dx -= knockback
-                if (knockback_player and knockback == 30 and not wall_l_rect.colliderect(player_hitbox)):
+                if (knockback_player and knockback == 40 and not wall_l_rect.colliderect(player_hitbox)):
                     player_dx += knockback
-                knockback = choice([-30,30])
-                if (knockback_player and knockback == -30 and not wall_n_rect.colliderect(player_hitbox)):
+                knockback = choice([-40,40])
+                if (knockback_player and knockback == -40 and not wall_n_rect.colliderect(player_hitbox)):
                     player_dy -= knockback
-                if (knockback_player and knockback == 30 and not wall_s_rect.colliderect(player_hitbox)):
+                if (knockback_player and knockback == 40 and not wall_s_rect.colliderect(player_hitbox)):
                     player_dy += knockback
                 
                 current_notification = notification_font.render("You were hit!", True, (127, 98, 98))
@@ -1031,13 +1031,13 @@ def game():
                         i.pos[1] += i.speed
                     i.direction = 3
             if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,2]  and i.line_of_sight.colliderect(player_hitbox) and not i.inv_frames > 0):
-                i.cooldown = 700
+                i.cooldown = randint(500,700)
                 enemy_attack = True
                 enemy_projectiles.append(classes.enemy.Projectile(sprites["stomp"], 0, 0, i.dmg, 100, [i.hitbox.bottomleft[0], i.hitbox.bottomleft[1]-30]))
             if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,1] and player_x - i.pos[0] < 100 and player_y - i.pos[1] < 100):
                 enemy_attack = True
                 i.attack_hitbox_spawned = 100
-                i.cooldown = 700
+                i.cooldown = randint(500,700)
             if (i.attack_hitbox_spawned > 0 and i.ID == [0,1]):
                 if (i.pos[0] > player_x and not i.hitbox.colliderect(wall_r_rect)):
                     i.pos[0] -= i.speed + 5
