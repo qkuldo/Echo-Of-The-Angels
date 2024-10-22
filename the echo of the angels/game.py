@@ -93,7 +93,8 @@ sprites = {
            "deathattack slice":(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),90).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),180).convert_alpha(),pygame.transform.rotate(pygame.transform.scale(pygame.image.load("assets/deathattack_slice.png"),(100,50)),90).convert_alpha()),
            "loading":pygame.transform.scale(pygame.image.load("assets/hud/loading.png"), (50,50)).convert_alpha(),
            "hud dmg":pygame.transform.scale(pygame.image.load("assets/hud/hud_dmg.png"), (600, 90)).convert_alpha(),
-           "toxic pool":pygame.transform.scale(pygame.image.load("assets/toxic_pool.png"),(30,30)).convert_alpha()
+           "toxic pool":pygame.transform.scale(pygame.image.load("assets/toxic_pool.png"),(30,30)).convert_alpha(),
+           "crt":pygame.image.load("assets/crt.png").convert_alpha()
           }
 sprites["player left"].set_colorkey((255,255,255))
 sprites["player right"].set_colorkey((255,255,255))
@@ -150,6 +151,7 @@ sprites["deathattack slice"][1].set_colorkey((255,255,255))
 sprites["deathattack slice"][2].set_colorkey((255,255,255))
 sprites["deathattack slice"][3].set_colorkey((255,255,255))
 sprites["loading"].set_colorkey((255,255,255))
+sprites["crt"].set_alpha(80)
 pygame.display.set_icon(sprites["player down"])
 cursor_rect = sprites["cursor"].get_rect()
 sound_effects = {
@@ -180,7 +182,6 @@ def save(to_save):
     file = open("saves/data.json", "w")
     json.dump(to_save, file, indent=4)
     file.close()
-
 #---------------------
 def intro():
     surf = pygame.Surface((600,600)).convert_alpha()
@@ -280,12 +281,15 @@ def title():
                 screen.blit(sprites["cursor"], cursor_rect)
             if (WIN.get_width() != pyautogui.size()[0]):
                 temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+                tempcrt = pygame.transform.scale(sprites["crt"],(WIN.get_width(),WIN.get_height()))
                 temprect = temp.get_rect(x=0,y=0)
             else:
                 temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
                 temprect = temp.get_rect(midtop=(pyautogui.size()[0]/2,0))
+                tempcrt = pygame.transform.scale(sprites["crt"],(WIN.get_width()/2,WIN.get_height())) 
                 WIN.blit(sprites["game bg"], (0, 90))
             WIN.blit(temp,temprect)
+            WIN.blit(tempcrt,temprect)
             pygame.display.update()
             if (transition):
                 fade2()
@@ -1570,12 +1574,15 @@ def game():
              screen.blit(sprites["cursor"], cursor_rect)
         if (WIN.get_width() != pyautogui.size()[0]):
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+            tempcrt = pygame.transform.scale(sprites["crt"],(WIN.get_width(),WIN.get_height()))
             temprect = temp.get_rect(x=0,y=0)
         else:
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
+            tempcrt = pygame.transform.scale(sprites["crt"],(WIN.get_width()/2,WIN.get_height()))
             temprect = temp.get_rect(midtop=(pyautogui.size()[0]/2,0))
             WIN.blit(sprites["game bg"], (0, 90))
         WIN.blit(temp,temprect)
+        WIN.blit(tempcrt,temprect)
         pygame.display.update()
         if (death_delay):
             if (shift_attack):
@@ -1622,12 +1629,15 @@ def fade():
             screen.blit(sprites["cursor"], cursor_rect)
         if (WIN.get_width() != pyautogui.size()[0]):
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+            tempcrt = pygame.transform.scale(sprites["crt"],(WIN.get_width(),WIN.get_height()))
             temprect = temp.get_rect(x=0,y=0)
         else:
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
+            tempcrt = pygame.transform.scale(sprites["crt"],(WIN.get_width()/2,WIN.get_height()))
             temprect = temp.get_rect(midtop=(pyautogui.size()[0]/2,0))
             WIN.blit(sprites["game bg"], (0, 90))
         WIN.blit(temp,temprect)
+        WIN.blit(tempcrt,temprect)
         pygame.display.update()
         clock.tick(60)
 #--------------------
@@ -1661,12 +1671,15 @@ def loadscreen():
             screen.blit(sprites["cursor"], cursor_rect)
         if (WIN.get_width() != pyautogui.size()[0]):
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+            tempcrt = pygame.transform.scale(sprites["crt"],(WIN.get_width(),WIN.get_height()))
             temprect = temp.get_rect(x=0,y=0)
         else:
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
+            tempcrt = pygame.transform.scale(sprites["crt"],(WIN.get_width()/2,WIN.get_height()))
             temprect = temp.get_rect(midtop=(pyautogui.size()[0]/2,0))
             WIN.blit(sprites["game bg"], (0, 90))
         WIN.blit(temp,temprect)
+        WIN.blit(tempcrt,temprect)
         pygame.display.update()
         clock.tick(60)
 #--------------------
@@ -1699,12 +1712,15 @@ def fade2():
             screen.blit(sprites["cursor"], cursor_rect)
         if (WIN.get_width() != pyautogui.size()[0]):
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width(),WIN.get_height()))
+            tempcrt = pygame.transform.scale(sprites["crt"],(WIN.get_width(),WIN.get_height()))
             temprect = temp.get_rect(x=0,y=0)
         else:
             temp = pygame.transform.scale(screen.copy(),(WIN.get_width()/2,WIN.get_height()))
+            tempcrt = pygame.transform.scale(sprites["crt"],(WIN.get_width()/2,WIN.get_height()))
             temprect = temp.get_rect(midtop=(pyautogui.size()[0]/2,0))
             WIN.blit(sprites["game bg"], (0, 90))
         WIN.blit(temp,temprect)
+        WIN.blit(tempcrt,temprect)
         pygame.display.update()
         clock.tick(60)
 #--------------------
