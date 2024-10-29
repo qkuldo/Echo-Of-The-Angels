@@ -566,11 +566,15 @@ def game():
     player_dy = 0
     pressed_space = False
     knockback_player = True
+    display_coins = copy.deepcopy(player_stats["gold"])
+    coin_increased_timer = 250
     while True:
-        coin_surf = hud_font.render("x"+str(player_stats["gold"]), True, (255,255,255))
+        coin_surf = hud_font.render("x"+str(display_coins), True, (255,255,255))
         key_surf = hud_font.render("x"+str(player_stats["keys"]), True, (255,255,255))
         updated_x = 0
         possible_attack_dist = pygame.Rect(player_x, player_y, 100, 100)
+        if (player_stats["gold"] > display_coins):
+            coin_increased_timer -= clock.get_time()
         torch_timer -= clock.get_time()
         if (screenshake_duration > 0):
             screenshake_duration -= clock.get_time()
@@ -1035,13 +1039,11 @@ def game():
                         i.pos[1] += i.speed
                     i.direction = 3
             if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,2]  and i.line_of_sight.colliderect(player_hitbox) and not i.inv_frames > 0):
-                i.cooldown = randint(500,700)
-                enemy_attack = True
+                i.cooldown = randint(900,1200)
                 enemy_projectiles.append(classes.enemy.Projectile(sprites["stomp"], 0, 0, i.dmg, 100, [i.hitbox.bottomleft[0], i.hitbox.bottomleft[1]-30]))
             if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,1] and player_x - i.pos[0] < 100 and player_y - i.pos[1] < 100):
-                enemy_attack = True
                 i.attack_hitbox_spawned = 100
-                i.cooldown = randint(500,700)
+                i.cooldown = randint(900,1200)
             if (i.attack_hitbox_spawned > 0 and i.ID == [0,1]):
                 if (i.pos[0] > player_x and not i.hitbox.colliderect(wall_r_rect)):
                     i.pos[0] -= i.speed + 5
@@ -1551,9 +1553,15 @@ def game():
         else:
             dropshadow(sprites["hud bg"],(0,0),80,5)
             screen.blit(sprites["hud bg"], (0, 0))
-        screen.blit(sprites["coin icon"], (30, 25))
         screen.blit(sprites["key icon"], (400, 25))
-        screen.blit(coin_surf, (56, 30))
+        if (not coin_increased_timer <= 0):
+            screen.blit(sprites["coin icon"], (30, 25))
+            screen.blit(coin_surf, (56, 30))
+        elif (coin_increased_timer <= 0 and display_coins < player_stats["gold"]):
+            screen.blit(sprites["coin icon"], (30,10))
+            screen.blit(coin_surf, (56, 25))
+            display_coins += 1
+            coin_increased_timer = 250
         screen.blit(hp_surf, (105, 30))
         screen.blit(key_surf, (420,30))
         border_rect = hp_rect.inflate(10,10)
