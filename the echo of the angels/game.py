@@ -246,7 +246,7 @@ def title():
                 return
             elif (event.type == pygame.MOUSEBUTTONDOWN and new_rect.colliderect(cursor_rect)):
                 sound_effects["click"].play()
-                save({"pos":{"x":300, "y":300}, "room":"spawn room", "stats": {"hp": 100, "max hp": 100, "gold": 0, "inventory": [], "max inventory capacity": 20, "current weapon":"sword", "weapons":["sword"],"keys":0,"speed":5,"attack":1,"key enemies":[True],"locked rooms":[True]}, "respawn timer":{}})
+                save({"pos":{"x":300, "y":300}, "room":"spawn room", "stats": {"hp": 100, "max hp": 100, "gold": 0, "inventory": [], "max inventory capacity": 20, "current weapon":"sword", "weapons":["sword"],"keys":0,"speed":3,"attack":1,"key enemies":[True],"locked rooms":[True]}, "respawn timer":{}})
                 return
             anim_pause -= clock.get_time()
             if (anim_pause <= 0):
@@ -969,7 +969,10 @@ def game():
                 i.texture = pygame.transform.rotate(i.texture, randint(-5, 5))
                 i.texture.set_colorkey((255,255,255))
             else:
-                i.update(clock)
+                if (i.ID == [0,1]):
+                    i.update(clock,1000)
+                else:
+                    i.update(clock)
             if (i.ID == [0,2]):
                 i.state = "chase"
             dropshadow(i.texture,i.pos,80,5)
@@ -1139,12 +1142,12 @@ def game():
                             combat_text.append([combat_text_font.render(f"+{i.point_drop+2} coins", True, (255, 196, 98)),[i.pos[0],i.pos[1]], 500])
                             player_stats["hp"] += 5
                             combat_text.append([combat_text_font.render("+5 HP", True, (15, 15, 255)),[player_x, player_y], 500])
-                        animations.append(classes.animation_effect.Effect((sprites["enemy death"][1], sprites["enemy death"][2], sprites["enemy death"][3]), 500, (i.pos[0], i.pos[1])))
                         if (i.key_item == "key"):
                             if (current_room == "dungeon room 5" and player_stats["key enemies"][0]==True):
                                 combat_text.append([sprites["key icon"],[player_hitbox.topleft[0],player_hitbox.topleft[1]], 1000])
                                 player_stats["keys"] += 1
                                 player_stats["key enemies"][0] = False
+                        animations.append(classes.animation_effect.Effect((sprites["enemy death"][1], sprites["enemy death"][2], sprites["enemy death"][3]), 500, (i.pos[0], i.pos[1])))
                         animations.append(classes.animation_effect.Effect((sprites[i.corpse],), 2000, (i.pos[0], i.pos[1])))
                         enemies.remove(i)
                         current_notification = notification_font.render("You defeated an enemy",True, (127,98,98))
@@ -1449,7 +1452,6 @@ def game():
                 pygame.event.post(pygame.event.Event(player_gothit))
                 enemy_projectiles.remove(i)
                 invincibility_frames = 20
-                animations.append(classes.animation_effect.Effect((sprites["enemy death"][1], sprites["enemy death"][2], sprites["enemy death"][3]), 500, (i.pos[0], i.pos[1])))
                 if (player_stats["hp"] <= 0 and i.texture == sprites["slimeball"]):
                      died_to = "You were rammed by a Slime"
                 elif (player_stats["hp"] <= 0 and i.texture == sprites["stomp"]):

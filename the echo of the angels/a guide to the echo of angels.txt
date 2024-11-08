@@ -1,12 +1,10 @@
-A guide for the game "The Echo Of The Angels"
-Document(and game) made by qkuldo(pronounced kwa-culdo)
+ripped straight out of "A rookie's guide to the 'sacred' dungeon" by L.X Wickcraft
 
 
 Story
-     After finishing years of training in exile, far away from your colonized country, you have to prove yourself worthy of being the Hero of your kingdom.
- To do this, you must obtain the 4 Magical Crests of the Hero, guarded by powerful deities who protect these Crests.
- You must defeat them in combat in order to recive the Crests. There are also other monsters and goblin shopkeepers in the dungeon.
- You grab your trusty sword and eat your last piece of bread before diving into the dungeon.
+     As a rookie adventurer, you pack your bags and head to a legendary "dungeon" nobody has ever conquered.
+Those that have survived heading into the dungeon, due to cowardiness, say of mystical creatures nobody has ever seen before.
+Your reason for heading into this dungeon is known by you and you only.
 Controls
  Arrow keys = move
  Space = use sword
@@ -15,13 +13,14 @@ Controls
  S = Save game
  Escape = Pause game
  Arrow keys + Enter/Return = dash
-Monster
+Monsters
  These are the monsters found in this dungeon
  -Slime
    15 HP 5 DMG 1 SPEED
-   These cute, slimy bastards are very common around here.
-   They usually wander around in packs, but some like traveling on their own.
-   A pack of Slimes is called a Glob Ball. Slimes are weak, but you can sneak behind them.
+   These slimes are a type unique to this region.
+   Called the Sobbing Slimes, they posses regions that are teal in color under their eyes that increase in size and brightness when hurt.
+   Yeah and theyre also shaped like one i guess.
+   The reason they have these regions is to discourage predators from attacking them by giving them pity and empathy for the slimes.
  -Corrupted Golem
    25 HP 8 DMG 1 SPEED
    Despite its height, these tall golems are the weakest of its brothers.
