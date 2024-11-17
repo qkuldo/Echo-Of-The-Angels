@@ -556,7 +556,7 @@ def game():
     foliage = []
     for i in range(randint(1,5)):
         foliage.append(classes.room.Foliage(sprites["foliage"][choice(["grass","vine"])][randint(1,2)], (randint(280,400),randint(280,400))))
-    shift_notification = notification_font.render("Shift",True,(255,255,255))
+    shift_notification = dialogue_font.render("[Shift]",True,(255,255,255))
     shift_attack = False
     collided = False
     death_delay = False
@@ -568,7 +568,9 @@ def game():
     knockback_player = True
     display_coins = copy.deepcopy(player_stats["gold"])
     coin_increased_timer = 250
+    sight_hitbox = pygame.Rect(0,0, 100, 100)
     while True:
+        sight_hitbox.center = player_hitbox.center
         coin_surf = hud_font.render("x"+str(display_coins), True, (255,255,255))
         key_surf = hud_font.render("x"+str(player_stats["keys"]), True, (255,255,255))
         updated_x = 0
@@ -1044,7 +1046,7 @@ def game():
             if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,2]  and i.line_of_sight.colliderect(player_hitbox) and not i.inv_frames > 0):
                 i.cooldown = randint(900,1200)
                 enemy_projectiles.append(classes.enemy.Projectile(sprites["stomp"], 0, 0, i.dmg, 100, [i.hitbox.bottomleft[0], i.hitbox.bottomleft[1]-30]))
-            if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,1] and player_x - i.pos[0] < 100 and player_y - i.pos[1] < 100):
+            if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,1]):
                 i.attack_hitbox_spawned = 100
                 i.cooldown = randint(900,1200)
             if (i.attack_hitbox_spawned > 0 and i.ID == [0,1]):
@@ -1362,7 +1364,7 @@ def game():
                 pressed_space = True
             if ((not shift_attack) and (not sword_pause)):
                 for i in enemies:
-                    if (player_hitbox.colliderect(i.hitbox) or i.hitbox.colliderect(player_hitbox)):
+                    if (sight_hitbox.colliderect(i.hitbox) or i.hitbox.colliderect(sight_hitbox)):
                         if (i.death_attack_hp >= i.hp):
                             collided = True
                             player_y = i.pos[1]
@@ -1527,9 +1529,8 @@ def game():
         for i in enemies:
             if (i.hp <= i.death_attack_hp):
                 screen.blit(sprites["death attack remind"],i.pos)
-                dropshadow(sprites["keypress remind"],(sprites["death attack remind"].get_rect(x=i.pos[0],y=i.pos[1]).topleft[0],sprites["death attack remind"].get_rect(x=i.pos[0],y=i.pos[1]).topleft[1]-40), 80,5)
-                screen.blit(sprites["keypress remind"],(sprites["death attack remind"].get_rect(x=i.pos[0],y=i.pos[1]).topleft[0],sprites["death attack remind"].get_rect(x=i.pos[0],y=i.pos[1]).topleft[1]-40))
-                screen.blit(shift_notification,(sprites["death attack remind"].get_rect(x=i.pos[0],y=i.pos[1]).topleft[0]+5,sprites["death attack remind"].get_rect(x=i.pos[0],y=i.pos[1]).topleft[1]-35))
+                if (sight_hitbox.colliderect(i.hitbox) or i.hitbox.colliderect(sight_hitbox)):
+                    screen.blit(shift_notification,(300,400))
         dash_particle.setup(screen,clock)
         damage_particle.setup(screen,clock)
         deathattack_particle.setup(screen,clock)
