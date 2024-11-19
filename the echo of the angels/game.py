@@ -1277,6 +1277,14 @@ def game():
                     died_to = "You were burnt in acid"
         player_x += player_dx
         player_y += player_dy
+        if (player_x <= wall_r_rect.x):
+            player_x = wall_r_rect.x
+        if (player_x >= wall_l_rect.x):
+            player_x = wall_l_rect.x-10
+        if (player_y <= wall_n_rect.y):
+            player_y = wall_n_rect.y
+        if (player_y >= wall_s_rect.y):
+            player_y = wall_s_rect.y - 10
         if (not in_door):
             dropshadow(player_blitscreen,(player_x,player_y),80,5)
             screen.blit(player_blitscreen, (player_x,player_y))
