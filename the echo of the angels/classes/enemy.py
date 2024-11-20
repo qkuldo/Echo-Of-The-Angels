@@ -32,9 +32,10 @@ class Enemy:
 		self.runaway = 0
 		self.death_attack_hp = copy.deepcopy(self.hp) // 2
 		self.attack_hitbox_spawned = 0
+		self.modify_drop = {"max hp":0,"speed":0,"damage":0,"special mult":0,"dash_mult":0}
 	def draw(self, screen):
 		screen.blit(self.texture, self.pos)
-	def update(self, clock):
+	def update(self, clock, speed=200):
 		self.anim_pause -= clock.get_time()
 		if (self.spin_walk_cooldown > 0):
 			self.spin_walk_cooldown -= clock.get_time()
@@ -42,7 +43,7 @@ class Enemy:
 			self.anim_index += 1
 			if (self.anim_index > len(self.anim_frames)-1):
 				self.anim_index = 0
-			self.anim_pause = 200
+			self.anim_pause = speed
 		if (self.spin_walk_cooldown <= 0):
 		     self.texture = pygame.transform.rotate(self.anim_frames[self.anim_index], random.randint(-5, 5))
 		     self.texture.set_colorkey((255,255,255))

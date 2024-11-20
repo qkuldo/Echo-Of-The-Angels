@@ -13,8 +13,10 @@ class Room:
         for i in self.spawners:
             if (i.enemy_id == [0,1] and spawn_enemy):
                  enemy_list.append(classes.enemy.Enemy(sprite_dict["slime"], i.pos, ID = classes.enemy.enemy_ids["slime"], knockback = 25, hp = 15, anim_frames=(sprite_dict["slime"], sprite_dict["slime 2"],),key_item=i.key_item,dmg=5))
+                 enemy_list[-1].modify_drop = {"max hp":0,"speed":0.5,"damage":0,"special mult":0,"dash_mult":0}
             elif (i.enemy_id == [0,2] and spawn_enemy):
                  enemy_list.append(classes.enemy.Enemy(sprite_dict["corrupted golem 1"], i.pos, ID = classes.enemy.enemy_ids["corrupted golem"], knockback = 25, hp = 25, anim_frames=(sprite_dict["corrupted golem 1"], sprite_dict["corrupted golem 2"]), speed=1, point_drop=5, dmg=10, corpse="corrupted golem corpse", key_item=i.key_item))
+                 enemy_list[-1].modify_drop = {"max hp":0.6,"speed":0,"damage":0.4,"special mult":0,"dash_mult":0}
         for i in self.walls:
             wall_list.append(i)
         if (spawn_pot == True):
