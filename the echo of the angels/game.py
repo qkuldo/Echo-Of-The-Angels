@@ -246,7 +246,7 @@ def title():
                 return
             elif (event.type == pygame.MOUSEBUTTONDOWN and new_rect.colliderect(cursor_rect)):
                 sound_effects["click"].play()
-                save({"pos":{"x":300, "y":300}, "room":"spawn room", "stats": {"hp": 100, "max hp": 100, "gold": 0, "inventory": [], "max inventory capacity": 20, "current weapon":"sword", "weapons":["sword"],"keys":0,"speed":3,"attack":1,"key enemies":[True],"locked rooms":[True]}, "respawn timer":{}})
+                save({"pos":{"x":300, "y":300}, "room":"spawn room", "stats": {"hp": 100, "max hp": 100, "gold": 0, "inventory": [], "max inventory capacity": 20, "current weapon":"sword", "weapons":["sword"],"keys":0,"speed":3,"attack":1,"key enemies":[True],"locked rooms":[True]},"stat modifiers":{"max hp":0, "speed":0,"damage":0,"special mult":2,"dash_mult":2}, "respawn timer":{}})
                 return
             anim_pause -= clock.get_time()
             if (anim_pause <= 0):
@@ -463,6 +463,7 @@ def game():
     player_x = data["pos"]["x"]
     player_y = data["pos"]["y"]
     player_stats = data["stats"]
+    player_stat_modifier = data["stat modifiers"]
     main_dir = sprites["player down"]
     sword_cooldown = 470
     sword_pause = False
@@ -607,46 +608,46 @@ def game():
                     updated_y = True
             if (222 >= dash_duration > 148):
                 if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
-                    player_dx -= player_stats["speed"]*2
+                    player_dx -= player_stats["speed"]*player_stat_modifier["dash_mult"]
                     player_blitscreen = pygame.transform.scale(main_dir,(70,25))
                     updated_x = True
                 if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
-                    player_dx += player_stats["speed"]*2
+                    player_dx += player_stats["speed"]*player_stat_modifier["dash_mult"]
                     updated_x = True
                     player_blitscreen = pygame.transform.scale(main_dir,(70,25))
                 if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
                     player_blitscreen = pygame.transform.scale(main_dir,(25,70))
-                    player_dy -= player_stats["speed"]*2
+                    player_dy -= player_stats["speed"]*player_stat_modifier["dash_mult"]
                     updated_y = True
                 if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
                     player_blitscreen = pygame.transform.scale(main_dir,(25,70))
-                    player_dy += player_stats["speed"]*2
+                    player_dy += player_stats["speed"]*player_stat_modifier["dash_mult"]
                     updated_y = True
             if (148 >= dash_duration > 111):
                 if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
-                    player_dx -= player_stats["speed"]*2.5
+                    player_dx -= player_stats["speed"]*player_stat_modifier["dash_mult"]+0.5
                     updated_x = True
                 if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
-                    player_dx += player_stats["speed"]*2.5
+                    player_dx += player_stats["speed"]*player_stat_modifier["dash_mult"]+0.5
                     updated_x = True
                 if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
-                    player_dy -= player_stats["speed"]*2.5
+                    player_dy -= player_stats["speed"]*player_stat_modifier["dash_mult"]+0.5
                     updated_y = True
                 if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
-                    player_dy += player_stats["speed"]*2.5
+                    player_dy += player_stats["speed"]*player_stat_modifier["dash_mult"]+0.5
                     updated_y = True
             if (111 >= dash_duration > 74):
                 if ((main_dir == sprites["player left"] or main_dir == sprites["player left invincible"]) and not player_hitbox.colliderect(wall_r_rect)):
-                    player_dx -= player_stats["speed"]*2
+                    player_dx -= player_stats["speed"]*player_stat_modifier["dash_mult"]
                     updated_x = True
                 if ((main_dir == sprites["player right"] or main_dir == sprites["player right invincible"]) and not player_hitbox.colliderect(wall_l_rect)):
-                    player_dx += player_stats["speed"]*2
+                    player_dx += player_stats["speed"]*player_stat_modifier["dash_mult"]+0.5
                     updated_x = True
                 if ((main_dir == sprites["player up"] or main_dir == sprites["player up invincible"]) and not player_hitbox.colliderect(wall_n_rect)):
-                    player_dy -= player_stats["speed"]*2
+                    player_dy -= player_stats["speed"]*player_stat_modifier["dash_mult"]+0.5
                     updated_y = True
                 if ((main_dir == sprites["player down"] or main_dir == sprites["player down invincible"]) and not player_hitbox.colliderect(wall_s_rect)):
-                    player_dy += player_stats["speed"]*2
+                    player_dy += player_stats["speed"]*player_stat_modifier["dash_mult"]+0.5
                     updated_y = True
             else:
                 player_blitscreen = main_dir
@@ -847,7 +848,7 @@ def game():
                         elif (direction == 3):
                             player_x = exit_rects[2].x
                             player_y = exit_rects[2].y
-                        save({"pos":{"x":player_x, "y":player_y}, "room":current_room, "stats":player_stats, "respawn timer":respawn_timer})
+                        save({"pos":{"x":player_x, "y":player_y}, "room":current_room, "stats":player_stats,"stat modifiers":player_stat_modifier, "respawn timer":respawn_timer})
                         room_cooldown = 1000
                         in_door = True
                         foliage = []
@@ -888,9 +889,9 @@ def game():
         if (keys[pygame.K_s]):
             current_notification = notification_font.render("Game saved!",True, (127,98,98))
             notification_rect = current_notification.get_rect(midtop=(200, 450))
-            save({"pos":{"x":player_x, "y":player_y}, "room":current_room, "stats":player_stats, "respawn timer":respawn_timer})
+            save({"pos":{"x":player_x, "y":player_y}, "room":current_room, "stats":player_stats,"stat modifiers":player_stat_modifier, "respawn timer":respawn_timer})
         if (keys[pygame.K_ESCAPE]):
-            while_break = pause({"pos":{"x":player_x, "y":player_y}, "room":current_room, "stats":player_stats, "respawn timer":respawn_timer})
+            while_break = pause({"pos":{"x":player_x, "y":player_y}, "room":current_room, "stats":player_stats,"stat modifiers":player_stat_modifier, "respawn timer":respawn_timer})
         if (resting and time_till_wakeup <= 0):
             resting = not resting
             main_dir = sprites["player down"]
@@ -992,7 +993,7 @@ def game():
                 i.pos[1] -= i.speed
                 if (i.pos[1] <= 210):
                   i.direction = 2
-                if (i.line_of_sight.colliderect(player_hitbox)):
+                if (i.line_of_sight.colliderect(sight_hitbox)):
                     i.state = "chase"
                     combat_text.append([sprites["alert"],[i.pos[0],i.pos[1]], 200])
             elif (i.state == "chase"):
@@ -1019,6 +1020,8 @@ def game():
                     else:
                         i.pos[1] += i.speed
                     i.direction = 3
+                if (not i.line_of_sight.colliderect(sight_hitbox)):
+                    i.state = "patrol"
             elif (i.state == "runaway"):
                 i.runaway -= clock.get_time()
                 if (i.runaway <= 0):
@@ -1081,19 +1084,19 @@ def game():
                         screenshake_duration = 200
                     i.state = "runaway"
                     if (randint(0, 10) == 10 and not shift_attack and not collided):
-                        damage = player_stats["attack"] + randint(2,4) 
+                        damage = player_stats["attack"] + randint(2,4) + player_stat_modifier["damage"]
                         i.hp -= damage
                         combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 215, 98)),[i.pos[0],i.pos[1]], 500])
                     elif (not shift_attack and not collided):
-                        damage = player_stats["attack"] + randint(0,2)
+                        damage = player_stats["attack"] + randint(0,2) + player_stat_modifier["damage"]
                         i.hp -= damage
                         combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 15, 98)),[i.pos[0],i.pos[1]], 500])
                     if (randint(0, 5) == 5 and shift_attack and collided and enemies.index(i) == current_deathattack_target):
-                        damage = (player_stats["attack"] + randint(2,4))*5 
+                        damage = (player_stats["attack"] + randint(2,4) + player_stat_modifier["damage"])*player_stat_modifier["special mult"] 
                         i.hp -= damage
                         combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 215, 98)),[i.pos[0],i.pos[1]], 500])
                     elif (shift_attack and collided and enemies.index(i) == current_deathattack_target):
-                        damage = (player_stats["attack"] + randint(0,2))*5
+                        damage = (player_stats["attack"] + randint(0,2))*player_stat_modifier["special mult"] 
                         i.hp -= damage
                         combat_text.append([combat_text_font.render(f"-{damage} HP", True, (255, 15, 98)),[i.pos[0],i.pos[1]], 500])  
                     i.inv_frames = 15
@@ -1154,11 +1157,24 @@ def game():
                         enemies.remove(i)
                         current_notification = notification_font.render("You defeated an enemy",True, (127,98,98))
                         notification_rect = current_notification.get_rect(midtop=(200, 450))
+                        player_stat_modifier["max hp"]+=i.modify_drop["max hp"]
+                        player_stat_modifier["speed"]+=i.modify_drop["speed"]
+                        player_stat_modifier["damage"]+=i.modify_drop["damage"]
+                        player_stat_modifier["special mult"]+=i.modify_drop["special mult"]
+                        player_stat_modifier["dash_mult"]+=i.modify_drop["dash_mult"]
                     else:
                         sound_effects["hurt"].play()
                     if (shift_attack):
                         shift_attack = False
                         collided = False
+            if (player_x <= wall_r_rect.x):
+                player_x = wall_r_rect.x
+            if (player_x >= wall_l_rect.x):
+                player_x = wall_l_rect.x-10
+            if (player_y <= wall_n_rect.y):
+                player_y = wall_n_rect.y
+            if (player_y >= wall_s_rect.y):
+                player_y = wall_s_rect.y - 10
         for i in wall_list:
             dropshadow(i.texture,i.pos,80,5)
             screen.blit(i.texture, i.pos)
