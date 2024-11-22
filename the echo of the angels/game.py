@@ -67,7 +67,7 @@ sprites = {
            "locked door":pygame.transform.scale(pygame.image.load("assets/locked_door.png"), (35,30)).convert_alpha(),
            "pot":pygame.transform.scale(pygame.image.load("assets/pot.png"),(40,40)).convert_alpha(),
            "alert":pygame.transform.scale(pygame.image.load("assets/alert.png"),(20,20)).convert_alpha(),
-           "damage particle":pygame.transform.scale(pygame.image.load("assets/particle/damage_particle.png"),(20,20)).convert_alpha(),
+           "damage particle":pygame.transform.scale(pygame.image.load("assets/particle/damage_particle.png"),(15,15)).convert_alpha(),
            "game bg":pygame.transform.scale(pygame.image.load("assets/background.png"), pyautogui.size()).convert_alpha(),
            "qk":pygame.transform.scale(pygame.image.load("assets/qkuldo.png"), (100,100)).convert_alpha(),
            "small wall2":pygame.transform.scale(pygame.image.load("assets/small_wall2.png"), (25,25)).convert_alpha(),
@@ -94,7 +94,8 @@ sprites = {
            "loading":pygame.transform.scale(pygame.image.load("assets/hud/loading.png"), (50,50)).convert_alpha(),
            "hud dmg":pygame.transform.scale(pygame.image.load("assets/hud/hud_dmg.png"), (600, 90)).convert_alpha(),
            "toxic pool":pygame.transform.scale(pygame.image.load("assets/toxic_pool.png"),(30,30)).convert_alpha(),
-           "crt":pygame.image.load("assets/crt.png").convert_alpha()
+           "crt":pygame.image.load("assets/crt.png").convert_alpha(),
+           "slime attack":pygame.transform.scale(pygame.image.load("assets/enemy/slime/slime_attack.png"), (50,50)).convert_alpha()
           }
 sprites["player left"].set_colorkey((255,255,255))
 sprites["player right"].set_colorkey((255,255,255))
@@ -152,6 +153,7 @@ sprites["deathattack slice"][2].set_colorkey((255,255,255))
 sprites["deathattack slice"][3].set_colorkey((255,255,255))
 sprites["loading"].set_colorkey((255,255,255))
 sprites["crt"].set_alpha(80)
+sprites["slime attack"].set_colorkey((255,255,255))
 pygame.display.set_icon(sprites["player down"])
 cursor_rect = sprites["cursor"].get_rect()
 sound_effects = {
@@ -948,7 +950,7 @@ def game():
         if (current_room == "spawn room"):
             screen.blit(tut_1, (150,300))
         for i in animations:
-            if (i.current_frame == sprites["slime corpse"] or i.current_frame == sprites["corrupted golem corpse"]):
+            if (i.current_frame == sprites["slime corpse"] or i.current_frame == sprites["corrupted golem corpse"] or i.current_frame == sprites["slimeball"]):
                 i.update(clock)
                 dropshadow(i.current_frame,i.pos,80,5)
                 i.draw(screen)
@@ -972,8 +974,10 @@ def game():
                 i.texture = pygame.transform.rotate(i.texture, randint(-5, 5))
                 i.texture.set_colorkey((255,255,255))
             else:
-                if (i.ID == [0,1]):
+                if (i.ID == [0,1] and not i.attack_hitbox_spawned > 0):
                     i.update(clock,1000)
+                elif (i.ID == [0,1] and i.attack_hitbox_spawned > 0):
+                    i.texture = sprites["slime attack"]
                 else:
                     i.update(clock)
             if (i.ID == [0,2]):
@@ -1050,7 +1054,7 @@ def game():
                 i.cooldown = randint(900,1200)
                 enemy_projectiles.append(classes.enemy.Projectile(sprites["stomp"], 0, 0, i.dmg, 100, [i.hitbox.bottomleft[0], i.hitbox.bottomleft[1]-30]))
             if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,1]):
-                i.attack_hitbox_spawned = 100
+                i.attack_hitbox_spawned = 200
                 i.cooldown = randint(900,1200)
             if (i.attack_hitbox_spawned > 0 and i.ID == [0,1]):
                 if (i.pos[0] > player_x and not i.hitbox.colliderect(wall_r_rect)):
@@ -1452,6 +1456,8 @@ def game():
             i.pos[0] += i.velocity_x
             i.pos[1] += i.velocity_y
             if (i.lifetime <= 0):
+                if (i.texture == sprites["slimeball"]):
+                    animations.append(classes.animation_effect.Effect((sprites["slimeball"],), 500, (i.pos[0], i.pos[1])))
                 enemy_projectiles.remove(i)
             elif ((player_hitbox.colliderect(i.hitbox) or i.hitbox.colliderect(player_hitbox) or player_hitbox.contains(i.hitbox)) and invincibility_frames <= 0):
                 sound_effects["hurt"].play()
@@ -1567,7 +1573,7 @@ def game():
             if (i[2] <= 0):
                 combat_text.remove(i)
         for i in animations:
-            if (i.current_frame != sprites["slime corpse"] and i.current_frame != sprites["corrupted golem corpse"]):
+            if (i.current_frame != sprites["slime corpse"] and i.current_frame != sprites["corrupted golem corpse"] and i.current_frame != sprites["slimeball"]):
                 i.update(clock)
                 dropshadow(i.current_frame,i.pos,80,5)
                 i.draw(screen)
