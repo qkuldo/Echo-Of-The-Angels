@@ -552,8 +552,8 @@ def game():
     dash_particle = classes.particle.ParticleGroup(sprites["dash"], [player_hitbox.midbottom[0], player_hitbox.midbottom[1]-20], randint(-3, 3), 0, 300)
     in_door = False
     updated_y = False
-    torch_lights = [classes.Glow((250,200),40,5,50),classes.Glow((376,200),40,5,50),classes.Glow((250,400),40,5,50),classes.Glow((376,400),40,5,50),classes.Glow((50,240),40,5,50),classes.Glow((50,368),40,5,50),classes.Glow((527,240),40,5,50),classes.Glow((527,368),40,5,50)]
-    player_glow = classes.Glow((player_x,player_y),player_hitbox.width,5,50)
+    torch_lights = [classes.Glow((250,200),20,5,50),classes.Glow((376,200),20,5,50),classes.Glow((250,400),20,5,50),classes.Glow((376,400),20,5,50),classes.Glow((50,240),20,5,50),classes.Glow((50,368),20,5,50),classes.Glow((527,240),20,5,50),classes.Glow((527,368),20,5,50)]
+    player_glow = classes.Glow((player_x,player_y),player_hitbox.width - 20,5,50)
     sword_times = 0
     spin_length = -5
     foliage = []
