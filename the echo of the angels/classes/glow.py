@@ -35,6 +35,13 @@ class Glow:
             k = i*self.light
             k = pygame.math.clamp(k,0,255)
             new_rect = self.surf.get_rect()
-            pygame.draw.rect(self.surf,(k,k,k), new_rect)
+            """if rgb is (k*1.6,k*1.6,k), makes brighter effect
+               but (k*1.6,k,k) does not in fact, make it redder
+               BUTTTTTT (k,k*1.6,k) makes it only a tiny bit greener
+               and (k,k,k*1.6) is blue asf
+               What is happening, I dont know
+               But im going with (k*1.6,k*1.6,k)
+            """
+            pygame.draw.rect(self.surf,(k*1.6,k*1.6,k), new_rect)
         self.surf.set_alpha(self.light)
         screen.blit(self.surf,(self.outer_rect.x,self.outer_rect.y), special_flags=pygame.BLEND_RGBA_MAX)
