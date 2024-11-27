@@ -164,7 +164,8 @@ sound_effects = {
                  "footstep":pygame.mixer.Sound("sounds/footstep.wav"),
                  "hurt":pygame.mixer.Sound("sounds/hurt.wav"),
                  "click":pygame.mixer.Sound("sounds/click.wav"),
-                 "heal":pygame.mixer.Sound("sounds/heal.wav")
+                 "heal":pygame.mixer.Sound("sounds/heal.wav"),
+                 "big stomp":pygame.mixer.Sound("sounds/bigstomp.wav")
                 }
 pygame.mixer.music.set_volume(0.7)
 music = [
@@ -1053,6 +1054,7 @@ def game():
             if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,2]  and i.line_of_sight.colliderect(player_hitbox) and not i.inv_frames > 0):
                 i.cooldown = randint(900,1200)
                 enemy_projectiles.append(classes.enemy.Projectile(sprites["stomp"], 0, 0, i.dmg, 100, [i.hitbox.bottomleft[0], i.hitbox.bottomleft[1]-30]))
+                sound_effects["big stomp"].play()
             if (i.cooldown <= 0 and i.state == "chase" and i.ID == [0,1]):
                 i.attack_hitbox_spawned = 200
                 i.cooldown = randint(900,1200)
