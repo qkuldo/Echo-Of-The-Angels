@@ -574,6 +574,7 @@ def game():
     coin_increased_timer = 250
     sight_hitbox = pygame.Rect(0,0, 100, 100)
     while True:
+        screen.fill("black")
         sight_hitbox.center = player_hitbox.center
         coin_surf = hud_font.render("x"+str(display_coins), True, (255,255,255))
         key_surf = hud_font.render("x"+str(player_stats["keys"]), True, (255,255,255))
