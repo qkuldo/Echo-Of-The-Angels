@@ -67,7 +67,7 @@ sprites = {
            "locked door":pygame.transform.scale(pygame.image.load("assets/locked_door.png"), (35,30)).convert_alpha(),
            "pot":pygame.transform.scale(pygame.image.load("assets/pot.png"),(40,40)).convert_alpha(),
            "alert":pygame.transform.scale(pygame.image.load("assets/alert.png"),(20,20)).convert_alpha(),
-           "damage particle":pygame.transform.scale(pygame.image.load("assets/particle/damage_particle.png"),(15,15)).convert_alpha(),
+           "damage particle":pygame.transform.scale(pygame.image.load("assets/particle/damage_particle.png"),(20,20)).convert_alpha(),
            "game bg":pygame.transform.scale(pygame.image.load("assets/background.png"), pyautogui.size()).convert_alpha(),
            "qk":pygame.transform.scale(pygame.image.load("assets/qkuldo.png"), (100,100)).convert_alpha(),
            "small wall2":pygame.transform.scale(pygame.image.load("assets/small_wall2.png"), (25,25)).convert_alpha(),
@@ -109,6 +109,7 @@ sprites["sword swing"]["right"].set_colorkey((255,255,255))
 sprites["coin icon"].set_colorkey((255,255,255))
 sprites["slime"].set_colorkey((255,255,255))
 sprites["slimeball"].set_colorkey((255,255,255))
+sprites["slimeball"].set_alpha(20)
 sprites["invincible slime"].set_colorkey((255,255,255))
 sprites["player rest"].set_colorkey((255,255,255))
 sprites["slime 2"].set_colorkey((255,255,255))
@@ -127,7 +128,6 @@ sprites["stomp"].set_colorkey((255,255,255))
 sprites["slime corpse"].set_colorkey((255,255,255))
 sprites["corrupted golem corpse"].set_colorkey((255,255,255))
 sprites["flame particle 1"].set_colorkey((255,255,255))
-sprites["flame particle 2"].set_colorkey((255,255,255))
 sprites["torch"].set_colorkey((255,255,255))
 sprites["torch 2"].set_colorkey((255,255,255))
 sprites["key icon"].set_colorkey((255,255,255))
@@ -1177,11 +1177,11 @@ def game():
             if (player_x <= wall_r_rect.x):
                 player_x = wall_r_rect.x
             if (player_x >= wall_l_rect.x):
-                player_x = wall_l_rect.x-10
+                player_x = wall_l_rect.x-500
             if (player_y <= wall_n_rect.y):
                 player_y = wall_n_rect.y
             if (player_y >= wall_s_rect.y):
-                player_y = wall_s_rect.y - 10
+                player_y = wall_s_rect.y - 500
         for i in wall_list:
             dropshadow(i.texture,i.pos,80,5)
             screen.blit(i.texture, i.pos)
