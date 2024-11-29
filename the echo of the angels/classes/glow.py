@@ -42,6 +42,6 @@ class Glow:
                What is happening, I dont know
                But im going with (k*1.6,k*1.6,k)
             """
-            pygame.draw.rect(self.surf,(k*1.6,k*1.6,k), new_rect)
+            pygame.draw.rect(self.surf,(k*1.5,k*1.3,k), new_rect)
         self.surf.set_alpha(self.light)
         screen.blit(self.surf,(self.outer_rect.x,self.outer_rect.y), special_flags=pygame.BLEND_RGBA_MAX)
